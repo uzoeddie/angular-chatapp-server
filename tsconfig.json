@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "module": "commonjs",
+    "lib": ["DOM", "ES2015"],
+    "baseUrl": ".",
+    "outDir": "./build",
+    "rootDir": "src",
+    "strict": true, 
+    "noImplicitAny": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "pretty": true,
+    "plugins": [
+      { 
+        "transform": "@zerollup/ts-transform-paths",
+        "exclude": ["*"]
+      }
+    ],
+    "paths": {
+      "@global/*": ["src/global/*"],
+      "@comments/*": ["src/features/comments/*"],
+      "@followers/*": ["src/features/followers/*"],
+      "@images/*": ["src/features/images/*"],
+      "@notifications/*": ["src/features/notifications/*"],
+      "@posts/*": ["src/features/posts/*"],
+      "@redis/*": ["src/services/redis/*"],
+      "@email/*": ["src/services/email/*"],
+      "@sockets/*": ["src/sockets/*"],
+      "@user/*": ["src/features/user/*"],
+      "@chat/*": ["src/features/chat/*"],
+      "@queues/*": ["src/services/queues/*"],
+      "@workers/*": ["src/workers/*"],
+      "@root/*": ["src/*"],
+    }
+  }
+}

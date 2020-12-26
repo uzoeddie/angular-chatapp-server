@@ -1,0 +1,23 @@
+import { Request } from 'express';
+import { ObjectSchema } from 'joi';
+import { RequestValidationError } from '@global/error-handler';
+
+type IJoiDescriptor = (target: Object, key: string, descriptor: PropertyDescriptor) => void;
+
+export function joiValidation(schema: ObjectSchema<any>): IJoiDescriptor {
+    return (target: Object, key: string, descriptor: PropertyDescriptor) => {
+        const originalMethod = descriptor.value;
+
+        descriptor.value = async function(...args: any[]) {
+            const req: Request = args[0];
+            // if you use validateAsync, you'll have to use a try/catch block
+            const { error } = await schema.validate(req.body);
+            if (error?.details) {
+                throw new RequestValidationError(error);
+            }
+            const result = originalMethod.apply(this, args);
+            return result;
+        }
+        return descriptor;
+    }
+}
