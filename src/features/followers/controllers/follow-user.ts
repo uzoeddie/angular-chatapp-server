@@ -24,36 +24,41 @@ export class Add {
       {
         updateOne: {
           filter: { _id: req.currentUser?.userId },
-          update: { $inc: { followingCount: 1 }} 
+          update: { $inc: { followingCount: 1 } }
         }
       },
       {
         updateOne: {
           filter: { _id: req.params.followerId },
-          update: { $inc: { followersCount: 1 }}
+          update: { $inc: { followersCount: 1 } }
         }
-      },
+      }
     ]);
-    const response: [IFollowerDocument, BulkWriteOpResultObject, IUserDocument] = await Promise.all(
-      [following, 
-        users, 
-        UserModel.findOne({ _id: req.params.followerId })
-      ]) as [IFollowerDocument, BulkWriteOpResultObject, IUserDocument];
+    const response: [IFollowerDocument, BulkWriteOpResultObject, IUserDocument | null] = await Promise.all([
+      following,
+      users,
+      UserModel.findOne({ _id: req.params.followerId })
+    ]);
+
     if (response[2]!.notifications.follows) {
-      NotificationModel.schema.methods.insertNotification({ 
-        userFrom: req.currentUser?.userId, 
-        userTo: req.params.followerId, 
-        message: `${req.currentUser?.username} is now following you.`, 
+      NotificationModel.schema.methods.insertNotification({
+        userFrom: req.currentUser?.userId,
+        userTo: req.params.followerId,
+        message: `${req.currentUser?.username} is now following you.`,
         notificationType: 'follows',
         entityId: req.currentUser?.userId,
         createdItemId: response[0]._id
       });
     }
+
     if (response) {
       userQueue.addUserJob('updateUserFollowersInCache', { key: `${req.params.followerId}`, prop: 'followersCount', value: 1 });
       userQueue.addUserJob('updateUserFollowersInCache', { key: `${req.currentUser?.userId}`, prop: 'followingCount', value: 1 });
-      followerQueue.addFollowerJob('addFollowerToCache', { key: `${req.currentUser?.userId}`, value: `${req.params.followerId}` });
+      followerQueue.addFollowerJob('addFollowerToCache', {
+        key: `${req.currentUser?.userId}`,
+        value: `${req.params.followerId}`
+      });
     }
-    res.status(HTTP_STATUS.OK).json({ message: `Following user now`, notification: true });
+    res.status(HTTP_STATUS.OK).json({ message: 'Following user now', notification: true });
   }
 }

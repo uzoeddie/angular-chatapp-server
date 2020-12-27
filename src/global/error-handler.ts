@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import HTTP_STATUS from 'http-status-codes';
 
 export interface IErrorResponse {
   message: string;
   statusCode: number;
-  serializeErrors(): {}
+  serializeErrors(): IError;
 }
 
 export interface IError {
@@ -26,6 +27,7 @@ export abstract class CustomError extends Error {
 export class RequestValidationError extends CustomError {
   statusCode = HTTP_STATUS.BAD_REQUEST;
 
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   constructor(public errors: any) {
     super(errors);
 

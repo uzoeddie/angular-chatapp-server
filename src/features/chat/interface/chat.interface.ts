@@ -1,51 +1,86 @@
 import mongoose from 'mongoose';
 
 export interface IMessageDocument extends mongoose.Document {
-    _id: mongoose.Types.ObjectId;
-    conversationId: mongoose.Types.ObjectId;
-    senderId: mongoose.Types.ObjectId;
-    receiverId: mongoose.Types.ObjectId;
-    senderName: string;
-    receiverName: string;
-    body: string;
-    gifUrl: string;
-    isRead: boolean;
-    images: string[];
-    createdAt: Date;
+  _id: mongoose.Types.ObjectId;
+  conversationId: mongoose.Types.ObjectId;
+  senderId: mongoose.Types.ObjectId;
+  receiverId: mongoose.Types.ObjectId;
+  senderName: string;
+  receiverName: string;
+  body: string;
+  gifUrl: string;
+  isRead: boolean;
+  images: string[];
+  createdAt: Date;
 }
 
 export interface ITyping {
-    sender: string;
-    receiver: string;
+  sender: string;
+  receiver: string;
 }
-  
+
 export interface IChatPage {
-    name: string;
-    url: string;
-    type?: string;
+  name: string;
+  url: string;
+  type?: string;
 }
 
 export interface IChatUser {
-    _id?: string;
-    username?: string;
-    email?: string;
-    profilePicture?: string;
-    avatarColor?: string;
-    senderName?: string;
-    conversationId?: string;
-    body?: string;
-    createdAt?: Date;
-    isRead?: boolean;
+  _id?: string;
+  username?: string;
+  email?: string;
+  profilePicture?: string;
+  avatarColor?: string;
+  senderName?: string;
+  conversationId?: string;
+  body?: string;
+  createdAt?: Date;
+  isRead?: boolean;
+  receiverId?: string;
+  senderId?: string;
+  receiverName?: string;
+  images?: Array<string>;
+  gifUrl?: string;
 }
 
 export interface IChatMessage {
-    body: string;
-    isRead: boolean;
-    images: string[];
-    conversationId: string;
-    senderName: string;
-    gifUrl: string;
-    createdAt: Date;
-    senderId: IChatUser;
-    receiverId: IChatUser;
+  body: string;
+  isRead: boolean;
+  images: string[];
+  conversationId: string;
+  senderName: string;
+  gifUrl: string;
+  createdAt: Date;
+  senderId: IChatUser;
+  receiverId: IChatUser;
+}
+
+export interface IChatJobData {
+  keys?: string[];
+  key?: string;
+  value?: IChatRedisData;
+  keyOne?: string;
+  keyTwo?: string;
+  conversationId?: string;
+}
+
+export interface IChatRedisData {
+  conversationId: string;
+  'senderId._id': string;
+  'senderId.username': string;
+  'senderId.avatarColor': string;
+  'senderId.email': string;
+  'senderId.profilePicture': string;
+  'receiverId._id': string;
+  'receiverId.username': string;
+  'receiverId.avatarColor': string;
+  'receiverId.email': string;
+  'receiverId.profilePicture': string;
+  body: string;
+  isRead: boolean;
+  gifUrl: string;
+  senderName: string;
+  receiverName: string;
+  createdAt: Date;
+  images: string[];
 }

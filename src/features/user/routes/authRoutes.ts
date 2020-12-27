@@ -7,40 +7,40 @@ import { SignOut } from '@user/controllers/auth/signout';
 import { SignUp } from '@user/controllers/auth/signup';
 
 class AuthRoutes {
-    private router: Router;
+  private router: Router;
 
-    constructor() {
-        this.router = express.Router();
-    }
+  constructor() {
+    this.router = express.Router();
+  }
 
-    public routes(): Router {
-        this.router.post('/signup', SignUp.prototype.create);
-        this.router.post('/signin', SignIn.prototype.read);
-        this.router.post('/forgot-password', Password.prototype.create);
-        this.router.post('/reset-password/:token', Password.prototype.update);
+  public routes(): Router {
+    this.router.post('/signup', SignUp.prototype.create);
+    this.router.post('/signin', SignIn.prototype.read);
+    this.router.post('/forgot-password', Password.prototype.create);
+    this.router.post('/reset-password/:token', Password.prototype.update);
 
-        return this.router;
-    }
+    return this.router;
+  }
 
-    public SignOutRoute(): Router {
-        this.router.get('/signout', SignOut.prototype.update);
+  public SignOutRoute(): Router {
+    this.router.get('/signout', SignOut.prototype.update);
 
-        return this.router;
-    }
+    return this.router;
+  }
 }
 
 class CurrentUserRoute {
-    private router: Router;
+  private router: Router;
 
-    constructor() {
-        this.router = express.Router();
-    }
+  constructor() {
+    this.router = express.Router();
+  }
 
-    public routes(): Router {
-        this.router.get('/currentuser', authMiddleware.checkAuthentication, CurrentUser.prototype.read);
+  public routes(): Router {
+    this.router.get('/currentuser', authMiddleware.checkAuthentication, CurrentUser.prototype.read);
 
-        return this.router;
-    }
+    return this.router;
+  }
 }
 
 export const authRoutes: AuthRoutes = new AuthRoutes();

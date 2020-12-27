@@ -1,3 +1,4 @@
+import { IFollowers } from '@followers/interface/followers.interface';
 import { Server, Socket } from 'socket.io';
 
 export class SocketIOFollowerHandler {
@@ -9,12 +10,11 @@ export class SocketIOFollowerHandler {
 
   public listen(): void {
     this.io.on('connection', (socket: Socket) => {
-      // TODO: I am too lazy to add the interface
-      socket.on('follow user', (data: any) => {
+      socket.on('follow user', (data: IFollowers) => {
         this.io.emit('add follower', data);
       });
-  
-      socket.on('unfollow user', (data: any) => {
+
+      socket.on('unfollow user', (data: IFollowers) => {
         this.io.emit('remove follower', data);
       });
     });

@@ -14,12 +14,21 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "npm run lint"
+    }
+  },
   "devDependencies": {
+    "@commitlint/cli": "^11.0.0",
+    "@commitlint/config-conventional": "^11.0.0",
     "@types/bcryptjs": "^2.4.2",
     "@types/bull": "^3.14.4",
     "@types/bull-board": "^0.6.0",
     "@types/bunyan": "^1.8.6",
     "@types/compression": "^1.7.0",
+    "@types/cookie-parser": "^1.4.2",
     "@types/cors": "^2.8.9",
     "@types/dotenv": "^8.2.0",
     "@types/ejs": "^3.0.5",
@@ -36,6 +45,7 @@
     "@types/node": "^14.14.16",
     "@types/nodemailer": "^6.4.0",
     "@types/redis": "^2.8.28",
+    "@types/response-time": "^2.3.4",
     "@types/socket.io": "^2.1.12",
     "@types/socket.io-redis": "^1.0.26",
     "@typescript-eslint/eslint-plugin": "^4.11.0",
@@ -43,6 +53,7 @@
     "eslint": "^7.16.0",
     "eslint-config-prettier": "^7.1.0",
     "eslint-plugin-prettier": "^3.3.0",
+    "husky": "^4.3.6",
     "nodemon": "^2.0.6",
     "prettier": "^2.2.1",
     "ts-node": "^9.1.1",
@@ -59,6 +70,7 @@
     "bunyan": "^1.8.14",
     "cloudinary": "^1.23.0",
     "compression": "^1.7.4",
+    "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "D": "^1.0.0",
     "dotenv": "^8.2.0",
