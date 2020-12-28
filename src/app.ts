@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // require('newrelic');
 import express from 'express';
-import { config } from '@root/config';
-import { ChatServer } from '@root/setupServer';
-import databaseConnection from '@root/setupDatabase';
 import Logger from 'bunyan';
+import { config } from '@root/config';
+import databaseConnection from '@root/setupDatabase';
+import { ChatServer } from '@root/setupServer';
 
 const log: Logger = config.createLogger('app');
 class Application {
@@ -28,6 +27,7 @@ class Application {
       Application.shutdownProperly(1);
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     process.on('unhandledRejection', (reason: any | undefined) => {
       log.error('Unhandled Rejection at promise', reason);
       Application.shutdownProperly(2);

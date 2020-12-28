@@ -3,6 +3,7 @@ import _ from 'lodash';
 import Logger from 'bunyan';
 import { config } from '@root/config';
 import { IUserBirthDay, IUserPlacesLived, IUserSchool, IUserWork } from '@user/interface/user.interface';
+import { Helpers } from '@global/helpers';
 
 const client: RedisClient = redis.createClient();
 const log: Logger = config.createLogger('userInfoCache');
@@ -16,13 +17,19 @@ type UserItem = string | number | IUserBirthDay | ListType | null;
 
 export function updateSingleUserItemInRedisCache(key: string, prop: string, value: UserItem): Promise<void> {
   return new Promise((resolve, reject) => {
-    const dataToSave: string[] = [`${prop}`, `${value}`];
+    let dataToSave: string[];
+    if (prop === 'birthDay') {
+      dataToSave = ['birthDay', JSON.stringify(value)];
+    } else {
+      dataToSave = [`${prop}`, `${value}`];
+    }
     client.hmset(`users:${key}`, dataToSave, (error: Error | null) => {
       if (error) {
         reject(error);
       }
       resolve();
     });
+    resolve();
   });
 }
 
@@ -33,7 +40,7 @@ export function updateUserPropListInfoInRedisCache(key: string, prop: string, va
         reject(error);
       }
       const multi: Multi = client.multi();
-      let list: ListType[] = JSON.parse(response);
+      let list: ListType[] = Helpers.parseJson(response);
       if (type === 'add') {
         list = [...list, value];
       } else if (type === 'remove') {

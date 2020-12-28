@@ -21,7 +21,7 @@ export class SocketIOUserHandler {
   }
 
   public listen(): void {
-    this.io.on('connection', (socket: Socket) => {
+    this.io.of('/').on('connection', (socket: Socket) => {
       socket.on('setup', (data: ILogin) => {
         this.addClientToMap(data.userId, socket.id);
       });

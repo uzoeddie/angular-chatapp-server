@@ -9,14 +9,10 @@ import { UpdateQuery } from 'mongoose';
 export class Remove {
   public async reaction(req: Request, res: Response): Promise<void> {
     const { postId, previousReaction } = req.params;
-    const updatedReaction: [this, UpdateQuery<IPostDocument>, IPostDocument] = await Promise.all([
-      ReactionsModel.deleteOne({ postId, type: previousReaction, username: req.currentUser?.username }),
-      PostModel.updateOne({ _id: postId }, { $inc: { [`reactions.${previousReaction}`]: -1 } }),
-      PostModel.findOne({ _id: postId }).lean()
-    ]);
+    const updatedReaction: [this, UpdateQuery<IPostDocument>] = (await Promise.all([ReactionsModel.deleteOne({ postId, type: previousReaction, username: req.currentUser?.username }), PostModel.findOneAndUpdate({ _id: postId }, { $inc: { [`reactions.${previousReaction}`]: -1 } }, { new: true })])) as [this, UpdateQuery<IPostDocument>];
 
     if (updatedReaction) {
-      postQueue.addPostJob('updateSinglePostInRedis', { type: 'reactions', key: postId, value: updatedReaction[2]?.reactions });
+      postQueue.addPostJob('updateSinglePostInRedis', { type: 'reactions', key: postId, value: updatedReaction[1]?.reactions });
     }
     res.status(HTTP_STATUS.OK).json({ message: 'Reaction removed from post' });
   }

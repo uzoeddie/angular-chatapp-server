@@ -19,7 +19,7 @@ export class SocketIOChatHandler {
   }
 
   public listen(): void {
-    this.io.on('connection', (socket: Socket) => {
+    this.io.of('/').on('connection', (socket: Socket) => {
       this.socketIOChat(socket);
       this.chatPageSocket(socket);
       this.messageModelChangeStream(socket);

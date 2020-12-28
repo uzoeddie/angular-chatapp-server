@@ -7,6 +7,7 @@
     "start": "node ./build/app.js | ./node_modules/.bin/bunyan",
     "dev": "nodemon -r tsconfig-paths/register src/app.ts | ./node_modules/.bin/bunyan",
     "lint": "eslint 'src/**/*.ts*'",
+    "lint:fix": "eslint 'src/**/*.ts*' --fix",
     "prettier:check": "prettier --check 'src/**/*.{ts,json}'",
     "prettier:write": "prettier --write 'src/**/*.{ts,json}'",
     "build": "ttsc -p ."
@@ -46,8 +47,6 @@
     "@types/nodemailer": "^6.4.0",
     "@types/redis": "^2.8.28",
     "@types/response-time": "^2.3.4",
-    "@types/socket.io": "^2.1.12",
-    "@types/socket.io-redis": "^1.0.26",
     "@typescript-eslint/eslint-plugin": "^4.11.0",
     "@typescript-eslint/parser": "^4.11.0",
     "eslint": "^7.16.0",

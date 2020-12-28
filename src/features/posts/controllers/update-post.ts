@@ -48,14 +48,12 @@ export class Update {
         imgVersion,
         createdAt: new Date()
       } as IPostDocument;
-      const updatePost: UpdateQuery<IPostDocument> = await PostModel.updateOne({ _id: req.params.postId }, { $set: postUpdated });
-      if (updatePost) {
-        postQueue.addPostJob('updatePostInRedisCache', { key: req.params.postId, value: postUpdated });
-      }
+      await PostModel.updateOne({ _id: req.params.postId }, { $set: postUpdated });
+      postQueue.addPostJob('updatePostInRedisCache', { key: req.params.postId, value: postUpdated });
       res.status(HTTP_STATUS.OK).json({ message: 'Post updated successfully', notification: true });
       return;
     } else {
-      const result: UploadApiResponse = (await uploads({ file: image })) as UploadApiResponse;
+      const result: UploadApiResponse = (await uploads(image)) as UploadApiResponse;
       if (result) {
         const postUpdated: IPostDocument = {
           profilePicture,

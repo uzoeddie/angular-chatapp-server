@@ -12,7 +12,7 @@ export class AddMessage {
     const uploadResult = [];
 
     for (const file of selectedImages) {
-      const result: UploadApiResponse = (await uploads({ file })) as UploadApiResponse;
+      const result: UploadApiResponse = (await uploads(file)) as UploadApiResponse;
       const url = `http://res.cloudinary.com/ratingapp/image/upload/v${result.version}/${result.public_id}`;
       uploadResult.push(url);
     }

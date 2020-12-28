@@ -6,12 +6,11 @@ import { IUserDocument } from '@user/interface/user.interface';
 import { userInfoQueue } from '@queues/user-info.queue';
 import { joiValidation } from '@global/decorators/joi-validation.decorator';
 import { placesSchema } from '@user/schemes/user/info';
-import { UpdateQuery } from 'mongoose';
 
 export class AddPlacesLived {
   @joiValidation(placesSchema)
   public async places(req: Request, res: Response): Promise<void> {
-    const updatedPlaces: UpdateQuery<IUserDocument> = UserModel.updateOne(
+    const updatedPlaces: IUserDocument = (await UserModel.findOneAndUpdate(
       { username: req.currentUser?.username },
       {
         $push: {
@@ -22,20 +21,16 @@ export class AddPlacesLived {
             month: req.body.month
           }
         }
-      }
-    ).exec();
-    const userData: Promise<IUserDocument | null> = UserModel.findOne({ username: req.currentUser?.username })
+      },
+      { new: true }
+    )
       .select('placesLived')
       .slice('placesLived', -1)
-      .exec();
-    const response: [UpdateQuery<IUserDocument>, IUserDocument] = (await Promise.all([updatedPlaces, userData])) as [
-      UpdateQuery<IUserDocument>,
-      IUserDocument
-    ];
+      .exec()) as IUserDocument;
     userInfoQueue.addUserInfoJob('updateUserPlaceInCache', {
       key: `${req.currentUser?.userId}`,
       prop: 'placesLived',
-      value: response[1].placesLived[0],
+      value: updatedPlaces.placesLived[0],
       type: 'add'
     });
     res.status(HTTP_STATUS.OK).json({ message: 'Places updated successfully' });

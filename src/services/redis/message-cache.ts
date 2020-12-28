@@ -3,6 +3,7 @@ import _ from 'lodash';
 import Logger from 'bunyan';
 import { config } from '@root/config';
 import { IChatRedisData } from '@chat/interface/chat.interface';
+import { Helpers } from '@global/helpers';
 
 const client: RedisClient = redis.createClient();
 const log: Logger = config.createLogger('messageCache');
@@ -22,7 +23,7 @@ export function addChatListToRedisCache(keys: string[], value: IChatRedisData): 
         if (response.length > 0) {
           let list: IChatRedisData[] = [];
           for (const responseItem of response) {
-            list.push(JSON.parse(responseItem));
+            list.push(Helpers.parseJson(responseItem));
             multi.ltrim(`chatList:${key}`, 1, -1);
           }
           _.remove(list, (item: IChatRedisData) => item.conversationId === value.conversationId);
@@ -86,7 +87,7 @@ export function updateIsReadPropInRedisCache(keyOne: string, keyTwo: string, con
           reject(err);
         }
         for (const value of response2) {
-          const parsedMessages = JSON.parse(value);
+          const parsedMessages = Helpers.parseJson(value);
           parsedMessages.isRead = true;
           multi.ltrim(`messages:${conversationId}`, 1, -1);
           multi.rpush(`messages:${conversationId}`, JSON.stringify(parsedMessages));
@@ -116,7 +117,7 @@ export function getChatFromRedisCache(key: string): Promise<string[]> {
 function updateChatList(multi: Multi, response: string[], key: string, conversationId: string): void {
   const list: IChatRedisData[] = [];
   for (const value of response) {
-    list.push(JSON.parse(value));
+    list.push(Helpers.parseJson(value));
     multi.ltrim(`chatList:${key}`, 1, -1);
   }
   const result: IChatRedisData = _.find(list, (item: IChatRedisData) => item.conversationId === conversationId) as IChatRedisData;

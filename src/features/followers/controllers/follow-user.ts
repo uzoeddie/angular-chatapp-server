@@ -34,11 +34,7 @@ export class Add {
         }
       }
     ]);
-    const response: [IFollowerDocument, BulkWriteOpResultObject, IUserDocument | null] = await Promise.all([
-      following,
-      users,
-      UserModel.findOne({ _id: req.params.followerId })
-    ]);
+    const response: [IFollowerDocument, BulkWriteOpResultObject, IUserDocument | null] = await Promise.all([following, users, UserModel.findOne({ _id: req.params.followerId })]);
 
     if (response[2]!.notifications.follows) {
       NotificationModel.schema.methods.insertNotification({

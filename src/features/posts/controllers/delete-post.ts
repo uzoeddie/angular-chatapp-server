@@ -11,10 +11,7 @@ import { IUserDocument } from '@user/interface/user.interface';
 export class Delete {
   public async post(req: Request, res: Response): Promise<void> {
     const deletPost: Promise<this> = PostModel.deleteOne({ _id: req.params.postId });
-    const decrementPostNumber: UpdateQuery<IUserDocument> = UserModel.updateOne(
-      { _id: req.currentUser?.userId },
-      { $inc: { postCount: -1 } }
-    );
+    const decrementPostNumber: UpdateQuery<IUserDocument> = UserModel.updateOne({ _id: req.currentUser?.userId }, { $inc: { postCount: -1 } });
     const deleteComments: Promise<this> = CommentsModel.deleteMany({ postId: req.params.postId });
     const deleteReactions: Promise<this> = ReactionsModel.deleteMany({ postId: req.params.postId });
     const deleteFromCache: Promise<void> = deletePostFromCache(req.params.postId);

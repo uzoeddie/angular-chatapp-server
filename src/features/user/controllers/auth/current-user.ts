@@ -8,9 +8,7 @@ import { getUserFromCache } from '@redis/user-cache';
 export class CurrentUser {
   public async read(req: Request, res: Response): Promise<void> {
     const cachedUser: IUserDocument = await getUserFromCache(`${req.currentUser?.userId}`);
-    const existingAuthUser: IUserDocument = cachedUser
-      ? cachedUser
-      : ((await UserModel.findById({ _id: req.currentUser?.userId })) as IUserDocument);
+    const existingAuthUser: IUserDocument = cachedUser ? cachedUser : ((await UserModel.findById({ _id: req.currentUser?.userId })) as IUserDocument);
     if (!existingAuthUser) {
       res.status(HTTP_STATUS.OK).send(false);
       return;

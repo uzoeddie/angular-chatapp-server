@@ -20,9 +20,7 @@ export class Get {
 
   public async postById(req: Request, res: Response): Promise<void> {
     const cachedData: IPostDocument[] = await getSinglePostFromCache(req.params.postId);
-    const post: IPostDocument[] = cachedData.length
-      ? cachedData
-      : await Helpers.getUserPosts({ _id: req.params.postId }, 0, 1, { createdAt: -1 });
+    const post: IPostDocument[] = cachedData.length ? cachedData : await Helpers.getUserPosts({ _id: req.params.postId }, 0, 1, { createdAt: -1 });
     res.status(HTTP_STATUS.OK).json({ message: 'Single post', post: post[0] });
   }
 }

@@ -9,7 +9,7 @@ export class SocketIOFollowerHandler {
   }
 
   public listen(): void {
-    this.io.on('connection', (socket: Socket) => {
+    this.io.of('/').on('connection', (socket: Socket) => {
       socket.on('follow user', (data: IFollowers) => {
         this.io.emit('add follower', data);
       });

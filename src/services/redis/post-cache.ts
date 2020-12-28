@@ -13,60 +13,9 @@ client.on('error', function (error) {
 });
 
 export function savePostsToRedisCache(key: string, uId: number, createdPost: IPostDocument): Promise<void> {
-  const {
-    _id,
-    userId,
-    username,
-    email,
-    avatarColor,
-    post,
-    bgColor,
-    feelings,
-    privacy,
-    gifUrl,
-    reactions,
-    imgId,
-    imgVersion,
-    comments,
-    createdAt,
-    profilePicture
-  } = createdPost;
-  const firstList: string[] = [
-    '_id',
-    `${_id}`,
-    'userId',
-    JSON.stringify(userId),
-    'username',
-    `${username}`,
-    'email',
-    `${email}`,
-    'avatarColor',
-    `${avatarColor}`,
-    'post',
-    `${post}`,
-    'bgColor',
-    `${bgColor}`,
-    'feelings',
-    JSON.stringify(feelings),
-    'privacy',
-    JSON.stringify(privacy),
-    'gifUrl',
-    `${gifUrl}`
-  ];
-  const secondList: string[] = [
-    'reactions',
-    JSON.stringify(reactions),
-    'imgId',
-    `${imgId}`,
-    'imgVersion',
-    `${imgVersion}`,
-    'comments',
-    JSON.stringify(comments),
-    'createdAt',
-    JSON.stringify(createdAt),
-    'profilePicture',
-    `${profilePicture}`
-  ];
+  const { _id, userId, username, email, avatarColor, post, bgColor, feelings, privacy, gifUrl, reactions, imgId, imgVersion, comments, createdAt, profilePicture } = createdPost;
+  const firstList: string[] = ['_id', `${_id}`, 'userId', `${userId}`, 'username', `${username}`, 'email', `${email}`, 'avatarColor', `${avatarColor}`, 'post', `${post}`, 'bgColor', `${bgColor}`, 'feelings', JSON.stringify(feelings), 'privacy', JSON.stringify(privacy), 'gifUrl', `${gifUrl}`];
+  const secondList: string[] = ['reactions', JSON.stringify(reactions), 'imgId', `${imgId}`, 'imgVersion', `${imgVersion}`, 'comments', JSON.stringify(comments), 'createdAt', `${createdAt}`, 'profilePicture', `${profilePicture}`];
   const dataToSave: string[] = [...firstList, ...secondList];
   return new Promise((resolve, reject) => {
     client.hmset(`posts:${key}`, dataToSave, (error) => {
@@ -81,28 +30,8 @@ export function savePostsToRedisCache(key: string, uId: number, createdPost: IPo
 
 export function updatePostInRedisCache(key: string, createdPost: ICreatePost): Promise<void> {
   const { post, bgColor, feelings, privacy, gifUrl, imgId, imgVersion, createdAt, profilePicture } = createdPost;
-  const firstList: string[] = [
-    'post',
-    `${post}`,
-    'bgColor',
-    `${bgColor}`,
-    'feelings',
-    JSON.stringify(feelings),
-    'privacy',
-    JSON.stringify(privacy),
-    'gifUrl',
-    `${gifUrl}`
-  ];
-  const secondList: string[] = [
-    'imgId',
-    `${imgId}`,
-    'imgVersion',
-    `${imgVersion}`,
-    'createdAt',
-    JSON.stringify(createdAt),
-    'profilePicture',
-    `${profilePicture}`
-  ];
+  const firstList: string[] = ['post', `${post}`, 'bgColor', `${bgColor}`, 'feelings', JSON.stringify(feelings), 'privacy', JSON.stringify(privacy), 'gifUrl', `${gifUrl}`];
+  const secondList: string[] = ['imgId', `${imgId}`, 'imgVersion', `${imgVersion}`, 'createdAt', `${createdAt}`, 'profilePicture', `${profilePicture}`];
   const dataToSave: string[] = [...firstList, ...secondList];
   return new Promise((resolve, reject) => {
     client.hmset(`posts:${key}`, dataToSave, (error: Error | null) => {
@@ -141,14 +70,12 @@ export function getPostsFromCache(key: string, start: number, end: number): Prom
           reject(error);
         }
         for (const reply of replies) {
-          reply.feelings = JSON.parse(reply.feelings);
-          reply.comments = JSON.parse(reply.comments);
-          reply.privacy = JSON.parse(reply.privacy);
-          reply.userId = JSON.parse(reply.userId);
-          reply.reactions = Object.keys(JSON.parse(reply.reactions)).length
-            ? Helpers.formattedReactions(JSON.parse(reply.reactions))
-            : [];
-          reply.createdAt = new Date(JSON.parse(reply.createdAt));
+          reply.feelings = Helpers.parseJson(reply.feelings);
+          reply.comments = Helpers.parseJson(reply.comments);
+          reply.privacy = Helpers.parseJson(reply.privacy);
+          reply.userId = Helpers.parseJson(reply.userId);
+          reply.reactions = Object.keys(Helpers.parseJson(reply.reactions)).length ? Helpers.formattedReactions(Helpers.parseJson(reply.reactions)) : [];
+          reply.createdAt = new Date(reply.createdAt);
         }
         resolve(replies);
       });
@@ -162,14 +89,12 @@ export function getSinglePostFromCache(key: string): Promise<IPostDocument[]> {
       if (err) {
         reject(err);
       }
-      reply.feelings = JSON.parse(reply.feelings);
-      reply.comments = JSON.parse(reply.comments);
-      reply.privacy = JSON.parse(reply.privacy);
-      reply.userId = JSON.parse(reply.userId);
-      reply.reactions = (Object.keys(JSON.parse(reply.reactions)).length
-        ? Helpers.formattedReactions(JSON.parse(reply.reactions))
-        : []) as any;
-      reply.createdAt = JSON.parse(reply.createdAt);
+      reply.feelings = Helpers.parseJson(reply.feelings);
+      reply.comments = Helpers.parseJson(reply.comments);
+      reply.privacy = Helpers.parseJson(reply.privacy);
+      reply.userId = Helpers.parseJson(reply.userId);
+      reply.reactions = (Object.keys(Helpers.parseJson(reply.reactions)).length ? Helpers.formattedReactions(Helpers.parseJson(reply.reactions)) : []) as any;
+      reply.createdAt = Helpers.parseJson(reply.createdAt);
       resolve([reply]);
     });
   });
@@ -190,14 +115,12 @@ export function getUserPostsFromCache(key: string, uId: number): Promise<IPostDo
           reject(error);
         }
         for (const reply of replies) {
-          reply.feelings = JSON.parse(reply.feelings);
-          reply.comments = JSON.parse(reply.comments);
-          reply.privacy = JSON.parse(reply.privacy);
-          reply.userId = JSON.parse(reply.userId);
-          reply.reactions = Object.keys(JSON.parse(reply.reactions)).length
-            ? Helpers.formattedReactions(JSON.parse(reply.reactions))
-            : [];
-          reply.createdAt = JSON.parse(reply.createdAt);
+          reply.feelings = Helpers.parseJson(reply.feelings);
+          reply.comments = Helpers.parseJson(reply.comments);
+          reply.privacy = Helpers.parseJson(reply.privacy);
+          reply.userId = Helpers.parseJson(reply.userId);
+          reply.reactions = Object.keys(Helpers.parseJson(reply.reactions)).length ? Helpers.formattedReactions(Helpers.parseJson(reply.reactions)) : [];
+          reply.createdAt = Helpers.parseJson(reply.createdAt);
         }
         resolve(replies);
       });

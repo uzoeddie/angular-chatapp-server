@@ -5,10 +5,7 @@ import { INotificationDocument } from '@notifications/interface/notification.int
 
 export class Get {
   public async notification(req: Request, res: Response): Promise<void> {
-    const notifications: Promise<INotificationDocument[]> = await NotificationModel.find({ userTo: req.currentUser?.userId })
-      .lean()
-      .populate({ path: 'userFrom', select: 'username avatarColor uId profilePicture' })
-      .sort({ date: -1 });
+    const notifications: Promise<INotificationDocument[]> = await NotificationModel.find({ userTo: req.currentUser?.userId }).lean().populate({ path: 'userFrom', select: 'username avatarColor uId profilePicture' }).sort({ date: -1 });
 
     res.status(HTTP_STATUS.OK).json({ message: 'User notifications', notifications });
   }

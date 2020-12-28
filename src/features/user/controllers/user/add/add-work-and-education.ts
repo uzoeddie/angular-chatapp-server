@@ -6,12 +6,11 @@ import { IUserDocument } from '@user/interface/user.interface';
 import { userInfoQueue } from '@queues/user-info.queue';
 import { joiValidation } from '@global/decorators/joi-validation.decorator';
 import { educationSchema, workSchema } from '@user/schemes/user/info';
-import { UpdateQuery } from 'mongoose';
 
 export class AddWorkAndEducation {
   @joiValidation(workSchema)
   public async work(req: Request, res: Response): Promise<void> {
-    const updatedWork: UpdateQuery<IUserDocument> = UserModel.updateOne(
+    const updatedWork: IUserDocument = (await UserModel.findOneAndUpdate(
       { username: req.currentUser?.username },
       {
         $push: {
@@ -24,20 +23,16 @@ export class AddWorkAndEducation {
             to: req.body.to
           }
         }
-      }
-    ).exec();
-    const userData: Promise<IUserDocument | null> = UserModel.findOne({ username: req.currentUser?.username })
+      },
+      { new: true }
+    )
       .select('work')
       .slice('work', -1)
-      .exec();
-    const response: [UpdateQuery<IUserDocument>, IUserDocument] = (await Promise.all([updatedWork, userData])) as [
-      UpdateQuery<IUserDocument>,
-      IUserDocument
-    ];
+      .exec()) as IUserDocument;
     userInfoQueue.addUserInfoJob('updateUserWorkInCache', {
       key: `${req.currentUser?.userId}`,
       prop: 'work',
-      value: response[1].work[0],
+      value: updatedWork.work[0],
       type: 'add'
     });
     res.status(HTTP_STATUS.OK).json({ message: 'Work updated successfully' });
@@ -45,7 +40,7 @@ export class AddWorkAndEducation {
 
   @joiValidation(educationSchema)
   public async education(req: Request, res: Response): Promise<void> {
-    const updatedSchool: UpdateQuery<IUserDocument> = UserModel.updateOne(
+    const updatedSchool: IUserDocument = (await UserModel.findOneAndUpdate(
       { username: req.currentUser?.username },
       {
         $push: {
@@ -57,20 +52,16 @@ export class AddWorkAndEducation {
             to: req.body.to
           }
         }
-      }
-    ).exec();
-    const userData: Promise<IUserDocument | null> = UserModel.findOne({ username: req.currentUser?.username })
+      },
+      { new: true }
+    )
       .select('school')
       .slice('school', -1)
-      .exec();
-    const response: [UpdateQuery<IUserDocument>, IUserDocument] = (await Promise.all([updatedSchool, userData])) as [
-      UpdateQuery<IUserDocument>,
-      IUserDocument
-    ];
+      .exec()) as IUserDocument;
     userInfoQueue.addUserInfoJob('updateUserSchoolInCache', {
       key: `${req.currentUser?.userId}`,
       prop: 'school',
-      value: response[1].school[0],
+      value: updatedSchool.school[0],
       type: 'add'
     });
     res.status(HTTP_STATUS.OK).json({ message: 'Education updated successfully' });

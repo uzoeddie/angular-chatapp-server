@@ -29,13 +29,7 @@ export class GetUser {
         .limit(limit)
         .sort({ createdAt: -1 });
     }
-    const followers: Promise<IFollowerDocument[]> = FollowerModel.find({ followerId: req.currentUser?.userId })
-      .lean()
-      .populate({ path: 'followerId', select: 'username avatarColor postCount followersCount followingCount profilePicture' })
-      .populate({ path: 'followeeId', select: 'username avatarColor postCount followersCount followingCount profilePicture' })
-      .skip(skip)
-      .limit(limit)
-      .sort({ createdAt: -1 });
+    const followers: Promise<IFollowerDocument[]> = FollowerModel.find({ followerId: req.currentUser?.userId }).lean().populate({ path: 'followerId', select: 'username avatarColor postCount followersCount followingCount profilePicture' }).populate({ path: 'followeeId', select: 'username avatarColor postCount followersCount followingCount profilePicture' }).skip(skip).limit(limit).sort({ createdAt: -1 });
 
     const response: [IUserDocument[], IFollowerDocument[]] = await Promise.all([allUsers, followers]);
     res.status(HTTP_STATUS.OK).json({ message: 'Get users', users: response[0], followers: response[1] });
@@ -43,9 +37,7 @@ export class GetUser {
 
   public async profile(req: Request, res: Response): Promise<void> {
     const cachedUser: IUserDocument = await getUserFromCache(`${req.currentUser?.userId}`);
-    const existingUser: IUserDocument = (cachedUser
-      ? cachedUser
-      : await UserModel.findOne({ _id: req.currentUser?.userId }).lean()) as IUserDocument;
+    const existingUser: IUserDocument = (cachedUser ? cachedUser : await UserModel.findOne({ _id: req.currentUser?.userId }).lean()) as IUserDocument;
     res.status(HTTP_STATUS.OK).json({ message: 'Get user profile', user: existingUser });
   }
 
@@ -55,9 +47,7 @@ export class GetUser {
     const cachecUserPosts: Promise<IPostDocument[]> = getUserPostsFromCache('post', parseInt(req.params.uId, 10));
     const cacheResponse: [IUserDocument, IPostDocument[]] = await Promise.all([cachedUser, cachecUserPosts]);
     const existingUser: IUserDocument = cacheResponse[0] ? cacheResponse[0] : UserModel.findOne({ username }).lean();
-    const userPosts: IPostDocument[] | Promise<IPostDocument[]> = cacheResponse[1]
-      ? cacheResponse[1]
-      : Helpers.getUserPosts({ username }, 0, 100, { createdAt: -1 });
+    const userPosts: IPostDocument[] | Promise<IPostDocument[]> = cacheResponse[1] ? cacheResponse[1] : Helpers.getUserPosts({ username }, 0, 100, { createdAt: -1 });
     const response: [IUserDocument, IPostDocument[]] = await Promise.all([existingUser, userPosts]);
     res.status(HTTP_STATUS.OK).json({ message: 'Get user profile by username', user: response[0], posts: response[1] });
   }

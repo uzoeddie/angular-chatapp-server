@@ -18,10 +18,7 @@ export class SocketIONotificationsHandler {
       }
       const { fullDocument, operationType, documentKey } = change;
       if (operationType === 'insert') {
-        const notifications = await NotificationModel.find({ userTo: fullDocument.userTo })
-          .lean()
-          .populate({ path: 'userFrom', select: 'username avatarColor uId profilePicture' })
-          .sort({ date: -1 });
+        const notifications = await NotificationModel.find({ userTo: fullDocument.userTo }).lean().populate({ path: 'userFrom', select: 'username avatarColor uId profilePicture' }).sort({ date: -1 });
         this.io.emit('insert notification', notifications, fullDocument);
       }
 

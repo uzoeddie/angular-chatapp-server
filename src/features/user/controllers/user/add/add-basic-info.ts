@@ -20,10 +20,7 @@ export class AddBasicInfo {
 
   @joiValidation(birthdaySchema)
   public async birthday(req: Request, res: Response): Promise<void> {
-    await UserModel.updateOne(
-      { _id: req.currentUser?.userId },
-      { $set: { 'birthDay.month': req.body.month, 'birthDay.day': req.body.day } }
-    );
+    await UserModel.updateOne({ _id: req.currentUser?.userId }, { $set: { 'birthDay.month': req.body.month, 'birthDay.day': req.body.day } });
     userInfoQueue.addUserInfoJob('updateBirthdayInCache', {
       key: `${req.currentUser?.userId}`,
       prop: 'birthDay',

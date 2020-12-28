@@ -15,17 +15,9 @@ export class Add {
   @joiValidation(addImageSchema)
   public async image(req: Request, res: Response): Promise<void> {
     const { image }: { image: string } = req.body;
-    const result: UploadApiResponse = (await uploads({
-      file: image,
-      public_id: req.currentUser?.userId,
-      overwrite: true,
-      invalidate: true
-    })) as UploadApiResponse;
+    const result: UploadApiResponse = (await uploads(image, req.currentUser?.userId, true, true)) as UploadApiResponse;
     const url = `https://res.cloudinary.com/ratingapp/image/upload/${result.public_id}`;
-    const setUserImage: UpdateQuery<IUserDocument> = await UserModel.updateOne(
-      { _id: req.currentUser?.userId },
-      { $set: { profilePicture: url } }
-    ).exec();
+    const setUserImage: UpdateQuery<IUserDocument> = await UserModel.updateOne({ _id: req.currentUser?.userId }, { $set: { profilePicture: url } }).exec();
     if (setUserImage) {
       userInfoQueue.addUserInfoJob('updateImageInCache', {
         key: `${req.currentUser?.userId}`,
@@ -39,7 +31,7 @@ export class Add {
   @joiValidation(addBGImageSchema)
   public async backgroundImage(req: Request, res: Response): Promise<void> {
     const { image }: { image: string } = req.body;
-    const result: UploadApiResponse = (await uploads({ file: image })) as UploadApiResponse;
+    const result: UploadApiResponse = (await uploads(image)) as UploadApiResponse;
     const images: UpdateQuery<IFileImageDocument> = ImageModel.updateOne(
       { userId: req.currentUser?.userId },
       {
@@ -48,10 +40,7 @@ export class Add {
       },
       { upsert: true }
     );
-    const backgroundImage: UpdateQuery<IUserDocument> = UserModel.updateOne(
-      { _id: req.currentUser?.userId },
-      { $set: { bgImageId: result.public_id, bgImageVersion: result.version } }
-    );
+    const backgroundImage: UpdateQuery<IUserDocument> = UserModel.updateOne({ _id: req.currentUser?.userId }, { $set: { bgImageId: result.public_id, bgImageVersion: result.version } });
     const response: [UpdateQuery<IFileImageDocument>, UpdateQuery<IUserDocument>] = await Promise.all([images, backgroundImage]);
     if (response) {
       userInfoQueue.addUserInfoJob('updateImageInCache', {

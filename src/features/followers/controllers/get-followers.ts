@@ -21,10 +21,7 @@ export class Get {
 
   public async following(req: Request, res: Response): Promise<void> {
     const userObjectId: ObjectId = mongoose.Types.ObjectId(req.currentUser?.userId);
-    const following: Promise<IFollowerDocument[]> = await FollowerModel.find(
-      { followerId: userObjectId },
-      { _id: 0, followeeId: 1, followerId: 1 }
-    )
+    const following: Promise<IFollowerDocument[]> = await FollowerModel.find({ followerId: userObjectId }, { _id: 0, followeeId: 1, followerId: 1 })
       .lean()
       .populate({
         path: 'followerId',
@@ -40,10 +37,7 @@ export class Get {
 
   public async userFollowers(req: Request, res: Response): Promise<void> {
     const userObjectId: ObjectId = mongoose.Types.ObjectId(req.params.userId);
-    const followers: Promise<IFollowerDocument[]> = await FollowerModel.find(
-      { followeeId: userObjectId },
-      { _id: 0, followeeId: 1, followerId: 1 }
-    )
+    const followers: Promise<IFollowerDocument[]> = await FollowerModel.find({ followeeId: userObjectId }, { _id: 0, followeeId: 1, followerId: 1 })
       .lean()
       .populate({
         path: 'followerId',

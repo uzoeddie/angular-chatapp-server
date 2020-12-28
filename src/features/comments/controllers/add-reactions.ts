@@ -25,21 +25,20 @@ export class AddReaction {
       profilePicture: req.body.profilePicture
     } as IReactionDocument;
 
-    const updatedReaction: [
-      IUserDocument,
-      this,
-      IReactionDocument,
-      UpdateQuery<IPostDocument>,
-      UpdateQuery<IPostDocument>,
-      IPostDocument
-    ] = (await Promise.all([
+    const updatedReaction: [IUserDocument, UpdateQuery<IReactionDocument>, UpdateQuery<IPostDocument>] = (await Promise.all([
       getUserFromCache(req.body.userTo),
-      ReactionsModel.deleteOne({ postId, type: previousReaction, username: req.currentUser?.username }),
-      ReactionsModel.create(reactionObject),
-      PostModel.updateOne({ _id: postId }, { $inc: { [`reactions.${previousReaction}`]: -1 } }),
-      PostModel.updateOne({ _id: postId }, { $inc: { [`reactions.${type}`]: 1 } }),
-      PostModel.findOne({ _id: postId }).lean()
-    ])) as [IUserDocument, this, IReactionDocument, UpdateQuery<IPostDocument>, UpdateQuery<IPostDocument>, IPostDocument];
+      ReactionsModel.replaceOne({ postId, type: previousReaction, username: req.currentUser?.username }, reactionObject, { upsert: true }),
+      PostModel.findOneAndUpdate(
+        { _id: postId },
+        {
+          $inc: {
+            [`reactions.${previousReaction}`]: -1,
+            [`reactions.${type}`]: 1
+          }
+        },
+        { new: true }
+      )
+    ])) as [IUserDocument, UpdateQuery<IReactionDocument>, UpdateQuery<IPostDocument>];
 
     if (updatedReaction[0].notifications.reactions) {
       NotificationModel.schema.methods.insertNotification({
@@ -48,12 +47,12 @@ export class AddReaction {
         message: `${req.currentUser?.username} reacted to your post.`,
         notificationType: 'reactions',
         entityId: postId,
-        createdItemId: updatedReaction[2]._id
+        createdItemId: updatedReaction[1]._id
       });
     }
 
     if (updatedReaction) {
-      postQueue.addPostJob('updateSinglePostInRedis', { type: 'reactions', key: postId, value: updatedReaction[5]?.reactions });
+      postQueue.addPostJob('updateSinglePostInRedis', { type: 'reactions', key: postId, value: updatedReaction[2]?.reactions });
     }
     res.status(HTTP_STATUS.OK).json({ message: 'Like added to post successfully', notification: true });
   }

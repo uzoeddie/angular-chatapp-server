@@ -35,22 +35,14 @@ class UserRoutes {
 
     // edit
     this.router.put('/user/profile/work/:workId', authMiddleware.checkAuthentication, EditWorkAndEducation.prototype.work);
-    this.router.put(
-      '/user/profile/school/:schoolId',
-      authMiddleware.checkAuthentication,
-      EditWorkAndEducation.prototype.education
-    );
+    this.router.put('/user/profile/school/:schoolId', authMiddleware.checkAuthentication, EditWorkAndEducation.prototype.education);
     this.router.put('/user/profile/places/:placeId', authMiddleware.checkAuthentication, EditPlacesLived.prototype.places);
     this.router.put('/user/profile/change-password', authMiddleware.checkAuthentication, ChangePassword.prototype.update);
     this.router.put('/user/profile/settings', authMiddleware.checkAuthentication, Settings.prototype.update);
 
     // delete
     this.router.delete('/user/profile/work/:workId', authMiddleware.checkAuthentication, DeleteWorkAndEducation.prototype.work);
-    this.router.delete(
-      '/user/profile/school/:schoolId',
-      authMiddleware.checkAuthentication,
-      DeleteWorkAndEducation.prototype.education
-    );
+    this.router.delete('/user/profile/school/:schoolId', authMiddleware.checkAuthentication, DeleteWorkAndEducation.prototype.education);
     this.router.delete('/user/profile/places/:placeId', authMiddleware.checkAuthentication, DeletePlacesLived.prototype.places);
 
     return this.router;

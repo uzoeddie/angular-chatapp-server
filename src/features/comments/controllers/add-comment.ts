@@ -22,15 +22,10 @@ export class Add {
       comment: req.body.comment,
       profilePicture: req.body.profilePicture
     });
-    const posts: UpdateQuery<IPostDocument> = PostModel.updateOne({ _id: req.body.postId }, { $inc: { comments: 1 } });
+    const posts: UpdateQuery<IPostDocument> = PostModel.findOneAndUpdate({ _id: req.body.postId }, { $inc: { comments: 1 } }, { new: true });
     const user: Promise<IUserDocument> = getUserFromCache(req.body.userTo);
-    const response: [ICommentDocument, UpdateQuery<IPostDocument>, IPostDocument, IUserDocument] = await Promise.all([
-      comments,
-      posts,
-      PostModel.findOne({ _id: req.body.postId }).lean(),
-      user
-    ]);
-    if (response[3].notifications.comments) {
+    const response: [ICommentDocument, UpdateQuery<IPostDocument>, IUserDocument] = await Promise.all([comments, posts, user]);
+    if (response[2].notifications.comments) {
       NotificationModel.schema.methods.insertNotification({
         userFrom: req.currentUser?.userId,
         userTo: req.body.userTo,
@@ -44,7 +39,7 @@ export class Add {
       postQueue.addPostJob('updateSinglePostInRedis', {
         type: 'comments',
         key: req.body.postId,
-        value: `${response[2]?.comments}`,
+        value: `${response[1]?.comments}`,
         username: `${req.currentUser?.username}`
       });
     }

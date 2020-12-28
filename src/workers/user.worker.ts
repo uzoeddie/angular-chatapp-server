@@ -1,9 +1,5 @@
 import { DoneCallback, Job } from 'bull';
-import {
-  updateUserFollowersInRedisCache,
-  updateBlockedUserPropInRedisCache,
-  updateNotificationSettingInCache
-} from '@redis/user-cache';
+import { updateUserFollowersInRedisCache, updateBlockedUserPropInRedisCache, updateNotificationSettingInCache } from '@redis/user-cache';
 
 class UserWorker {
   async updateUserFollowersInCache(jobQueue: Job, done: DoneCallback): Promise<void> {

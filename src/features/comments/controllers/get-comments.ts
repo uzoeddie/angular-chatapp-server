@@ -31,12 +31,7 @@ export class GetPost {
     //     skip = (parseInt(page) - 1) * 1;
     //     limit = PAGE_SIZE * parseInt(page);
     // }
-    const reactions: [IReactionDocument[], number] = await Helpers.getPostReactions(
-      { postId: mongoose.Types.ObjectId(postId) },
-      0,
-      100,
-      { createdAt: -1 }
-    );
+    const reactions: [IReactionDocument[], number] = await Helpers.getPostReactions({ postId: mongoose.Types.ObjectId(postId) }, 0, 100, { createdAt: -1 });
     res.status(HTTP_STATUS.OK).json({ message: 'Post reactions', reactions: reactions[0], count: reactions[1] });
   }
 
@@ -50,12 +45,7 @@ export class GetPost {
 
   public async singleReaction(req: Request, res: Response): Promise<void> {
     const { reactionId } = req.params;
-    const reactions: [IReactionDocument[], number] = await Helpers.getPostReactions(
-      { _id: mongoose.Types.ObjectId(reactionId) },
-      0,
-      1,
-      { createdAt: -1 }
-    );
+    const reactions: [IReactionDocument[], number] = await Helpers.getPostReactions({ _id: mongoose.Types.ObjectId(reactionId) }, 0, 1, { createdAt: -1 });
     res.status(HTTP_STATUS.OK).json({ message: 'Single post reaction', reactions: reactions[0], count: reactions[1] });
   }
 }

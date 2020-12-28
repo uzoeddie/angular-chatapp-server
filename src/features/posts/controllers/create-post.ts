@@ -29,18 +29,14 @@ export class Create {
       privacy,
       gifUrl
     } as IPostDocument;
-    const response: [IPostDocument, UpdateQuery<IUserDocument>, IUserDocument] = await Promise.all([
-      PostModel.create(createPost),
-      UserModel.updateOne({ _id: req.currentUser?.userId }, { $inc: { postCount: 1 } }, { upsert: true }),
-      UserModel.findOne({ _id: req.currentUser?.userId }).lean()
-    ]);
+    const response: [IPostDocument, UpdateQuery<IUserDocument>] = await Promise.all([PostModel.create(createPost), UserModel.findOneAndUpdate({ _id: req.currentUser?.userId }, { $inc: { postCount: 1 } }, { upsert: true, new: true })]);
     if (response) {
       response[0].reactions = [];
       postQueue.addPostJob('savePostsToRedisCache', { key: response[0]._id, uId: req.currentUser?.uId, value: response[0] });
       postQueue.addPostJob('updateUserPostCount', {
         key: req.currentUser?.userId,
         prop: 'postCount',
-        value: response[2].postCount
+        value: response[1].postCount
       });
     }
     res.status(HTTP_STATUS.CREATED).json({ message: 'Post created successfully', notification: true });
@@ -49,7 +45,7 @@ export class Create {
   @joiValidation(postWithImageSchema)
   public async postWithImage(req: Request, res: Response): Promise<void> {
     const { image, post, bgColor, feelings, privacy, gifUrl, profilePicture } = req.body;
-    const result: UploadApiResponse = (await uploads({ file: image })) as UploadApiResponse;
+    const result: UploadApiResponse = (await uploads(image)) as UploadApiResponse;
     const postWithImage: IPostDocument = {
       userId: req.currentUser?.userId,
       username: req.currentUser?.username,
@@ -65,11 +61,7 @@ export class Create {
       imgVersion: result.version.toString()
     } as IPostDocument;
     const createdPost: Promise<IPostDocument> = PostModel.create(postWithImage);
-    const updatePostCount: UpdateQuery<IUserDocument> = UserModel.updateOne(
-      { _id: req.currentUser?.userId },
-      { $inc: { postCount: 1 } },
-      { upsert: true }
-    );
+    const updatePostCount: UpdateQuery<IUserDocument> = UserModel.findOneAndUpdate({ _id: req.currentUser?.userId }, { $inc: { postCount: 1 } }, { upsert: true, new: true });
     const images: UpdateQuery<IFileImageDocument> = ImageModel.updateOne(
       { userId: req.currentUser?.userId },
       {
@@ -77,14 +69,15 @@ export class Create {
       },
       { upsert: true }
     );
-    const response: [IPostDocument, UpdateQuery<IUserDocument>, UpdateQuery<IFileImageDocument>] = await Promise.all([
-      createdPost,
-      updatePostCount,
-      images
-    ]);
+    const response: [IPostDocument, UpdateQuery<IUserDocument>, UpdateQuery<IFileImageDocument>] = await Promise.all([createdPost, updatePostCount, images]);
     if (response) {
       response[0].reactions = [];
       postQueue.addPostJob('savePostsToRedisCache', { key: response[0]._id, uId: req.currentUser?.uId, value: response[0] });
+      postQueue.addPostJob('updateUserPostCount', {
+        key: req.currentUser?.userId,
+        prop: 'postCount',
+        value: response[1].postCount
+      });
     }
     res.status(HTTP_STATUS.CREATED).json({ message: 'Post added with image successfully' });
   }

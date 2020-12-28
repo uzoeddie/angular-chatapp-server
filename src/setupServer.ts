@@ -25,7 +25,8 @@ import { SocketIOPostHandler } from '@sockets/posts';
 import { SocketIOUserHandler } from '@sockets/users';
 import { userRoutes } from '@user/routes/userRoutes';
 import { config } from '@root/config';
-// import redisAdapter from 'socket.io-redis';
+import { createAdapter } from 'socket.io-redis';
+import { RedisClient } from 'redis';
 import { Server } from 'socket.io';
 import responseTime from 'response-time';
 import { router } from 'bull-board';
@@ -111,24 +112,24 @@ export class ChatServer {
     try {
       const httpServer: http.Server = new http.Server(app);
       const socketIO = this.createSocketIO(httpServer);
-      this.socketIOConnections(socketIO);
       this.startHttpServer(httpServer);
+      this.socketIOConnections(socketIO);
     } catch (error) {
       return error;
     }
   }
 
   private createSocketIO(httpServer: http.Server): Server {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const io: Server = require('socket.io')(httpServer);
-    const PORT = parseInt(config.REDIS_PORT!, 10) || 6379;
-    io.adapter(
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      require('socket.io-redis')({
-        host: config.REDIS_HOST! || 'localhost',
-        port: PORT
-      })
-    );
+    const io: Server = new Server(httpServer, {
+      cors: {
+        origin: config.CLIENT_URL,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+      }
+    });
+    const PORT: number = parseInt(config.REDIS_PORT!, 10) || 6379;
+    const pubClient: RedisClient = new RedisClient({ host: config.REDIS_HOST! || 'localhost', port: PORT });
+    const subClient: RedisClient = pubClient.duplicate();
+    io.adapter(createAdapter({ pubClient, subClient }));
     return io;
   }
 

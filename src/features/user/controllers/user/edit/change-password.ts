@@ -36,8 +36,6 @@ export class ChangePassword {
     // const template: string = resetPasswordTemplate.passwordResetConfirmationTemplate(templateParams);
     // TODO: Fix issue with username and password for sending emails. Implement sendgrid
     // await mailTransport.sendEmail(config.TESTING_RECEIVER_EMAIL!, 'Password Update Confirmation', template);
-    res
-      .status(HTTP_STATUS.OK)
-      .json({ message: 'Password updated successfully. You will be redirected shortly to the login page.', notification: true });
+    res.status(HTTP_STATUS.OK).json({ message: 'Password updated successfully. You will be redirected shortly to the login page.', notification: true });
   }
 }

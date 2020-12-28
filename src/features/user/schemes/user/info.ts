@@ -70,15 +70,4 @@ const notificationSettingsSchema: ObjectSchema = Joi.object().keys({
   follows: Joi.boolean().optional()
 });
 
-export {
-  genderSchema,
-  birthdaySchema,
-  relationshipSchema,
-  aboutSchema,
-  quotesSchema,
-  placesSchema,
-  workSchema,
-  educationSchema,
-  changePasswordSchema,
-  notificationSettingsSchema
-};
+export { genderSchema, birthdaySchema, relationshipSchema, aboutSchema, quotesSchema, placesSchema, workSchema, educationSchema, changePasswordSchema, notificationSettingsSchema };

@@ -20,11 +20,7 @@ class CommentRoutes {
     this.router.get('/post/comment/names/:postId', authMiddleware.checkAuthentication, GetPost.prototype.commentsFromCache);
     this.router.post('/post/comments', authMiddleware.checkAuthentication, Add.prototype.comment);
     this.router.post('/post/reactions', authMiddleware.checkAuthentication, AddReaction.prototype.reaction);
-    this.router.delete(
-      '/post/reactions/:postId/:previousReaction',
-      authMiddleware.checkAuthentication,
-      Remove.prototype.reaction
-    );
+    this.router.delete('/post/reactions/:postId/:previousReaction', authMiddleware.checkAuthentication, Remove.prototype.reaction);
 
     return this.router;
   }
