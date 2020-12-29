@@ -113,4 +113,33 @@ dist
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
 
-# End of https://www.toptal.com/developers/gitignore/api/node
+# Created by https://www.toptal.com/developers/gitignore/api/terraform
+# Edit at https://www.toptal.com/developers/gitignore?templates=terraform
+
+# Terraform configuration
+infrastructure/.terraform/
+
+# Terraform state
+infrastructure/terraform.tfstate
+infrastructure/terraform.tfstate.backup
+
+# Terraform variables
+infrastructure/terraform.tfvars
+
+infrastructure/.terraform.lock.hcl
+
+
+# Public keys
+infrastructure/*.pem
+
+# Private keys
+infrastructure/*.key
+
+# Ignore override files as they are usually used to override resources locally and so
+# are not checked in
+infrastructure/override.tf
+infrastructure/override.tf.json
+infrastructure/*_override.tf
+infrastructure/*_override.tf.json
+
+terraform-steps.txt

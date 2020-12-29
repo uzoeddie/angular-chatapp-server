@@ -76,3 +76,10 @@ application.initialize();
 // to tsconfig.json
 // change build command in package.json to
 // "build": "ttsc -p ."
+
+// To install terraform on macOS
+// download the zip file
+// unzip the file (manually or using the unzip command)
+// run chmod +x terraform
+// sudo mv terraform /usr/local/bin/
+// confirm version with terraform --version
