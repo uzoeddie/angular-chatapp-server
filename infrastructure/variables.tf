@@ -11,7 +11,7 @@ variable "region" {}
 variable "vpc_cidr" {}
 
 variable "ec2_key_pair" {
-  default = "eddiesKP"
+  default = "testKP"
 }
 
 variable "public_subnet_cidr" {

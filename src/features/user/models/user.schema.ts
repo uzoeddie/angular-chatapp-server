@@ -86,8 +86,8 @@ userSchema.methods.hashPassword = async function (password: string): Promise<str
   return hashedPassword;
 };
 
-userSchema.methods.comparePassword = function (password: string): Promise<boolean> {
-  const hashedPassword: string = (this as IUserDocument).password;
+userSchema.methods.comparePassword = (password: string) => {
+  const hashedPassword: string = (this! as IUserDocument).password;
   return compare(password, hashedPassword);
 };
 

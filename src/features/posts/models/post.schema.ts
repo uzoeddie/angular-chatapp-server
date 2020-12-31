@@ -40,6 +40,6 @@ const postSchema: mongoose.Schema = new mongoose.Schema(
 );
 
 postSchema.plugin(autopopulate);
-const PostModel: mongoose.Model<IPostDocument, Document> = mongoose.model<IPostDocument>('Post', postSchema, 'Post');
+const PostModel: mongoose.Model<IPostDocument> = mongoose.model<IPostDocument>('Post', postSchema, 'Post');
 
 export { PostModel };

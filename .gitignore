@@ -131,6 +131,7 @@ infrastructure/.terraform.lock.hcl
 
 # Public keys
 infrastructure/*.pem
+testKP.pem
 
 # Private keys
 infrastructure/*.key

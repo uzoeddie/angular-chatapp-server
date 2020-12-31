@@ -31,7 +31,7 @@ export class MarkChat {
           }
         }
       ]);
-      conversationMessageId = conversation[0]._id;
+      conversationMessageId = conversation[0]._id as mongoose.Types.ObjectId;
     } else {
       conversationMessageId = mongoose.Types.ObjectId(conversationId);
     }

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 export interface ICommentDocument extends mongoose.Document {
-  _id: mongoose.Types.ObjectId;
+  _id?: mongoose.Types.ObjectId;
   username: string;
   avatarColor: string;
   postId: string;
@@ -10,7 +10,7 @@ export interface ICommentDocument extends mongoose.Document {
   userTo?: mongoose.Types.ObjectId;
 }
 export interface IReactionDocument extends mongoose.Document {
-  _id: mongoose.Types.ObjectId;
+  _id?: mongoose.Types.ObjectId;
   postId: string;
   type: string;
   username: string;
