@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "preinstall": "npm install pm2 -g && pm2 install pm2-logrotate",
-    "start": "pm2 start ./build/app.js -i max | ./node_modules/.bin/bunyan",
+    "start": "pm2 start ./build/ecosystem.config.js | ./node_modules/.bin/bunyan",
     "dev": "nodemon -r tsconfig-paths/register src/app.ts | ./node_modules/.bin/bunyan",
     "lint": "eslint 'src/**/*.ts*'",
     "lint:fix": "eslint 'src/**/*.ts*' --fix",
