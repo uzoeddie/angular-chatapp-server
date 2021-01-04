@@ -8,7 +8,7 @@ import 'express-async-errors';
 import cookieParser from 'cookie-parser';
 import HTTP_STATUS from 'http-status-codes';
 import Logger from 'bunyan';
-import { authRoutes, currentUserRoute } from '@user/routes/authRoutes';
+import { authRoutes, currentUserRoute, healthRoute } from '@user/routes/authRoutes';
 import { authMiddleware } from '@global/auth-middlewares';
 import { chatRoutes } from '@chat/routes/chatRoutes';
 import { commentRoutes } from '@comments/routes/commentRoutes';
@@ -71,6 +71,7 @@ export class ChatServer {
   }
 
   private routeMiddleWares(app: express.Application): void {
+    app.use('', healthRoute.routes());
     app.use('/api/v1/chatapp', authRoutes.routes());
     app.use('/api/v1/chatapp', authRoutes.SignOutRoute());
 

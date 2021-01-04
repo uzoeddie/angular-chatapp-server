@@ -1,4 +1,4 @@
-import express, { Router } from 'express';
+import express, { Router, Request, Response } from 'express';
 import { authMiddleware } from '@global/auth-middlewares';
 import { CurrentUser } from '@user/controllers/auth/current-user';
 import { Password } from '@user/controllers/auth/password';
@@ -14,6 +14,7 @@ class AuthRoutes {
   }
 
   public routes(): Router {
+    this.router.post('/signup', SignUp.prototype.create);
     this.router.post('/signup', SignUp.prototype.create);
     this.router.post('/signin', SignIn.prototype.read);
     this.router.post('/forgot-password', Password.prototype.create);
@@ -38,6 +39,21 @@ class CurrentUserRoute {
 
   public routes(): Router {
     this.router.get('/currentuser', authMiddleware.checkAuthentication, CurrentUser.prototype.read);
+    return this.router;
+  }
+}
+
+class HealthRoute {
+  private router: Router;
+
+  constructor() {
+    this.router = express.Router();
+  }
+
+  public routes(): Router {
+    this.router.get('/health', (req: Request, res: Response) => {
+      res.status(200).send('Server is healthy.');
+    });
 
     return this.router;
   }
@@ -45,3 +61,4 @@ class CurrentUserRoute {
 
 export const authRoutes: AuthRoutes = new AuthRoutes();
 export const currentUserRoute: CurrentUserRoute = new CurrentUserRoute();
+export const healthRoute: HealthRoute = new HealthRoute();
