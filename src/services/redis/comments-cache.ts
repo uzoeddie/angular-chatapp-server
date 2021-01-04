@@ -3,7 +3,8 @@ import Logger from 'bunyan';
 import { config } from '@root/config';
 import { IRedisCommentList } from '@comments/interface/comment.interface';
 
-const client: RedisClient = redis.createClient();
+const PORT: number = parseInt(config.REDIS_PORT!, 10) || 6379;
+const client: RedisClient = redis.createClient({ host: config.REDIS_HOST! || 'localhost', port: PORT });
 const log: Logger = config.createLogger('commentsCache');
 
 client.on('error', function (error) {

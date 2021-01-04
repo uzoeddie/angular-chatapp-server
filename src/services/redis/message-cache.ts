@@ -5,7 +5,8 @@ import { config } from '@root/config';
 import { IChatRedisData } from '@chat/interface/chat.interface';
 import { Helpers } from '@global/helpers';
 
-const client: RedisClient = redis.createClient();
+const PORT: number = parseInt(config.REDIS_PORT!, 10) || 6379;
+const client: RedisClient = redis.createClient({ host: config.REDIS_HOST! || 'localhost', port: PORT });
 const log: Logger = config.createLogger('messageCache');
 
 client.on('error', function (error) {

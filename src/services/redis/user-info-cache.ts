@@ -5,7 +5,8 @@ import { config } from '@root/config';
 import { IUserBirthDay, IUserPlacesLived, IUserSchool, IUserWork } from '@user/interface/user.interface';
 import { Helpers } from '@global/helpers';
 
-const client: RedisClient = redis.createClient();
+const PORT: number = parseInt(config.REDIS_PORT!, 10) || 6379;
+const client: RedisClient = redis.createClient({ host: config.REDIS_HOST! || 'localhost', port: PORT });
 const log: Logger = config.createLogger('userInfoCache');
 
 client.on('error', function (error) {

@@ -5,7 +5,8 @@ import { ICreatePost, IPostDocument } from '@posts/interface/post.interface';
 import Logger from 'bunyan';
 import { config } from '@root/config';
 
-const client: RedisClient = redis.createClient();
+const PORT: number = parseInt(config.REDIS_PORT!, 10) || 6379;
+const client: RedisClient = redis.createClient({ host: config.REDIS_HOST! || 'localhost', port: PORT });
 const log: Logger = config.createLogger('postCache');
 
 client.on('error', function (error) {
