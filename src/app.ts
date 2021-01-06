@@ -4,7 +4,7 @@ import Logger from 'bunyan';
 import { config } from '@root/config';
 import databaseConnection from '@root/setupDatabase';
 import { ChatServer } from '@root/setupServer';
-import cluster, { isMaster } from 'cluster';
+import cluster from 'cluster';
 import { cpus } from 'os';
 
 const log: Logger = config.createLogger('app');
