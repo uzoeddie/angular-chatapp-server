@@ -4,8 +4,11 @@ import Logger from 'bunyan';
 import { config } from '@root/config';
 import databaseConnection from '@root/setupDatabase';
 import { ChatServer } from '@root/setupServer';
+import cluster, { isMaster } from 'cluster';
+import { cpus } from 'os';
 
 const log: Logger = config.createLogger('app');
+const numCPUs = cpus().length;
 class Application {
   public initialize(): void {
     this.loadConfig();
@@ -13,12 +16,26 @@ class Application {
     const app: express.Application = express();
     const server: ChatServer = new ChatServer(app);
     server.start();
+    // if (isMaster) {
+    //   this.masterProcess();
+    // } else {
+    //   server.start();
+    // }
     Application.handleExit();
   }
 
   private loadConfig(): void {
     config.validateConfig();
     config.cloudinaryConfig();
+  }
+
+  masterProcess() {
+    console.log(`Master ${process.pid} is running`);
+
+    for (let i = 0; i < numCPUs; i++) {
+      console.log(`Forking process number ${i}...`);
+      cluster.fork();
+    }
   }
 
   private static handleExit(): void {

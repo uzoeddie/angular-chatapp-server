@@ -21,7 +21,7 @@ export class SocketIOUserHandler {
   }
 
   public listen(): void {
-    this.io.of('/').on('connection', (socket: Socket) => {
+    this.io.on('connection', (socket: Socket) => {
       socket.on('setup', (data: ILogin) => {
         this.addClientToMap(data.userId, socket.id);
       });
@@ -54,6 +54,7 @@ export class SocketIOUserHandler {
       if (!change.documentKey) {
         return;
       }
+
       if (change.operationType === 'update') {
         this.io.emit('update user', change.fullDocument);
       }

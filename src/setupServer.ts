@@ -32,7 +32,7 @@ import responseTime from 'response-time';
 import { router } from 'bull-board';
 
 const log: Logger = config.createLogger('main');
-
+const PORT: number = parseInt(config.REDIS_PORT!, 10) || 6379;
 export class ChatServer {
   private app: express.Application;
 
@@ -127,7 +127,6 @@ export class ChatServer {
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
       }
     });
-    const PORT: number = parseInt(config.REDIS_PORT!, 10) || 6379;
     const pubClient: RedisClient = new RedisClient({ host: config.REDIS_HOST! || 'localhost', port: PORT });
     const subClient: RedisClient = pubClient.duplicate();
     io.adapter(createAdapter({ pubClient, subClient }));
@@ -135,6 +134,7 @@ export class ChatServer {
   }
 
   private startHttpServer(httpServer: http.Server): void {
+    log.info(`Worker ${process.pid} started...`);
     const PORT: string = config.PORT!;
     httpServer.listen(PORT, () => {
       log.info(`Successfully started running server on port ${PORT}`);
