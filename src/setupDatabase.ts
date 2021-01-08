@@ -31,3 +31,9 @@ export default () => {
 
   mongoose.connection.on('disconnected', connect);
 };
+
+// "husky": {
+//   "hooks": {
+//     "pre-commit": "npm run lint"
+//   }
+// },
