@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import redis, { Multi, RedisClient } from 'redis';
 import { Helpers } from '@global/helpers';
-import { ICreatePost, IPostDocument } from '@posts/interface/post.interface';
+import { IPostDocument } from '@posts/interface/post.interface';
 import Logger from 'bunyan';
 import { config } from '@root/config';
 
@@ -29,7 +29,7 @@ export function savePostsToRedisCache(key: string, uId: number, createdPost: IPo
   });
 }
 
-export function updatePostInRedisCache(key: string, createdPost: ICreatePost): Promise<void> {
+export function updatePostInRedisCache(key: string, createdPost: IPostDocument): Promise<IPostDocument> {
   const { post, bgColor, feelings, privacy, gifUrl, imgId, imgVersion, createdAt, profilePicture } = createdPost;
   const firstList: string[] = ['post', `${post}`, 'bgColor', `${bgColor}`, 'feelings', JSON.stringify(feelings), 'privacy', JSON.stringify(privacy), 'gifUrl', `${gifUrl}`];
   const secondList: string[] = ['imgId', `${imgId}`, 'imgVersion', `${imgVersion}`, 'createdAt', `${createdAt}`, 'profilePicture', `${profilePicture}`];
@@ -39,7 +39,20 @@ export function updatePostInRedisCache(key: string, createdPost: ICreatePost): P
       if (error) {
         reject(error);
       }
-      resolve();
+      const multi: Multi = client.multi();
+      multi.hgetall(`posts:${key}`);
+      multi.exec((error, reply) => {
+        if (error) {
+          reject(error);
+        }
+        reply[0].feelings = Helpers.parseJson(reply[0].feelings);
+        reply[0].comments = Helpers.parseJson(reply[0].comments);
+        reply[0].privacy = Helpers.parseJson(reply[0].privacy);
+        reply[0].userId = Helpers.parseJson(reply[0].userId);
+        reply[0].reactions = Object.keys(Helpers.parseJson(reply[0].reactions)).length ? Helpers.formattedReactions(Helpers.parseJson(reply[0].reactions)) : [];
+        reply[0].createdAt = new Date(reply[0].createdAt);
+        resolve(reply[0]);
+      });
     });
   });
 }
@@ -62,7 +75,7 @@ export function getPostsFromCache(key: string, start: number, end: number): Prom
       if (err) {
         reject(err);
       }
-      const multi = client.multi();
+      const multi: Multi = client.multi();
       for (const value of reply) {
         multi.hgetall(`posts:${value}`);
       }

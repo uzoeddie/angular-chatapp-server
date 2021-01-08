@@ -1,3 +1,4 @@
+import { ObjectID } from 'mongodb';
 import mongoose from 'mongoose';
 
 declare global {
@@ -9,8 +10,8 @@ declare global {
 }
 
 export interface IUserDocument extends mongoose.Document {
-  _id: string;
-  uId: number;
+  _id: string | ObjectID;
+  uId: string;
   username: string;
   email: string;
   password: string;
@@ -24,12 +25,12 @@ export interface IUserDocument extends mongoose.Document {
   quotes: string;
   about: string;
   placesLived: IUserPlacesLived[];
-  blocked: [mongoose.Types.ObjectId];
-  blockedBy: [mongoose.Types.ObjectId];
+  blocked: [mongoose.Types.ObjectId] | [];
+  blockedBy: [mongoose.Types.ObjectId] | [];
   followersCount: number;
   followingCount: number;
   createdAt: Date;
-  bgImageVersion: number;
+  bgImageVersion: number | string;
   bgImageId: string;
   profilePicture: string;
   passwordResetToken?: string;
@@ -42,7 +43,7 @@ export interface IUserDocument extends mongoose.Document {
 
 export interface AuthPayload {
   userId: string;
-  uId: number;
+  uId: string;
   email: string;
   username: string;
   avatarColor: string;
@@ -50,22 +51,22 @@ export interface AuthPayload {
 }
 
 export interface IUserWork {
+  _id: mongoose.Types.ObjectId | string;
   company: string;
   position: string;
   city: string;
   description: string;
   from: string;
   to: string;
-  _id?: mongoose.Types.ObjectId | string;
 }
 
 export interface IUserSchool {
+  _id: mongoose.Types.ObjectId | string;
   name: string;
   course: string;
   degree: string;
   from: string;
   to: string;
-  _id?: mongoose.Types.ObjectId | string;
 }
 
 export interface IUserBirthDay {
@@ -74,11 +75,11 @@ export interface IUserBirthDay {
 }
 
 export interface IUserPlacesLived {
+  _id: mongoose.Types.ObjectId | string;
   city: string;
   country: string;
   year: string;
   month: string;
-  _id?: mongoose.Types.ObjectId | string;
 }
 
 export interface INotificationSettings {
@@ -86,6 +87,15 @@ export interface INotificationSettings {
   reactions: boolean;
   comments: boolean;
   follows: boolean;
+}
+
+export interface ISocketData {
+  blockedUser: string;
+  blockedBy: string;
+}
+
+export interface ILogin {
+  userId: string;
 }
 
 export interface IUserJobInfo {

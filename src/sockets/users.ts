@@ -1,26 +1,25 @@
-import { UserModel } from '@user/models/user.schema';
-import { ChangeStream } from 'mongodb';
 import { Server, Socket } from 'socket.io';
+import { eventEmitter } from '@global/helpers';
+import { config } from '@root/config';
+import Logger from 'bunyan';
+import { ILogin, ISocketData } from '@user/interface/user.interface';
 
 export const connectedUsersMap: Map<string, string> = new Map();
-interface ISocketData {
-  blockedUser: string;
-  blockedBy: string;
-}
-
-interface ILogin {
-  userId: string;
-}
-
 export class SocketIOUserHandler {
   private io: Server;
+  log: Logger;
 
   constructor(io: Server) {
     this.io = io;
-    this.userModelChangeStream();
+    this.log = config.createLogger('app');
   }
 
   public listen(): void {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    eventEmitter.on('userInfo', (data: any) => {
+      this.io.emit('update user', data);
+    });
+
     this.io.on('connection', (socket: Socket) => {
       socket.on('setup', (data: ILogin) => {
         this.addClientToMap(data.userId, socket.id);
@@ -36,6 +35,9 @@ export class SocketIOUserHandler {
 
       socket.on('disconnect', () => {
         this.removeClientFromMap(socket.id);
+        eventEmitter.removeListener('userInfo', () => {
+          this.log.info('Event emitter removed');
+        });
       });
     });
   }
@@ -45,20 +47,6 @@ export class SocketIOUserHandler {
       connectedUsersMap.set(userId, socketId);
     }
     this.io.emit('user online', [...connectedUsersMap.keys()]);
-  }
-
-  private userModelChangeStream(): void {
-    const changeStream: ChangeStream = UserModel.watch([], { fullDocument: 'updateLookup' });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    changeStream.on('change', (change: any) => {
-      if (!change.documentKey) {
-        return;
-      }
-
-      if (change.operationType === 'update') {
-        this.io.emit('update user', change.fullDocument);
-      }
-    });
   }
 
   private removeClientFromMap(socketId: string): void {

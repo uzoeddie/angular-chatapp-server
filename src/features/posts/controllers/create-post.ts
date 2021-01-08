@@ -1,23 +1,26 @@
 import { Request, Response } from 'express';
-import { UpdateQuery } from 'mongoose';
 import HTTP_STATUS from 'http-status-codes';
 import { uploads } from '@global/cloudinary-upload';
 import { joiValidation } from '@global/decorators/joi-validation.decorator';
 import { IPostDocument } from '@posts/interface/post.interface';
-import { PostModel } from '@posts/models/post.schema';
 import { addPostSchema, postWithImageSchema } from '@posts/schemes/post';
 import { postQueue } from '@queues/post.queue';
-import { UserModel } from '@user/models/user.schema';
-import { IUserDocument } from '@user/interface/user.interface';
 import { UploadApiResponse } from 'cloudinary';
-import { ImageModel } from '@images/models/images.schema';
-import { IFileImageDocument } from '@images/interface/images.interface';
+import { savePostsToRedisCache } from '@redis/post-cache';
+import { ObjectID } from 'mongodb';
+import { socketIOPostObject } from '@sockets/posts';
 
 export class Create {
   @joiValidation(addPostSchema)
   public async post(req: Request, res: Response): Promise<void> {
-    const { post, bgColor, feelings, privacy, gifUrl, profilePicture } = req.body;
-    const createPost: IPostDocument = {
+    const { post, bgColor, privacy, gifUrl, profilePicture } = req.body;
+    let { feelings } = req.body;
+    const postObjectId: ObjectID = new ObjectID();
+    if (!feelings) {
+      feelings = {};
+    }
+    const createPost: IPostDocument = ({
+      _id: postObjectId,
       userId: req.currentUser?.userId,
       username: req.currentUser?.username,
       email: req.currentUser?.email,
@@ -27,18 +30,17 @@ export class Create {
       bgColor,
       feelings,
       privacy,
-      gifUrl
-    } as IPostDocument;
-    const response: [IPostDocument, UpdateQuery<IUserDocument>] = await Promise.all([PostModel.create(createPost), UserModel.findOneAndUpdate({ _id: req.currentUser?.userId }, { $inc: { postCount: 1 } }, { upsert: true, new: true })]);
-    if (response) {
-      response[0].reactions = [];
-      postQueue.addPostJob('savePostsToRedisCache', { key: response[0]._id, uId: req.currentUser?.uId, value: response[0] });
-      postQueue.addPostJob('updateUserPostCount', {
-        key: req.currentUser?.userId,
-        prop: 'postCount',
-        value: response[1].postCount
-      });
-    }
+      gifUrl,
+      comments: 0,
+      imgVersion: '',
+      imgId: '',
+      reactions: [],
+      createdAt: new Date()
+    } as unknown) as IPostDocument;
+    await savePostsToRedisCache(`${createPost._id}`, parseInt(req.currentUser!.uId, 10), createPost);
+    socketIOPostObject.emit('post message', createPost, 'posts');
+    delete createPost.reactions;
+    postQueue.addPostJob('savePostsToDB', { key: req.currentUser?.userId, value: createPost });
     res.status(HTTP_STATUS.CREATED).json({ message: 'Post created successfully', notification: true });
   }
 
@@ -46,7 +48,9 @@ export class Create {
   public async postWithImage(req: Request, res: Response): Promise<void> {
     const { image, post, bgColor, feelings, privacy, gifUrl, profilePicture } = req.body;
     const result: UploadApiResponse = (await uploads(image)) as UploadApiResponse;
-    const postWithImage: IPostDocument = {
+    const postObjectId: ObjectID = new ObjectID();
+    const postWithImage: IPostDocument = ({
+      _id: postObjectId,
       userId: req.currentUser?.userId,
       username: req.currentUser?.username,
       email: req.currentUser?.email,
@@ -57,28 +61,16 @@ export class Create {
       feelings,
       privacy,
       gifUrl,
+      comments: 0,
       imgId: result.public_id,
-      imgVersion: result.version.toString()
-    } as IPostDocument;
-    const createdPost: Promise<IPostDocument> = PostModel.create(postWithImage);
-    const updatePostCount: UpdateQuery<IUserDocument> = UserModel.findOneAndUpdate({ _id: req.currentUser?.userId }, { $inc: { postCount: 1 } }, { upsert: true, new: true });
-    const images: UpdateQuery<IFileImageDocument> = ImageModel.updateOne(
-      { userId: req.currentUser?.userId },
-      {
-        $push: { images: { imgId: result.public_id, imgVersion: result.version } }
-      },
-      { upsert: true }
-    );
-    const response: [IPostDocument, UpdateQuery<IUserDocument>, UpdateQuery<IFileImageDocument>] = await Promise.all([createdPost, updatePostCount, images]);
-    if (response) {
-      response[0].reactions = [];
-      postQueue.addPostJob('savePostsToRedisCache', { key: response[0]._id, uId: req.currentUser?.uId, value: response[0] });
-      postQueue.addPostJob('updateUserPostCount', {
-        key: req.currentUser?.userId,
-        prop: 'postCount',
-        value: response[1].postCount
-      });
-    }
+      imgVersion: result.version.toString(),
+      reactions: [],
+      createdAt: new Date()
+    } as unknown) as IPostDocument;
+    await savePostsToRedisCache(`${postWithImage._id}`, parseInt(req.currentUser!.uId, 10), postWithImage);
+    socketIOPostObject.emit('post message', postWithImage, 'posts');
+    delete postWithImage.reactions;
+    postQueue.addPostJob('savePostsToDB', { key: req.currentUser?.userId, value: postWithImage });
     res.status(HTTP_STATUS.CREATED).json({ message: 'Post added with image successfully' });
   }
 }

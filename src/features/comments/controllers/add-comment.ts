@@ -1,48 +1,34 @@
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
-import { UpdateQuery } from 'mongoose';
 import { ICommentDocument } from '@comments/interface/comment.interface';
-import { CommentsModel } from '@comments/models/comment.schema';
 import { addCommentSchema } from '@comments/schemes/comments';
 import { joiValidation } from '@global/decorators/joi-validation.decorator';
-import { PostModel } from '@posts/models/post.schema';
-import { postQueue } from '@queues/post.queue';
-import { NotificationModel } from '@notifications/models/notification.schema';
-import { getUserFromCache } from '@redis/user-cache';
-import { IUserDocument } from '@user/interface/user.interface';
-import { IPostDocument } from '@posts/interface/post.interface';
+import { ObjectID } from 'mongodb';
+import { savePostCommentToRedisCache } from '@redis/comments-cache';
+import { commentQueue } from '@queues/comment.queue';
+
 export class Add {
   @joiValidation(addCommentSchema)
   public async comment(req: Request, res: Response): Promise<void> {
-    const comments: Promise<ICommentDocument> = CommentsModel.create({
-      userTo: req.body.userTo,
+    const commentObJectId: ObjectID = new ObjectID();
+    const commentData: ICommentDocument = ({
+      _id: commentObJectId,
       postId: req.body.postId,
       username: req.currentUser?.username as string,
       avatarColor: req.currentUser?.avatarColor as string,
       comment: req.body.comment,
-      profilePicture: req.body.profilePicture
-    });
-    const posts: UpdateQuery<IPostDocument> = PostModel.findOneAndUpdate({ _id: req.body.postId }, { $inc: { comments: 1 } }, { new: true });
-    const user: Promise<IUserDocument> = getUserFromCache(req.body.userTo);
-    const response: [ICommentDocument, UpdateQuery<IPostDocument>, IUserDocument] = await Promise.all([comments, posts, user]);
-    if (response[2].notifications.comments) {
-      NotificationModel.schema.methods.insertNotification({
-        userFrom: req.currentUser?.userId,
-        userTo: req.body.userTo,
-        message: `${req.currentUser?.username} commented on your post.`,
-        notificationType: 'comment',
-        entityId: req.body.postId,
-        createdItemId: response[0]._id
-      });
-    }
-    if (response) {
-      postQueue.addPostJob('updateSinglePostInRedis', {
-        type: 'comments',
-        key: req.body.postId,
-        value: `${response[1]?.comments}`,
-        username: `${req.currentUser?.username}`
-      });
-    }
+      profilePicture: req.body.profilePicture,
+      createdAt: new Date()
+    } as unknown) as ICommentDocument;
+    await savePostCommentToRedisCache(req.body.postId, JSON.stringify(commentData));
+    const dbCommentData = {
+      postId: req.body.postId,
+      userTo: req.body.userTo,
+      userFrom: req.currentUser?.userId,
+      username: req.currentUser?.username,
+      comment: commentData
+    };
+    commentQueue.addCommentJob('addCommentToDB', dbCommentData);
 
     res.status(HTTP_STATUS.OK).json({ message: 'Comment created successfully' });
   }

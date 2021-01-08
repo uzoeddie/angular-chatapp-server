@@ -36,7 +36,7 @@ export class Add {
     ]);
     const response: [IFollowerDocument, BulkWriteOpResultObject, IUserDocument | null] = await Promise.all([following, users, UserModel.findOne({ _id: req.params.followerId })]);
 
-    if (response[2]!.notifications.follows) {
+    if (response[2]!.notifications.follows && req.currentUser?.userId !== req.params.followerId) {
       NotificationModel.schema.methods.insertNotification({
         userFrom: req.currentUser?.userId,
         userTo: req.params.followerId,

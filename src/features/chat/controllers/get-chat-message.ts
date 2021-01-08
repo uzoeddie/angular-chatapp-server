@@ -8,6 +8,7 @@ import { Helpers } from '@global/helpers';
 import { IChatMessage } from '@chat/interface/chat.interface';
 import { ObjectId } from 'mongodb';
 import { unflatten } from 'flat';
+
 export class GetChat {
   public async list(req: Request, res: Response): Promise<void> {
     let list: IChatMessage[];

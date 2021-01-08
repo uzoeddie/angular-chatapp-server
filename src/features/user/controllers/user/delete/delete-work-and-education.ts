@@ -1,51 +1,48 @@
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
-import mongoose from 'mongoose';
 import { userInfoQueue } from '@queues/user-info.queue';
-import { IUserDocument } from '@user/interface/user.interface';
-import { UserModel } from '@user/models/user.schema';
+import { IUserDocument, IUserSchool, IUserWork } from '@user/interface/user.interface';
+import { updateUserPropListInfoInRedisCache } from '@redis/user-info-cache';
+import { eventEmitter } from '@global/helpers';
 
 export class DeleteWorkAndEducation {
   public async work(req: Request, res: Response): Promise<void> {
-    const userData: IUserDocument = (await UserModel.findOneAndUpdate(
-      { username: req.currentUser?.username },
-      {
-        $pull: {
-          work: {
-            _id: mongoose.Types.ObjectId(req.params.workId)
-          }
-        }
-      }
-    )) as IUserDocument;
+    const work: IUserWork = {
+      _id: '',
+      company: '',
+      position: '',
+      city: '',
+      description: '',
+      from: '',
+      to: ''
+    };
+    const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(`${req.currentUser?.userId}`, 'work', work, 'remove', req.params.workId);
+    eventEmitter.emit('userInfo', cachedUser);
     userInfoQueue.addUserInfoJob('updateUserWorkInCache', {
-      key: `${req.currentUser?.userId}`,
-      prop: 'work',
+      key: `${req.currentUser?.username}`,
       value: null,
       type: 'remove',
-      data: userData.work,
-      paramId: req.params.workId
+      paramsId: req.params.workId
     });
     res.status(HTTP_STATUS.OK).json({ message: 'Work deleted successfully', notification: true });
   }
 
   public async education(req: Request, res: Response): Promise<void> {
-    const userData: IUserDocument = (await UserModel.findOneAndUpdate(
-      { username: req.currentUser?.username },
-      {
-        $pull: {
-          school: {
-            _id: mongoose.Types.ObjectId(req.params.schoolId)
-          }
-        }
-      }
-    )) as IUserDocument;
+    const school: IUserSchool = {
+      _id: '',
+      name: '',
+      course: '',
+      degree: '',
+      from: '',
+      to: ''
+    };
+    const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(`${req.currentUser?.userId}`, 'school', school, 'remove', req.params.schoolId);
+    eventEmitter.emit('userInfo', cachedUser);
     userInfoQueue.addUserInfoJob('updateUserSchoolInCache', {
-      key: `${req.currentUser?.userId}`,
-      prop: 'school',
+      key: `${req.currentUser?.username}`,
       value: null,
       type: 'remove',
-      data: userData.school,
-      paramId: req.params.schoolId
+      paramsId: req.params.schoolId
     });
     res.status(HTTP_STATUS.OK).json({ message: 'School deleted successfully', notification: true });
   }

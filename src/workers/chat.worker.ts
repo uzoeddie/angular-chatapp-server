@@ -1,13 +1,11 @@
 import { DoneCallback, Job } from 'bull';
-import { addChatListToRedisCache, addChatmessageToRedisCache, updateIsReadPropInRedisCache } from '@redis/message-cache';
+import { chatService } from '@db/chat.service';
 
 class ChatWorker {
-  async addChatMessagesToCache(jobQueue: Job, done: DoneCallback): Promise<void> {
+  async addChatMessagesToDB(jobQueue: Job, done: DoneCallback): Promise<void> {
     try {
-      const { keys, key, value } = jobQueue.data;
-      const addChatList: Promise<void> = addChatListToRedisCache(keys, value);
-      const addChatMessage: Promise<void> = addChatmessageToRedisCache(key, value);
-      await Promise.all([addChatList, addChatMessage]);
+      const { value } = jobQueue.data;
+      await chatService.addMessageToDB(value);
       jobQueue.progress(100);
       done(null, jobQueue.data);
     } catch (error) {
@@ -15,10 +13,10 @@ class ChatWorker {
     }
   }
 
-  async markMessagesAsReadInRedisCache(jobQueue: Job, done: DoneCallback): Promise<void> {
+  async markMessagesAsReadInDB(jobQueue: Job, done: DoneCallback): Promise<void> {
     try {
-      const { keyOne, keyTwo, conversationId } = jobQueue.data;
-      await updateIsReadPropInRedisCache(keyOne, keyTwo, conversationId);
+      const { conversationId } = jobQueue.data;
+      await chatService.markMessageAsRead(conversationId);
       jobQueue.progress(100);
       done(null, jobQueue.data);
     } catch (error) {

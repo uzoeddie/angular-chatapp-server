@@ -18,7 +18,7 @@ export interface ILike {
   type: string;
 }
 export interface ICreatePost {
-  id?: mongoose.Types.ObjectId;
+  id: mongoose.Types.ObjectId;
   userId?: string;
   email?: string;
   username?: string;
@@ -66,6 +66,6 @@ export interface IPostJobData {
   key?: string | ObjectId | undefined;
   value?: string | IPostDocument | number | IFormattedReactions[] | IReactions;
   username?: string;
-  uId?: string | number;
+  uId?: string;
   prop?: string;
 }

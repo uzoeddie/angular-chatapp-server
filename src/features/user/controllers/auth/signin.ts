@@ -19,7 +19,7 @@ export class SignIn {
     if (!existingAuthUser) {
       throw new BadRequestError('Invalid credentials');
     }
-    const passwordsMatch: boolean = await existingAuthUser!.comparePassword(req.body.password);
+    const passwordsMatch: boolean = await existingAuthUser.comparePassword(req.body.password);
     if (!passwordsMatch) {
       throw new BadRequestError('Invalid credentials');
     }
@@ -33,10 +33,6 @@ export class SignIn {
       },
       config.JWT_TOKEN!
     );
-    // let session: any = req.session;
-    // session.jwt = userJwt;
-    // req.session = session;
-    // res.cookie('userId', userJwt);
     res.status(HTTP_STATUS.OK).json({ message: 'User login successfully', user: existingAuthUser, token: userJwt });
   }
 }

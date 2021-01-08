@@ -65,6 +65,7 @@ export interface IChatJobData {
 }
 
 export interface IChatRedisData {
+  _id: string;
   conversationId: string;
   'senderId._id': string;
   'senderId.username': string;

@@ -5,6 +5,6 @@ export interface IParticipants {
 }
 
 export interface IConversationDocument extends mongoose.Document {
-  _id?: mongoose.Types.ObjectId;
+  _id: mongoose.Types.ObjectId;
   participants: IParticipants[];
 }

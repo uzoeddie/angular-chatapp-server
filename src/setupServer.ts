@@ -33,6 +33,7 @@ import { router } from 'bull-board';
 
 const log: Logger = config.createLogger('main');
 const PORT: number = parseInt(config.REDIS_PORT!, 10) || 6379;
+// export let ioServer: Server;
 export class ChatServer {
   private app: express.Application;
 

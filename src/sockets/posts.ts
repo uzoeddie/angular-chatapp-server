@@ -8,12 +8,14 @@ import { ICommentDocument, IReactionDocument } from '@comments/interface/comment
 import { ChangeStream } from 'mongodb';
 import { unflatten } from 'flat';
 
+let socketIOPostObject: Server;
+
 export class SocketIOPostHandler {
   private io: Server;
 
   constructor(io: Server) {
     this.io = io;
-    this.postModelChangeStream();
+    socketIOPostObject = io;
   }
 
   public listen(): void {
@@ -60,3 +62,5 @@ export class SocketIOPostHandler {
     });
   }
 }
+
+export { socketIOPostObject };

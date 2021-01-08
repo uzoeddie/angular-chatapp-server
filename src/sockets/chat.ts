@@ -1,7 +1,5 @@
-import { IChatMessage, ITyping } from '@chat/interface/chat.interface';
-import { MessageModel } from '@chat/models/chat.schema';
+import { ITyping } from '@chat/interface/chat.interface';
 import { connectedUsersMap } from '@sockets/users';
-import { ChangeStream } from 'mongodb';
 import { Server, Socket } from 'socket.io';
 
 interface ISenderReceiver {
@@ -11,18 +9,20 @@ interface ISenderReceiver {
   receiverName: string;
 }
 
+let socketIOChatObject: Server;
+
 export class SocketIOChatHandler {
   private io: Server;
 
   constructor(io: Server) {
     this.io = io;
+    socketIOChatObject = io;
   }
 
   public listen(): void {
-    this.io.of('/').on('connection', (socket: Socket) => {
+    this.io.on('connection', (socket: Socket) => {
       this.socketIOChat(socket);
       this.chatPageSocket(socket);
-      this.messageModelChangeStream(socket);
     });
   }
 
@@ -33,15 +33,6 @@ export class SocketIOChatHandler {
       const receiverSocketId: string = connectedUsersMap.get(receiver) as string;
       socket.join(senderSocketId);
       socket.join(receiverSocketId);
-    });
-
-    socket.on('new message', (usersId: ISenderReceiver, message: IChatMessage) => {
-      const { sender, receiver } = usersId;
-      const senderSocketId: string = connectedUsersMap.get(sender) as string;
-      const receiverSocketId: string = connectedUsersMap.get(receiver) as string;
-      this.io.to(senderSocketId).to(receiverSocketId).emit('message received', message);
-      this.io.to(senderSocketId).to(receiverSocketId).emit('chat list', message);
-      this.io.emit('trigger message notification', message);
     });
 
     socket.on('start_typing', (data: ITyping) => {
@@ -72,19 +63,6 @@ export class SocketIOChatHandler {
       });
     });
   }
-
-  private messageModelChangeStream(socket: Socket): void {
-    const changeStream: ChangeStream = MessageModel.watch([], { fullDocument: 'updateLookup' });
-    socket.on('message change stream', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      changeStream.once('change', (change: any) => {
-        if (!change.documentKey) {
-          return;
-        }
-        if (change.operationType === 'update') {
-          this.io.emit('message collection update', change.fullDocument);
-        }
-      });
-    });
-  }
 }
+
+export { socketIOChatObject };

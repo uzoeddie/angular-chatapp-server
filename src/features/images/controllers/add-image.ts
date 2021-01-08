@@ -10,6 +10,7 @@ import { UserModel } from '@user/models/user.schema';
 import { UploadApiResponse } from 'cloudinary';
 import { IUserDocument } from '@user/interface/user.interface';
 import { IFileImageDocument } from '@images/interface/images.interface';
+import { userQueue } from '@queues/user.queue';
 
 export class Add {
   @joiValidation(addImageSchema)
@@ -19,7 +20,7 @@ export class Add {
     const url = `https://res.cloudinary.com/ratingapp/image/upload/${result.public_id}`;
     const setUserImage: UpdateQuery<IUserDocument> = await UserModel.updateOne({ _id: req.currentUser?.userId }, { $set: { profilePicture: url } }).exec();
     if (setUserImage) {
-      userInfoQueue.addUserInfoJob('updateImageInCache', {
+      userQueue.addUserJob('updateImageInCache', {
         key: `${req.currentUser?.userId}`,
         prop: 'profilePicture',
         value: url
@@ -35,20 +36,20 @@ export class Add {
     const images: UpdateQuery<IFileImageDocument> = ImageModel.updateOne(
       { userId: req.currentUser?.userId },
       {
-        $push: { images: { imgId: result.public_id, imgVersion: result.version } },
-        $set: { bgImageId: result.public_id, bgImageVersion: result.version }
+        $push: { images: { imgId: result.public_id, imgVersion: result.version.toString() } },
+        $set: { bgImageId: result.public_id, bgImageVersion: result.version.toString() }
       },
       { upsert: true }
     );
     const backgroundImage: UpdateQuery<IUserDocument> = UserModel.updateOne({ _id: req.currentUser?.userId }, { $set: { bgImageId: result.public_id, bgImageVersion: result.version } });
     const response: [UpdateQuery<IFileImageDocument>, UpdateQuery<IUserDocument>] = await Promise.all([images, backgroundImage]);
     if (response) {
-      userInfoQueue.addUserInfoJob('updateImageInCache', {
+      userQueue.addUserJob('updateImageInCache', {
         key: `${req.currentUser?.userId}`,
         prop: 'bgImageId',
         value: result.public_id
       });
-      userInfoQueue.addUserInfoJob('updateImageInCache', {
+      userQueue.addUserJob('updateImageInCache', {
         key: `${req.currentUser?.userId}`,
         prop: 'bgImageVersion',
         value: result.version

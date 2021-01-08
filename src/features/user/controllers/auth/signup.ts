@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 import JWT from 'jsonwebtoken';
-
+import { ObjectID } from 'mongodb';
 import { NotAuthorizedError } from '@global/error-handler';
 import { Helpers } from '@global/helpers';
 import { UserModel } from '@user/models/user.schema';
@@ -10,9 +10,9 @@ import { saveUserToRedisCache } from '@redis/user-cache';
 import { config } from '@root/config';
 import { joiValidation } from '@global/decorators/joi-validation.decorator';
 import { signupSchema } from '@user/schemes/auth/signup';
+import { userQueue } from '@queues/user.queue';
 
 const MAX = 10000;
-
 export class SignUp {
   @joiValidation(signupSchema)
   public async create(req: Request, res: Response): Promise<void> {
@@ -24,29 +24,53 @@ export class SignUp {
     if (checkIfUserExist) {
       throw new NotAuthorizedError('User with details already exists.');
     }
-    const uId: number = Math.floor(Math.random() * Math.floor(MAX));
-    const body: IUserDocument = {
-      username: Helpers.firstLetterUppercase(username),
+    const uId = `${Math.floor(Math.random() * Math.floor(MAX))}${Date.now()}`;
+    const createdObjectId: ObjectID = new ObjectID();
+    const data: IUserDocument = ({
+      _id: createdObjectId,
       uId,
+      username: Helpers.firstLetterUppercase(username),
       email: Helpers.lowerCase(email),
+      avatarColor: Helpers.avatarColor(),
       password,
-      avatarColor: Helpers.avatarColor()
-    } as IUserDocument;
+      birthDay: { month: '', day: '' },
+      postCount: 0,
+      gender: '',
+      quotes: '',
+      about: '',
+      relationship: '',
+      blocked: [],
+      blockedBy: [],
+      bgImageVersion: '',
+      bgImageId: '',
+      work: [],
+      school: [],
+      placesLived: [],
+      createdAt: new Date(),
+      followersCount: 0,
+      followingCount: 0,
+      notifications: {
+        messages: true,
+        reactions: true,
+        comments: true,
+        follows: true
+      },
+      profilePicture: ''
+    } as unknown) as IUserDocument;
 
-    const createdAuthUser: IUserDocument = await UserModel.create(body);
+    await saveUserToRedisCache(`${createdObjectId}`, uId, data);
+    userQueue.addUserJob('addUserToDB', data);
     const userJwt: string = JWT.sign(
       {
-        userId: createdAuthUser._id,
-        uId: createdAuthUser.uId,
-        email: createdAuthUser.email,
-        username: createdAuthUser.username,
-        avatarColor: createdAuthUser.avatarColor
+        userId: data._id,
+        uId: data.uId,
+        email: data.email,
+        username: data.username,
+        avatarColor: data.avatarColor
       },
       config.JWT_TOKEN!
     );
-    // req.session = { jwt: userJwt };
 
-    await saveUserToRedisCache(createdAuthUser._id, uId, createdAuthUser);
-    res.status(HTTP_STATUS.CREATED).json({ message: 'User created successfully', user: createdAuthUser, token: userJwt });
+    res.status(HTTP_STATUS.CREATED).json({ message: 'User created successfully', user: data, token: userJwt });
   }
 }

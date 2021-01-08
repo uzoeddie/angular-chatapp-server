@@ -7,11 +7,11 @@ import { IChatJobData } from '@chat/interface/chat.interface';
 class ChatQueue extends BaseQueue {
   constructor() {
     super('chat');
-    this.processChatJob('addChatMessagesToCache', 5, chatWorker.addChatMessagesToCache);
-    this.processChatJob('markMessagesAsReadInCache', 5, chatWorker.markMessagesAsReadInRedisCache);
+    this.processChatJob('addChatMessagesToDB', 5, chatWorker.addChatMessagesToDB);
+    this.processChatJob('markMessagesAsReadInDB', 5, chatWorker.markMessagesAsReadInDB);
   }
 
-  public addChatJob(name: string, data: IChatJobData): void {
+  public addChatJob(name: string, data: any): void {
     this.addJob(name, data);
   }
 

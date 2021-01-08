@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 interface Images {
-  imgVersion: number;
+  imgVersion: string;
   imgId: string;
   createdAt?: Date;
   _id?: mongoose.Types.ObjectId;
@@ -14,7 +14,7 @@ export interface Image {
 
 export interface IFileImageDocument extends mongoose.Document {
   userId: mongoose.Types.ObjectId;
-  bgImageVersion: number;
+  bgImageVersion: string;
   bgImageId: string;
   profilePicture: string;
   images: Images[];

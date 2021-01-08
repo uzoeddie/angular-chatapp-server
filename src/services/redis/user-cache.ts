@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { IUserDocument } from '@user/interface/user.interface';
 import Logger from 'bunyan';
 import { config } from '@root/config';
-import { Helpers } from '../../global/helpers';
+import { Helpers } from '@global/helpers';
 
 const PORT: number = parseInt(config.REDIS_PORT!, 10) || 6379;
 const client: RedisClient = redis.createClient({ host: config.REDIS_HOST! || 'localhost', port: PORT });
@@ -14,7 +14,7 @@ client.on('error', function (error) {
   log.error(error);
 });
 
-export function saveUserToRedisCache(key: string, userId: number, createdUser: IUserDocument): Promise<string> {
+export function saveUserToRedisCache(key: string, userId: string, createdUser: IUserDocument): Promise<void> {
   const { _id, uId, username, email, avatarColor, birthDay, postCount, gender, quotes, about, relationship, blocked, blockedBy, bgImageVersion, bgImageId, work, school, placesLived, createdAt, followersCount, followingCount, notifications, profilePicture } = createdUser;
   const firstList: string[] = ['_id', `${_id}`, 'uId', `${uId}`, 'username', `${username}`, 'email', `${email}`, 'avatarColor', `${avatarColor}`, 'createdAt', `${createdAt}`, 'birthDay', JSON.stringify(birthDay), 'postCount', `${postCount}`];
   const secondList: string[] = ['gender', `${gender}`, 'quotes', `${quotes}`, 'about', `${about}`, 'relationship', `${relationship}`, 'blocked', JSON.stringify(blocked)];
@@ -22,12 +22,12 @@ export function saveUserToRedisCache(key: string, userId: number, createdUser: I
   const fourthList: string[] = ['followersCount', `${followersCount}`, 'followingCount', `${followingCount}`, 'notifications', JSON.stringify(notifications), 'profilePicture', `${profilePicture}`];
   const dataToSave: string[] = [...firstList, ...secondList, ...thirdList, ...fourthList];
   return new Promise((resolve, reject) => {
-    client.hmset(`users:${key}`, dataToSave, (error: Error | null, response: string) => {
+    client.hmset(`users:${key}`, dataToSave, (error: Error | null) => {
       if (error) {
         reject(error);
       }
       client.zadd('user', userId, `${key}`);
-      resolve(response);
+      resolve();
     });
   });
 }
@@ -37,6 +37,9 @@ export function getUserFromCache(key: string): Promise<IUserDocument> {
     client.hgetall(`users:${key}`, (error: Error | null, response: any) => {
       if (error) {
         reject(error);
+      }
+      if (response === null || response === undefined) {
+        return;
       }
       response.createdAt = Helpers.parseJson(response.createdAt);
       response.uId = Helpers.parseJson(response.uId);

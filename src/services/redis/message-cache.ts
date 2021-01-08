@@ -4,6 +4,7 @@ import Logger from 'bunyan';
 import { config } from '@root/config';
 import { IChatRedisData } from '@chat/interface/chat.interface';
 import { Helpers } from '@global/helpers';
+import { IConversationDocument } from '@chat/interface/converation.interface';
 
 const PORT: number = parseInt(config.REDIS_PORT!, 10) || 6379;
 const client: RedisClient = redis.createClient({ host: config.REDIS_HOST! || 'localhost', port: PORT });
@@ -12,6 +13,30 @@ const log: Logger = config.createLogger('messageCache');
 client.on('error', function (error) {
   log.error(error);
 });
+
+// export function addUsersConversationToCache(key: string, conversationData: IConversationDocument): Promise<void> {
+//   const { _id, participants } = conversationData;
+//   const dataToSave: string[] = ['_id', `${_id}`, 'participants', `${participants}`];
+//   return new Promise((resolve, reject) => {
+//     client.hmset(`conversations:${key}`, dataToSave, (error) => {
+//       if (error) {
+//         reject(error);
+//       }
+//       resolve();
+//     });
+//   });
+// }
+
+// export function getConversationFromCache(key: string): Promise<IConversationDocument> {
+//   return new Promise((resolve, reject) => {
+//     client.hgetall(`conversations:${key}`, (err: Error | null, reply: any) => {
+//       if (err) {
+//         reject(err);
+//       }
+//       resolve(reply);
+//     });
+//   });
+// }
 
 export function addChatListToRedisCache(keys: string[], value: IChatRedisData): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -69,7 +94,7 @@ export function addChatmessageToRedisCache(key: string, value: IChatRedisData): 
   });
 }
 
-export function updateIsReadPropInRedisCache(keyOne: string, keyTwo: string, conversationId: string): Promise<void> {
+export function updateIsReadPropInRedisCache(keyOne: string, keyTwo: string, conversationId: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const multi: Multi = client.multi();
     client.lrange(`chatList:${keyOne}`, 0, -1, (error: Error | null, response: string[]) => {
@@ -93,11 +118,12 @@ export function updateIsReadPropInRedisCache(keyOne: string, keyTwo: string, con
           multi.ltrim(`messages:${conversationId}`, 1, -1);
           multi.rpush(`messages:${conversationId}`, JSON.stringify(parsedMessages));
         }
-        multi.exec((error: Error | null) => {
+        multi.lindex(`messages:${conversationId}`, 0);
+        multi.exec((error: Error | null, response) => {
           if (error) {
             reject(error);
           }
-          resolve();
+          resolve(response[10]);
         });
       });
     });
@@ -107,6 +133,17 @@ export function updateIsReadPropInRedisCache(keyOne: string, keyTwo: string, con
 export function getChatFromRedisCache(key: string): Promise<string[]> {
   return new Promise((resolve, reject) => {
     client.lrange(key, 0, -1, (error: Error | null, response: string[]) => {
+      if (error) {
+        reject(error);
+      }
+      resolve(response);
+    });
+  });
+}
+
+export function getSingleChatObjectFromRedisCache(key: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    client.lindex(key, 0, (error: Error | null, response: string) => {
       if (error) {
         reject(error);
       }

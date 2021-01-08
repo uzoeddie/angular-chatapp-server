@@ -10,8 +10,8 @@ export interface ICommentDocument extends mongoose.Document {
   userTo?: mongoose.Types.ObjectId;
 }
 export interface IReactionDocument extends mongoose.Document {
-  _id?: mongoose.Types.ObjectId;
-  postId: string;
+  _id: mongoose.Types.ObjectId | null;
+  postId: string | mongoose.Types.ObjectId;
   type: string;
   username: string;
   profilePicture: string;

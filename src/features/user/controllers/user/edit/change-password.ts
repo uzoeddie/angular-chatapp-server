@@ -25,7 +25,7 @@ export class ChangePassword {
     if (!passwordsMatch) {
       throw new BadRequestError('Invalid credentials');
     }
-    const hashedPassword: string = await existingAuthUser!.hashPassword(newPassword);
+    const hashedPassword: string = await existingAuthUser.hashPassword(newPassword);
     await UserModel.updateOne({ _id: req.currentUser?.userId }, { $set: { password: hashedPassword } });
     // const templateParams = {
     //   username: existingAuthUser.username,

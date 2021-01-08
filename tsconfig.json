@@ -6,7 +6,7 @@
     "baseUrl": ".",
     "outDir": "./build",
     "rootDir": "src",
-    "strict": true, 
+    "strict": true,
     "noImplicitAny": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
@@ -19,7 +19,7 @@
     "allowSyntheticDefaultImports": true,
     "pretty": true,
     "plugins": [
-      { 
+      {
         "transform": "@zerollup/ts-transform-paths",
         "exclude": ["*"]
       }
@@ -37,6 +37,7 @@
       "@user/*": ["src/features/user/*"],
       "@chat/*": ["src/features/chat/*"],
       "@queues/*": ["src/services/queues/*"],
+      "@db/*": ["src/services/db/*"],
       "@workers/*": ["src/workers/*"],
       "@root/*": ["src/*"],
     }

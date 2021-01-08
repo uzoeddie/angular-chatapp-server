@@ -7,6 +7,9 @@ import { IPostDocument } from '@posts/interface/post.interface';
 import { PostModel } from '@posts/models/post.schema';
 import { MessageModel } from '@chat/models/chat.schema';
 import { IChatMessage } from '@chat/interface/chat.interface';
+import { EventEmitter } from 'events';
+
+export const eventEmitter = new EventEmitter();
 export class Helpers {
   static firstLetterUppercase(str: string): string {
     const valueStr = str.toLowerCase();

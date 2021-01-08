@@ -1,17 +1,21 @@
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 import mongoose from 'mongoose';
-import { IChatRedisData, IChatUser, IMessageDocument } from '@chat/interface/chat.interface';
-import { IConversationDocument } from '@chat/interface/converation.interface';
-import { MessageModel } from '@chat/models/chat.schema';
-import { ConversationModel } from '@chat/models/conversation.schema';
+import { IChatMessage, IChatRedisData, IChatUser, IMessageDocument } from '@chat/interface/chat.interface';
 import { addChatSchema } from '@chat/schemes/chat';
 import { joiValidation } from '@global/decorators/joi-validation.decorator';
 import { chatQueue } from '@queues/chat.queue';
+import { ObjectID } from 'mongodb';
+import { addChatListToRedisCache, addChatmessageToRedisCache } from '@redis/message-cache';
+import { unflatten } from 'flat';
+import { socketIOChatObject } from '@sockets/chat';
+import { connectedUsersMap } from '@sockets/users';
+
 export class AddChat {
   @joiValidation(addChatSchema)
   public async message(req: Request, res: Response): Promise<void> {
     const {
+      conversationId,
       receiverId,
       receiverName,
       body,
@@ -20,6 +24,7 @@ export class AddChat {
       profilePicture,
       selectedImages
     }: {
+      conversationId: string;
       receiverId: IChatUser;
       receiverName: string;
       body: string;
@@ -29,44 +34,18 @@ export class AddChat {
       profilePicture: string;
     } = req.body;
     const createdAt = new Date();
+    let conversationObjectId: ObjectID;
 
-    let conversation: IConversationDocument[] = await ConversationModel.aggregate([
-      {
-        $match: {
-          $or: [
-            {
-              participants: {
-                $elemMatch: {
-                  sender: mongoose.Types.ObjectId(req.currentUser?.userId),
-                  receiver: mongoose.Types.ObjectId(receiverId._id)
-                }
-              }
-            },
-            {
-              participants: {
-                $elemMatch: {
-                  sender: mongoose.Types.ObjectId(receiverId._id),
-                  receiver: mongoose.Types.ObjectId(req.currentUser?.userId)
-                }
-              }
-            }
-          ]
-        }
-      }
-    ]);
-    if (conversation.length === 0) {
-      const newConversation: IConversationDocument = await ConversationModel.create({
-        participants: [
-          {
-            sender: mongoose.Types.ObjectId(req.currentUser?.userId),
-            receiver: mongoose.Types.ObjectId(receiverId._id)
-          }
-        ]
-      });
-      conversation = [newConversation];
+    if (!conversationId) {
+      conversationObjectId = new ObjectID();
+    } else {
+      conversationObjectId = mongoose.Types.ObjectId(conversationId);
     }
+    const messageObjectId: ObjectID = new ObjectID();
+
     const data: IChatRedisData = {
-      conversationId: `${conversation[0]._id}`,
+      _id: `${messageObjectId}`,
+      conversationId: `${conversationObjectId}`,
       'senderId._id': req.currentUser!.userId!,
       'senderId.username': req.currentUser!.username!,
       'senderId.avatarColor': req.currentUser!.avatarColor!,
@@ -77,29 +56,43 @@ export class AddChat {
       'receiverId.avatarColor': receiverId.avatarColor!,
       'receiverId.email': receiverId.email!,
       'receiverId.profilePicture': profilePicture,
-      body: body,
-      isRead: false,
+      body,
+      isRead,
       gifUrl,
       senderName: req.currentUser!.username!,
       receiverName,
       createdAt: createdAt,
       images: selectedImages
     };
-    const message: IMessageDocument = new MessageModel({
-      conversationId: conversation[0]._id,
-      senderId: req.currentUser?.userId,
-      senderName: req.currentUser?.username,
-      receiverId: receiverId._id,
+    chatMessage(data);
+
+    const addChatList: Promise<void> = addChatListToRedisCache([`${req.currentUser?.userId}`, `${receiverId._id}`], data);
+    const addChatMessage: Promise<void> = addChatmessageToRedisCache(`${conversationObjectId}`, data);
+    await Promise.all([addChatList, addChatMessage]);
+
+    const message: IMessageDocument = ({
+      _id: messageObjectId,
+      conversationId: conversationObjectId,
+      senderId: mongoose.Types.ObjectId(req.currentUser?.userId),
+      senderName: req.currentUser!.username,
+      receiverId: mongoose.Types.ObjectId(receiverId._id),
       receiverName,
       body,
       gifUrl,
       isRead,
       images: selectedImages,
       createdAt
-    });
-    await message.save();
-    const keys: string[] = [`${req.currentUser?.userId}`, `${receiverId._id}`];
-    chatQueue.addChatJob('addChatMessagesToCache', { keys, key: `${conversation[0]._id}`, value: data });
-    res.status(HTTP_STATUS.OK).json({ message: 'User added to chat list.', conversation: conversation[0]._id });
+    } as unknown) as IMessageDocument;
+    chatQueue.addChatJob('addChatMessagesToDB', { value: message });
+    res.status(HTTP_STATUS.OK).json({ message: 'User added to chat list.', conversation: conversationObjectId });
   }
+}
+
+function chatMessage(data: IChatRedisData): void {
+  const unflattenedMessageData: IChatMessage = unflatten(data);
+  const senderSocketId: string = connectedUsersMap.get(unflattenedMessageData.senderId._id!) as string;
+  const receiverSocketId: string = connectedUsersMap.get(unflattenedMessageData.receiverId._id!) as string;
+  socketIOChatObject.to(senderSocketId).to(receiverSocketId).emit('message received', unflattenedMessageData);
+  socketIOChatObject.to(senderSocketId).to(receiverSocketId).emit('chat list', unflattenedMessageData);
+  socketIOChatObject.emit('trigger message notification', unflattenedMessageData);
 }

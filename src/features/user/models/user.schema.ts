@@ -6,7 +6,7 @@ import { IUserDocument } from '@user/interface/user.interface';
 const userSchema: mongoose.Schema = new mongoose.Schema(
   {
     username: { type: String, index: true },
-    uId: { type: Number },
+    uId: { type: String },
     email: { type: String },
     password: { type: String },
     avatarColor: { type: String },

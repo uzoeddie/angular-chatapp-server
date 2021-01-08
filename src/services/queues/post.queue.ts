@@ -2,19 +2,18 @@
 import Queue from 'bull';
 import { postWorker } from '@workers/post.worker';
 import { BaseQueue } from '@queues/base.queue';
-import { userInfoWorker } from '@workers/user-info.worker';
 import { IPostJobData } from '@posts/interface/post.interface';
 
 class PostQueue extends BaseQueue {
   constructor() {
     super('posts');
-    this.processPostJob('savePostsToRedisCache', 5, postWorker.savePostWorker);
+    this.processPostJob('savePostsToDB', 5, postWorker.savePostWorker);
     this.processPostJob('updatePostInRedisCache', 5, postWorker.updatePostWorker);
-    this.processPostJob('updateSinglePostInRedis', 5, postWorker.updateSinglePostPropWorker);
-    this.processPostJob('updateUserPostCount', 5, userInfoWorker.updateSinglePropInCache);
+    // this.processPostJob('updateSinglePostInRedis', 5, postWorker.updateSinglePostPropWorker);
+    this.processPostJob('deletePostFromDB', 5, postWorker.deletePostWorker);
   }
 
-  public addPostJob(name: string, data: IPostJobData): void {
+  public addPostJob(name: string, data: any): void {
     this.addJob(name, data);
   }
 
