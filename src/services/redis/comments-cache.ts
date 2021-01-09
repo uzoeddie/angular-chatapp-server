@@ -5,7 +5,6 @@ import { config } from '@root/config';
 import { ICommentDocument, IReactionDocument, IRedisCommentList } from '@comments/interface/comment.interface';
 import { Helpers } from '@global/helpers';
 import _ from 'lodash';
-import { resolve } from 'path';
 
 const PORT: number = parseInt(config.REDIS_PORT!, 10) || 6379;
 const client: RedisClient = redis.createClient({ host: config.REDIS_HOST! || 'localhost', port: PORT });

@@ -1,13 +1,13 @@
 import { DoneCallback, Job } from 'bull';
-import { updateUserFollowersInRedisCache, updateBlockedUserPropInRedisCache } from '@redis/user-cache';
 import { userService } from '@db/user.service';
 import { updateSingleUserItemInRedisCache } from '@redis/user-info-cache';
+import { blockUserService } from '@db/block-user.service';
 
 class UserWorker {
-  async updateUserFollowersInCache(jobQueue: Job, done: DoneCallback): Promise<void> {
+  async addBlockedUserToDB(jobQueue: Job, done: DoneCallback): Promise<void> {
     try {
-      const { key, prop, value } = jobQueue.data;
-      await updateUserFollowersInRedisCache(key, prop, value);
+      const { keyOne, keyTwo } = jobQueue.data;
+      await blockUserService.blockUser(keyOne, keyTwo);
       jobQueue.progress(100);
       done(null, jobQueue.data);
     } catch (error) {
@@ -15,10 +15,10 @@ class UserWorker {
     }
   }
 
-  async updateBlockedUserPropInCache(jobQueue: Job, done: DoneCallback): Promise<void> {
+  async removeUnblockedUserFromDB(jobQueue: Job, done: DoneCallback): Promise<void> {
     try {
-      const { key, prop, value, type } = jobQueue.data;
-      await updateBlockedUserPropInRedisCache(key, prop, value, type);
+      const { keyOne, keyTwo } = jobQueue.data;
+      await blockUserService.unblockUser(keyOne, keyTwo);
       jobQueue.progress(100);
       done(null, jobQueue.data);
     } catch (error) {
@@ -26,7 +26,7 @@ class UserWorker {
     }
   }
 
-  async updateNotificationPropInCache(jobQueue: Job, done: DoneCallback): Promise<void> {
+  async updateNotificationSettings(jobQueue: Job, done: DoneCallback): Promise<void> {
     try {
       const { key, value } = jobQueue.data;
       await userService.updateNotificationSettings(key, value);

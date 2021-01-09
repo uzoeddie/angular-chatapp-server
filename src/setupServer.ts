@@ -33,7 +33,6 @@ import { router } from 'bull-board';
 
 const log: Logger = config.createLogger('main');
 const PORT: number = parseInt(config.REDIS_PORT!, 10) || 6379;
-// export let ioServer: Server;
 export class ChatServer {
   private app: express.Application;
 
@@ -146,14 +145,14 @@ export class ChatServer {
     const userSocketIOHandler: SocketIOUserHandler = new SocketIOUserHandler(io);
     const postsSocketIOHandler: SocketIOPostHandler = new SocketIOPostHandler(io);
     const chatSocketIOHandler: SocketIOChatHandler = new SocketIOChatHandler(io);
-    const imageChangeStreamHandler: SocketIOImageHandler = new SocketIOImageHandler(io);
-    const notificationChangeStreamHandler: SocketIONotificationsHandler = new SocketIONotificationsHandler(io);
+    const imageHandler: SocketIOImageHandler = new SocketIOImageHandler();
+    const notificationHandler: SocketIONotificationsHandler = new SocketIONotificationsHandler();
     const followersSocketIOHandler: SocketIOFollowerHandler = new SocketIOFollowerHandler(io);
     postsSocketIOHandler.listen();
     userSocketIOHandler.listen();
     chatSocketIOHandler.listen();
-    imageChangeStreamHandler.imageModelChangeStream();
-    notificationChangeStreamHandler.notificationModelChangeStream();
+    imageHandler.listen(io);
+    notificationHandler.listen(io);
     followersSocketIOHandler.listen();
   }
 }

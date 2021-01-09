@@ -1,25 +1,17 @@
 import { Server, Socket } from 'socket.io';
-import { eventEmitter } from '@global/helpers';
-import { config } from '@root/config';
-import Logger from 'bunyan';
 import { ILogin, ISocketData } from '@user/interface/user.interface';
 
 export const connectedUsersMap: Map<string, string> = new Map();
+let socketIOUserObject: Server;
 export class SocketIOUserHandler {
   private io: Server;
-  log: Logger;
 
   constructor(io: Server) {
     this.io = io;
-    this.log = config.createLogger('app');
+    socketIOUserObject = io;
   }
 
   public listen(): void {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    eventEmitter.on('userInfo', (data: any) => {
-      this.io.emit('update user', data);
-    });
-
     this.io.on('connection', (socket: Socket) => {
       socket.on('setup', (data: ILogin) => {
         this.addClientToMap(data.userId, socket.id);
@@ -35,9 +27,6 @@ export class SocketIOUserHandler {
 
       socket.on('disconnect', () => {
         this.removeClientFromMap(socket.id);
-        eventEmitter.removeListener('userInfo', () => {
-          this.log.info('Event emitter removed');
-        });
       });
     });
   }
@@ -59,3 +48,5 @@ export class SocketIOUserHandler {
     }
   }
 }
+
+export { socketIOUserObject };

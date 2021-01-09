@@ -20,4 +20,4 @@ class ChatQueue extends BaseQueue {
   }
 }
 
-export const chatQueue = new ChatQueue();
+export const chatQueue: ChatQueue = new ChatQueue();

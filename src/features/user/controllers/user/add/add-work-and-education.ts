@@ -6,7 +6,7 @@ import { joiValidation } from '@global/decorators/joi-validation.decorator';
 import { educationSchema, workSchema } from '@user/schemes/user/info';
 import { updateUserPropListInfoInRedisCache } from '@redis/user-info-cache';
 import { ObjectID } from 'mongodb';
-import { eventEmitter } from '@global/helpers';
+import { socketIOUserObject } from '@sockets/users';
 
 export class AddWorkAndEducation {
   @joiValidation(workSchema)
@@ -22,7 +22,7 @@ export class AddWorkAndEducation {
       to: req.body.to
     };
     const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(`${req.currentUser?.userId}`, 'work', work, 'add');
-    eventEmitter.emit('userInfo', cachedUser);
+    socketIOUserObject.emit('update user', cachedUser);
     userInfoQueue.addUserInfoJob('updateUserWorkInCache', {
       key: `${req.currentUser?.username}`,
       value: work,
@@ -43,7 +43,7 @@ export class AddWorkAndEducation {
       to: req.body.to
     };
     const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(`${req.currentUser?.userId}`, 'school', school, 'add');
-    eventEmitter.emit('userInfo', cachedUser);
+    socketIOUserObject.emit('update user', cachedUser);
     userInfoQueue.addUserInfoJob('updateUserSchoolInCache', {
       key: `${req.currentUser?.username}`,
       value: school,

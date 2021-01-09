@@ -1,5 +1,4 @@
 import { DoneCallback, Job } from 'bull';
-import { updateSinglePostPropInRedisCache } from '@redis/post-cache';
 import { postService } from '@db/post.service';
 
 class PostWorker {
@@ -35,17 +34,6 @@ class PostWorker {
       done(error);
     }
   }
-
-  // async updateSinglePostPropWorker(jobQueue: Job, done: DoneCallback): Promise<void> {
-  //   try {
-  //     const { key, value, type } = jobQueue.data;
-  //     await updateSinglePostPropInRedisCache(key, type, value);
-  //     jobQueue.progress(100);
-  //     done(null, jobQueue.data);
-  //   } catch (error) {
-  //     done(error);
-  //   }
-  // }
 }
 
 export const postWorker: PostWorker = new PostWorker();

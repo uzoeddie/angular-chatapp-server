@@ -3,7 +3,7 @@ import HTTP_STATUS from 'http-status-codes';
 import { userInfoQueue } from '@queues/user-info.queue';
 import { IUserDocument, IUserPlacesLived } from '@user/interface/user.interface';
 import { updateUserPropListInfoInRedisCache } from '@redis/user-info-cache';
-import { eventEmitter } from '@global/helpers';
+import { socketIOUserObject } from '@sockets/users';
 
 export class DeletePlacesLived {
   public async places(req: Request, res: Response): Promise<void> {
@@ -15,7 +15,7 @@ export class DeletePlacesLived {
       month: ''
     };
     const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(`${req.currentUser?.userId}`, 'placesLived', placesLived, 'remove', req.params.placeId);
-    eventEmitter.emit('userInfo', cachedUser);
+    socketIOUserObject.emit('update user', cachedUser);
     userInfoQueue.addUserInfoJob('updateUserPlaceInCache', {
       key: `${req.currentUser?.username}`,
       value: null,

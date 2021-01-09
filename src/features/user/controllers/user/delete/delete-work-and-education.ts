@@ -3,7 +3,7 @@ import HTTP_STATUS from 'http-status-codes';
 import { userInfoQueue } from '@queues/user-info.queue';
 import { IUserDocument, IUserSchool, IUserWork } from '@user/interface/user.interface';
 import { updateUserPropListInfoInRedisCache } from '@redis/user-info-cache';
-import { eventEmitter } from '@global/helpers';
+import { socketIOUserObject } from '@sockets/users';
 
 export class DeleteWorkAndEducation {
   public async work(req: Request, res: Response): Promise<void> {
@@ -17,7 +17,7 @@ export class DeleteWorkAndEducation {
       to: ''
     };
     const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(`${req.currentUser?.userId}`, 'work', work, 'remove', req.params.workId);
-    eventEmitter.emit('userInfo', cachedUser);
+    socketIOUserObject.emit('update user', cachedUser);
     userInfoQueue.addUserInfoJob('updateUserWorkInCache', {
       key: `${req.currentUser?.username}`,
       value: null,
@@ -37,7 +37,7 @@ export class DeleteWorkAndEducation {
       to: ''
     };
     const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(`${req.currentUser?.userId}`, 'school', school, 'remove', req.params.schoolId);
-    eventEmitter.emit('userInfo', cachedUser);
+    socketIOUserObject.emit('update user', cachedUser);
     userInfoQueue.addUserInfoJob('updateUserSchoolInCache', {
       key: `${req.currentUser?.username}`,
       value: null,

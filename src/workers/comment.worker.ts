@@ -1,6 +1,5 @@
 import { DoneCallback, Job } from 'bull';
 import { commentService } from '@db/comment.service';
-
 class CommentWorker {
   async addCommentToDB(jobQueue: Job, done: DoneCallback): Promise<void> {
     try {

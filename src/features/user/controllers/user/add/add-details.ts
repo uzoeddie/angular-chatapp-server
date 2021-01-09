@@ -6,13 +6,13 @@ import { joiValidation } from '@global/decorators/joi-validation.decorator';
 import { aboutSchema, quotesSchema } from '@user/schemes/user/info';
 import { updateSingleUserItemInRedisCache } from '@redis/user-info-cache';
 import { IUserDocument } from '@user/interface/user.interface';
-import { eventEmitter } from '@global/helpers';
+import { socketIOUserObject } from '@sockets/users';
 
 export class AddDetails {
   @joiValidation(aboutSchema)
   public async about(req: Request, res: Response): Promise<void> {
     const cachedUser: IUserDocument = await updateSingleUserItemInRedisCache(`${req.currentUser?.userId}`, 'about', req.body.about);
-    eventEmitter.emit('userInfo', cachedUser);
+    socketIOUserObject.emit('update user', cachedUser);
     userInfoQueue.addUserInfoJob('updateAboutInfoInCache', {
       key: `${req.currentUser?.username}`,
       value: req.body.about
@@ -23,7 +23,7 @@ export class AddDetails {
   @joiValidation(quotesSchema)
   public async quotes(req: Request, res: Response): Promise<void> {
     const cachedUser: IUserDocument = await updateSingleUserItemInRedisCache(`${req.currentUser?.userId}`, 'quotes', req.body.quotes);
-    eventEmitter.emit('userInfo', cachedUser);
+    socketIOUserObject.emit('update user', cachedUser);
     userInfoQueue.addUserInfoJob('updateQuotesInCache', {
       key: `${req.currentUser?.username}`,
       value: req.body.quotes

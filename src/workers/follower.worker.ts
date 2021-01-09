@@ -1,11 +1,11 @@
 import { DoneCallback, Job } from 'bull';
-import { saveFollowerToRedisCache, removeFollowerFromRedisCache } from '@redis/follower-cache';
+import { followerService } from '@db/follower.service';
 
 class FollowerWorker {
-  async addFollowerToCache(jobQueue: Job, done: DoneCallback): Promise<void> {
+  async addFollowerToDB(jobQueue: Job, done: DoneCallback): Promise<void> {
     try {
-      const { key, value } = jobQueue.data;
-      await saveFollowerToRedisCache(key, value);
+      const { keyOne, keyTwo, username, followerDocumentId } = jobQueue.data;
+      await followerService.addFollowerToDB(keyOne, keyTwo, username, followerDocumentId);
       jobQueue.progress(100);
       done(null, jobQueue.data);
     } catch (error) {
@@ -13,10 +13,10 @@ class FollowerWorker {
     }
   }
 
-  async removeFollowerFromCache(jobQueue: Job, done: DoneCallback): Promise<void> {
+  async removeFollowerFromDB(jobQueue: Job, done: DoneCallback): Promise<void> {
     try {
-      const { key, value } = jobQueue.data;
-      await removeFollowerFromRedisCache(key, value);
+      const { keyOne, keyTwo } = jobQueue.data;
+      await followerService.unfollowerFromDB(keyOne, keyTwo);
       jobQueue.progress(100);
       done(null, jobQueue.data);
     } catch (error) {

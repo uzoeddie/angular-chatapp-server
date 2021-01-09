@@ -9,6 +9,7 @@ import { getUserFromCache } from '@redis/user-cache';
 import { IUserDocument } from '@user/interface/user.interface';
 import { UpdateQuery } from 'mongoose';
 import mongoose from 'mongoose';
+import { socketIONotificationObject } from '@sockets/notifications';
 
 class Comment {
   public async addCommentToDB(commentData: any): Promise<void> {
@@ -27,6 +28,14 @@ class Comment {
         entityId: postId,
         createdItemId: response[0]._id
       });
+      const notifications = NotificationModel.find({ userTo })
+        .lean()
+        .populate({
+          path: 'userFrom',
+          select: 'username avatarColor uId profilePicture'
+        })
+        .sort({ date: -1 });
+      socketIONotificationObject.emit('insert notification', notifications, { userTo });
     }
   }
 
@@ -60,6 +69,14 @@ class Comment {
         entityId: postId,
         createdItemId: updatedReaction[1]._id
       });
+      const notifications = NotificationModel.find({ userTo })
+        .lean()
+        .populate({
+          path: 'userFrom',
+          select: 'username avatarColor uId profilePicture'
+        })
+        .sort({ date: -1 });
+      socketIONotificationObject.emit('insert notification', notifications, { userTo });
     }
   }
 

@@ -15,9 +15,11 @@ export interface IFollowerDocument extends mongoose.Document {
   createdAt?: Date;
 }
 
-export interface IFollowers {
+export interface IFollower {
+  _id: mongoose.Types.ObjectId | string;
   followeeId: IFollowerData;
   followerId: IFollowerData;
+  createdAt?: Date;
 }
 
 export interface IFollowerData {
@@ -27,7 +29,7 @@ export interface IFollowerData {
   profilePicture: string;
   postCount: number;
   username: string;
-  _id: string;
+  _id?: mongoose.Types.ObjectId | string;
   birthDay?: IUserBirthDay;
 }
 

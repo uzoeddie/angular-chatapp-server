@@ -55,7 +55,7 @@ export class SignUp {
         comments: true,
         follows: true
       },
-      profilePicture: ''
+      profilePicture: `https://res.cloudinary.com/ratingapp/image/upload/${createdObjectId}`
     } as unknown) as IUserDocument;
 
     await saveUserToRedisCache(`${createdObjectId}`, uId, data);

@@ -20,4 +20,4 @@ class CommentQueue extends BaseQueue {
   }
 }
 
-export const commentQueue = new CommentQueue();
+export const commentQueue: CommentQueue = new CommentQueue();

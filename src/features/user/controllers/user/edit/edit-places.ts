@@ -5,7 +5,7 @@ import { userInfoQueue } from '@queues/user-info.queue';
 import { placesSchema } from '@user/schemes/user/info';
 import { IUserDocument, IUserPlacesLived } from '@user/interface/user.interface';
 import { updateUserPropListInfoInRedisCache } from '@redis/user-info-cache';
-import { eventEmitter } from '@global/helpers';
+import { socketIOUserObject } from '@sockets/users';
 
 export class EditPlacesLived {
   @joiValidation(placesSchema)
@@ -18,7 +18,7 @@ export class EditPlacesLived {
       month: req.body.month
     };
     const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(`${req.currentUser?.userId}`, 'placesLived', updatedPlace, 'edit');
-    eventEmitter.emit('userInfo', cachedUser);
+    socketIOUserObject.emit('update user', cachedUser);
     userInfoQueue.addUserInfoJob('updateUserPlaceInCache', {
       key: `${req.currentUser?.username}`,
       value: updatedPlace,

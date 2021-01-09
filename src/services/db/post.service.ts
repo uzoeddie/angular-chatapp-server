@@ -8,7 +8,6 @@ import { updateSingleUserItemInRedisCache } from '@redis/user-info-cache';
 import { IUserDocument } from '@user/interface/user.interface';
 import { UserModel } from '@user/models/user.schema';
 import { UpdateQuery } from 'mongoose';
-import { ObjectId } from 'mongodb';
 
 class Post {
   public async addPostToDB(userId: string, createdPost: IPostDocument): Promise<void> {
@@ -16,7 +15,7 @@ class Post {
     const post: Promise<IPostDocument> = PostModel.create(createdPost);
     const user: UpdateQuery<IUserDocument> = UserModel.findOneAndUpdate({ _id: userId }, { $inc: { postCount: 1 } }, { upsert: true, new: true });
     if (createdPost.imgId && createdPost.imgVersion) {
-      images = ImageModel.updateOne({ userId }, { push: { images: { imgId: createdPost.imgId, imgVersion: createdPost.imgVersion } } }, { upsert: true });
+      images = ImageModel.updateOne({ userId }, { $push: { images: { imgId: createdPost.imgId, imgVersion: createdPost.imgVersion } } }, { upsert: true });
     } else {
       images = undefined;
     }

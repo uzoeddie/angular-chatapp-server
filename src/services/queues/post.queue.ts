@@ -9,7 +9,6 @@ class PostQueue extends BaseQueue {
     super('posts');
     this.processPostJob('savePostsToDB', 5, postWorker.savePostWorker);
     this.processPostJob('updatePostInRedisCache', 5, postWorker.updatePostWorker);
-    // this.processPostJob('updateSinglePostInRedis', 5, postWorker.updateSinglePostPropWorker);
     this.processPostJob('deletePostFromDB', 5, postWorker.deletePostWorker);
   }
 
@@ -22,4 +21,4 @@ class PostQueue extends BaseQueue {
   }
 }
 
-export const postQueue = new PostQueue();
+export const postQueue: PostQueue = new PostQueue();

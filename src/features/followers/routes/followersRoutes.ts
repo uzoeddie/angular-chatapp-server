@@ -13,13 +13,13 @@ class FollowersRoutes {
   }
 
   public routes(): Router {
-    this.router.get('/user/get-followers', authMiddleware.checkAuthentication, Get.prototype.followers);
+    // this.router.get('/user/get-followers', authMiddleware.checkAuthentication, Get.prototype.followers);
     this.router.get('/user/followers/:userId', authMiddleware.checkAuthentication, Get.prototype.userFollowers);
     this.router.get('/user/following', authMiddleware.checkAuthentication, Get.prototype.following);
     this.router.put('/user/follow/:followerId', authMiddleware.checkAuthentication, Add.prototype.follower);
-    this.router.put('/user/unfollow/:followerId', authMiddleware.checkAuthentication, Remove.prototype.following);
-    this.router.put('/user/block/:followerId', authMiddleware.checkAuthentication, Block.prototype.follower);
-    this.router.put('/user/unblock/:followerId', authMiddleware.checkAuthentication, Block.prototype.unblockFollower);
+    this.router.put('/user/unfollow/:followerId/:objectId', authMiddleware.checkAuthentication, Remove.prototype.following);
+    this.router.put('/user/block/:followerId', authMiddleware.checkAuthentication, Block.prototype.block);
+    this.router.put('/user/unblock/:followerId', authMiddleware.checkAuthentication, Block.prototype.unblock);
 
     return this.router;
   }

@@ -46,9 +46,13 @@ export class Create {
 
   @joiValidation(postWithImageSchema)
   public async postWithImage(req: Request, res: Response): Promise<void> {
-    const { image, post, bgColor, feelings, privacy, gifUrl, profilePicture } = req.body;
+    const { image, post, bgColor, privacy, gifUrl, profilePicture } = req.body;
+    let { feelings } = req.body;
     const result: UploadApiResponse = (await uploads(image)) as UploadApiResponse;
     const postObjectId: ObjectID = new ObjectID();
+    if (!feelings) {
+      feelings = {};
+    }
     const postWithImage: IPostDocument = ({
       _id: postObjectId,
       userId: req.currentUser?.userId,

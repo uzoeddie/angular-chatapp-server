@@ -7,11 +7,11 @@ import { IFollowerJobData } from '@followers/interface/followers.interface';
 class FollowerQueue extends BaseQueue {
   constructor() {
     super('followers');
-    this.processFollowerJob('addFollowerToCache', 5, followerWorker.addFollowerToCache);
-    this.processFollowerJob('removeFollowerFromCache', 5, followerWorker.removeFollowerFromCache);
+    this.processFollowerJob('addFollowerDB', 5, followerWorker.addFollowerToDB);
+    this.processFollowerJob('removeFollowerFromDB', 5, followerWorker.removeFollowerFromDB);
   }
 
-  public addFollowerJob(name: string, data: IFollowerJobData): void {
+  public addFollowerJob(name: string, data: any): void {
     this.addJob(name, data);
   }
 
@@ -20,4 +20,4 @@ class FollowerQueue extends BaseQueue {
   }
 }
 
-export const followerQueue = new FollowerQueue();
+export const followerQueue: FollowerQueue = new FollowerQueue();

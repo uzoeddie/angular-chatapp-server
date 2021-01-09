@@ -7,7 +7,7 @@ import { joiValidation } from '@global/decorators/joi-validation.decorator';
 import { placesSchema } from '@user/schemes/user/info';
 import { updateUserPropListInfoInRedisCache } from '@redis/user-info-cache';
 import { ObjectID } from 'mongodb';
-import { eventEmitter } from '@global/helpers';
+import { socketIOUserObject } from '@sockets/users';
 
 export class AddPlacesLived {
   @joiValidation(placesSchema)
@@ -21,7 +21,7 @@ export class AddPlacesLived {
       month: req.body.month
     };
     const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(`${req.currentUser?.userId}`, 'placesLived', placesLived, 'add');
-    eventEmitter.emit('userInfo', cachedUser);
+    socketIOUserObject.emit('update user', cachedUser);
     userInfoQueue.addUserInfoJob('updateUserPlaceInCache', {
       key: `${req.currentUser?.username}`,
       value: placesLived,

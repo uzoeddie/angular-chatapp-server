@@ -2,17 +2,15 @@
 import Queue from 'bull';
 import { userWorker } from '@workers/user.worker';
 import { BaseQueue } from '@queues/base.queue';
-import { userInfoWorker } from '@workers/user-info.worker';
 // import { IUserJob } from '@user/interface/user.interface';
 
 class UserQueue extends BaseQueue {
   constructor() {
     super('users');
     this.processUserJob('addUserToDB', 5, userWorker.addUserToDB);
-    this.processUserJob('updateUserFollowersInCache', 5, userWorker.updateUserFollowersInCache);
-    this.processUserJob('updateBlockedUserPropInCache', 5, userWorker.updateBlockedUserPropInCache);
-    this.processUserJob('updateNotificationPropInCache', 5, userWorker.updateNotificationPropInCache);
-    this.processUserJob('updateImageInCache', 5, userInfoWorker.updateSinglePropInCache); // will work on this later
+    this.processUserJob('addBlockedUserToDB', 5, userWorker.addBlockedUserToDB);
+    this.processUserJob('removeUnblockedUserFromDB', 5, userWorker.removeUnblockedUserFromDB);
+    this.processUserJob('updateNotificationSettings', 5, userWorker.updateNotificationSettings);
   }
 
   // public addUserJob(name: string, data: IUserJob): void {
@@ -25,4 +23,4 @@ class UserQueue extends BaseQueue {
   }
 }
 
-export const userQueue = new UserQueue();
+export const userQueue: UserQueue = new UserQueue();

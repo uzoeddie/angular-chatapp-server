@@ -5,7 +5,7 @@ import { userInfoQueue } from '@queues/user-info.queue';
 import { workSchema, educationSchema } from '@user/schemes/user/info';
 import { IUserDocument, IUserSchool, IUserWork } from '@user/interface/user.interface';
 import { updateUserPropListInfoInRedisCache } from '@redis/user-info-cache';
-import { eventEmitter } from '@global/helpers';
+import { socketIOUserObject } from '@sockets/users';
 
 export class EditWorkAndEducation {
   @joiValidation(workSchema)
@@ -20,7 +20,7 @@ export class EditWorkAndEducation {
       to: req.body.to
     };
     const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(`${req.currentUser?.userId}`, 'work', updatedWork, 'edit');
-    eventEmitter.emit('userInfo', cachedUser);
+    socketIOUserObject.emit('update user', cachedUser);
     userInfoQueue.addUserInfoJob('updateUserWorkInCache', {
       key: `${req.currentUser?.username}`,
       value: updatedWork,
@@ -41,7 +41,7 @@ export class EditWorkAndEducation {
       to: req.body.to
     };
     const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(`${req.currentUser?.userId}`, 'school', updatedSchool, 'edit');
-    eventEmitter.emit('userInfo', cachedUser);
+    socketIOUserObject.emit('update user', cachedUser);
     userInfoQueue.addUserInfoJob('updateUserSchoolInCache', {
       key: `${req.currentUser?.username}`,
       value: updatedSchool,

@@ -26,4 +26,4 @@ class UserInfoQueue extends BaseQueue {
   }
 }
 
-export const userInfoQueue = new UserInfoQueue();
+export const userInfoQueue: UserInfoQueue = new UserInfoQueue();

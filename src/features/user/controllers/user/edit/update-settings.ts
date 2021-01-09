@@ -9,7 +9,7 @@ export class Settings {
   @joiValidation(notificationSettingsSchema)
   public async update(req: Request, res: Response): Promise<void> {
     await updateNotificationSettingInCache(`${req.currentUser?.userId}`, 'notifications', req.body);
-    userQueue.addUserJob('updateNotificationPropInCache', {
+    userQueue.addUserJob('updateNotificationSettings', {
       key: `${req.currentUser?.username}`,
       value: req.body
     });

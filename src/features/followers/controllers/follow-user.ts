@@ -1,60 +1,54 @@
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
-import mongoose from 'mongoose';
-import { FollowerModel } from '@followers/models/follower.schema';
 import { followerQueue } from '@queues/follower.queue';
-import { userQueue } from '@queues/user.queue';
-import { UserModel } from '@user/models/user.schema';
-import { NotificationModel } from '@notifications/models/notification.schema';
-import { IFollowerDocument } from '@followers/interface/followers.interface';
+import { getUserFromCache, updateUserFollowersInRedisCache } from '@redis/user-cache';
 import { IUserDocument } from '@user/interface/user.interface';
-import { BulkWriteOpResultObject, ObjectId } from 'mongodb';
+import { IFollower } from '@followers/interface/followers.interface';
+import { saveFollowerToRedisCache } from '@redis/follower-cache';
+import { ObjectID } from 'mongodb';
 
 export class Add {
   public async follower(req: Request, res: Response): Promise<void> {
-    const followerObjectId: ObjectId = mongoose.Types.ObjectId(req.params.followerId);
-    const userObjectId: ObjectId = mongoose.Types.ObjectId(req.currentUser?.userId);
-
-    const following: Promise<IFollowerDocument> = FollowerModel.create({
-      followerId: userObjectId,
-      followeeId: followerObjectId
-    });
-
-    const users: Promise<BulkWriteOpResultObject> = UserModel.bulkWrite([
-      {
-        updateOne: {
-          filter: { _id: req.currentUser?.userId },
-          update: { $inc: { followingCount: 1 } }
-        }
+    const cachedFollower: Promise<IUserDocument> = getUserFromCache(req.params.followerId);
+    const cachedUser: Promise<IUserDocument> = getUserFromCache(req.currentUser!.userId);
+    const response: [IUserDocument, IUserDocument] = await Promise.all([cachedUser, cachedFollower]);
+    const followerObjectId: ObjectID = new ObjectID();
+    const addFollower: IFollower = {
+      _id: followerObjectId,
+      followerId: {
+        _id: response[0]._id,
+        username: response[0].username,
+        avatarColor: response[0].avatarColor,
+        postCount: response[0].postCount,
+        followersCount: response[0].followersCount,
+        followingCount: response[0].followingCount,
+        birthDay: response[0].birthDay,
+        profilePicture: response[0].profilePicture
       },
-      {
-        updateOne: {
-          filter: { _id: req.params.followerId },
-          update: { $inc: { followersCount: 1 } }
-        }
-      }
-    ]);
-    const response: [IFollowerDocument, BulkWriteOpResultObject, IUserDocument | null] = await Promise.all([following, users, UserModel.findOne({ _id: req.params.followerId })]);
+      followeeId: {
+        _id: response[1]._id,
+        username: response[1].username,
+        avatarColor: response[1].avatarColor,
+        postCount: response[1].postCount,
+        followersCount: response[1].followersCount,
+        followingCount: response[1].followingCount,
+        birthDay: response[1].birthDay,
+        profilePicture: response[1].profilePicture
+      },
+      createdAt: new Date()
+    };
+    const addFollowerToCache = saveFollowerToRedisCache(`followers:${req.currentUser!.userId}`, addFollower);
+    const addFolloweeToCache = saveFollowerToRedisCache(`following:${req.params.followerId}`, addFollower);
+    const followersCount = updateUserFollowersInRedisCache(`${req.params.followerId}`, 'followersCount', 1);
+    const followingCount = updateUserFollowersInRedisCache(`${req.currentUser?.userId}`, 'followingCount', 1);
+    await Promise.all([addFollowerToCache, addFolloweeToCache, followersCount, followingCount]);
 
-    if (response[2]!.notifications.follows && req.currentUser?.userId !== req.params.followerId) {
-      NotificationModel.schema.methods.insertNotification({
-        userFrom: req.currentUser?.userId,
-        userTo: req.params.followerId,
-        message: `${req.currentUser?.username} is now following you.`,
-        notificationType: 'follows',
-        entityId: req.currentUser?.userId,
-        createdItemId: response[0]._id
-      });
-    }
-
-    if (response) {
-      userQueue.addUserJob('updateUserFollowersInCache', { key: `${req.params.followerId}`, prop: 'followersCount', value: 1 });
-      userQueue.addUserJob('updateUserFollowersInCache', { key: `${req.currentUser?.userId}`, prop: 'followingCount', value: 1 });
-      followerQueue.addFollowerJob('addFollowerToCache', {
-        key: `${req.currentUser?.userId}`,
-        value: `${req.params.followerId}`
-      });
-    }
+    followerQueue.addFollowerJob('addFollowerDB', {
+      keyOne: `${req.currentUser?.userId}`,
+      keyTwo: `${req.params.followerId}`,
+      username: req.currentUser?.username,
+      followerDocumentId: followerObjectId
+    });
     res.status(HTTP_STATUS.OK).json({ message: 'Following user now', notification: true });
   }
 }

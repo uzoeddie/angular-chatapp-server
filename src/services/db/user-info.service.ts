@@ -4,8 +4,6 @@ import { UserModel } from '@user/models/user.schema';
 import mongoose from 'mongoose';
 
 class UserInfo {
-  // constructor() {}
-
   public async updateGender(username: string, gender: string): Promise<void> {
     await UserModel.updateOne({ username }, { $set: { gender } });
   }

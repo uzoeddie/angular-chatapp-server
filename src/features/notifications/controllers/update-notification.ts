@@ -1,10 +1,12 @@
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
-import { NotificationModel } from '@notifications/models/notification.schema';
+import { socketIONotificationObject } from '@sockets/notifications';
+import { notificationQueue } from '@queues/notification.queue';
 
 export class Update {
   public async notification(req: Request, res: Response): Promise<void> {
-    await NotificationModel.updateOne({ _id: req.params.notificationId }, { $set: { read: true } });
+    socketIONotificationObject.emit('update notification', req.params.notificationId);
+    notificationQueue.addNotificationJob('updateNotification', { key: req.params.notificationId });
     res.status(HTTP_STATUS.OK).json({ message: 'Notification marked as read', notification: false });
   }
 }
