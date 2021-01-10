@@ -35,7 +35,7 @@ class Follower {
     const response: [IFollowerDocument, BulkWriteOpResultObject, IUserDocument | null] = await Promise.all([following, users, UserModel.findOne({ _id: followerId })]);
 
     if (response[2]!.notifications.follows && userId !== followerId) {
-      NotificationModel.schema.methods.insertNotification({
+      const notifications = await NotificationModel.schema.methods.insertNotification({
         userFrom: userId,
         userTo: followerId,
         message: `${username} is now following you.`,
@@ -43,13 +43,6 @@ class Follower {
         entityId: userId,
         createdItemId: response[0]._id
       });
-      const notifications = NotificationModel.find({ userTo: followerId })
-        .lean()
-        .populate({
-          path: 'userFrom',
-          select: 'username avatarColor uId profilePicture'
-        })
-        .sort({ date: -1 });
       socketIONotificationObject.emit('insert notification', notifications, { userTo: followerId });
     }
   }

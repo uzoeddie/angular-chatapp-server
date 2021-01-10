@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
-import { commentQueue } from '@queues/comment.queue';
 import { removeReactionFromCache } from '@redis/comments-cache';
 import { socketIOPostObject } from '@sockets/posts';
+import { reactionQueue } from '@queues/reaction.queue';
 
 export class Remove {
   public async reaction(req: Request, res: Response): Promise<void> {
@@ -18,7 +18,7 @@ export class Remove {
       previousReaction,
       username: req.currentUser?.username
     };
-    commentQueue.addCommentJob('removeReactionFromDB', dbReactionData);
+    reactionQueue.addReactionJob('removeReactionFromDB', dbReactionData);
     res.status(HTTP_STATUS.OK).json({ message: 'Reaction removed from post' });
   }
 }

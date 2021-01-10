@@ -6,16 +6,14 @@ import { commentWorker } from '@workers/comment.worker';
 class CommentQueue extends BaseQueue {
   constructor() {
     super('comments');
-    this.processFollowerJob('addCommentToDB', 5, commentWorker.addCommentToDB);
-    this.processFollowerJob('addReactionToDB', 5, commentWorker.addReactionToDB);
-    this.processFollowerJob('removeReactionFromDB', 5, commentWorker.removeReactionFromDB);
+    this.processCommentJob('addCommentToDB', 5, commentWorker.addCommentToDB);
   }
 
   public addCommentJob(name: string, data: any): void {
     this.addJob(name, data);
   }
 
-  private processFollowerJob(name: string, concurrency: number, callback: Queue.ProcessCallbackFunction<any>): void {
+  private processCommentJob(name: string, concurrency: number, callback: Queue.ProcessCallbackFunction<any>): void {
     this.processJob(name, concurrency, callback);
   }
 }

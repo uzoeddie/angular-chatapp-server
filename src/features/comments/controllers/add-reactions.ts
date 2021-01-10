@@ -5,7 +5,7 @@ import { joiValidation } from '@global/decorators/joi-validation.decorator';
 import { IReactionDocument } from '@comments/interface/comment.interface';
 import { ObjectID } from 'mongodb';
 import { savePostReactionToRedisCache } from '@redis/comments-cache';
-import { commentQueue } from '@queues/comment.queue';
+import { reactionQueue } from '@queues/reaction.queue';
 
 export class AddReaction {
   @joiValidation(reactionsSchema)
@@ -34,7 +34,7 @@ export class AddReaction {
       previousReaction,
       reactionObject
     };
-    commentQueue.addCommentJob('addReactionToDB', dbReactionData);
+    reactionQueue.addReactionJob('addReactionToDB', dbReactionData);
     res.status(HTTP_STATUS.OK).json({ message: 'Like added to post successfully', notification: true });
   }
 }
