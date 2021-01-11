@@ -11,6 +11,8 @@ import { config } from '@root/config';
 import { joiValidation } from '@global/decorators/joi-validation.decorator';
 import { signupSchema } from '@user/schemes/auth/signup';
 import { userQueue } from '@queues/user.queue';
+import Jimp from 'jimp';
+import { uploads } from '@global/cloudinary-upload';
 
 const MAX = 10000;
 export class SignUp {
@@ -58,7 +60,22 @@ export class SignUp {
       profilePicture: `https://res.cloudinary.com/ratingapp/image/upload/${createdObjectId}`
     } as unknown) as IUserDocument;
 
-    await saveUserToRedisCache(`${createdObjectId}`, uId, data);
+    const image: Jimp = await new Jimp(256, 256, data.avatarColor);
+    const font = await Jimp.loadFont(Jimp.FONT_SANS_128_WHITE);
+    image.print(
+      font,
+      65,
+      70,
+      {
+        text: data.username.charAt(0),
+        alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
+        alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE
+      },
+      image.bitmap.width / 2,
+      image.bitmap.height / 2
+    );
+    const dataFile: string = await image.getBase64Async('image/png');
+    await Promise.all([uploads(dataFile, `${createdObjectId}`, true, true), saveUserToRedisCache(`${createdObjectId}`, uId, data)]);
     userQueue.addUserJob('addUserToDB', data);
     const userJwt: string = JWT.sign(
       {

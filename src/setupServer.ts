@@ -43,7 +43,7 @@ export class ChatServer {
   public start(): void {
     this.securityMiddleWares(this.app);
     this.standardMiddlewares(this.app);
-    this.devMiddlewares(this.app);
+    // this.devMiddlewares(this.app);
     this.routeMiddleWares(this.app);
     this.globalErrorHandler(this.app);
     this.startServer(this.app);
@@ -61,14 +61,14 @@ export class ChatServer {
     app.use(cookieParser());
     app.use(express.json({ limit: '50mb' }));
     app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+    app.use(responseTime());
+    app.use('/api/v1/admin/queues', router);
   }
 
-  private devMiddlewares(app: express.Application): void {
-    if (process.env.NODE_ENV !== 'production') {
-      app.use(responseTime());
-      app.use('/api/v1/admin/queues', router);
-    }
-  }
+  // private devMiddlewares(app: express.Application): void {
+  //   app.use(responseTime());
+  //   app.use('/api/v1/admin/queues', router);
+  // }
 
   private routeMiddleWares(app: express.Application): void {
     app.use('', healthRoute.routes());

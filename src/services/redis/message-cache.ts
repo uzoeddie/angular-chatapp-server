@@ -123,7 +123,7 @@ export function updateIsReadPropInRedisCache(keyOne: string, keyTwo: string, con
           if (error) {
             reject(error);
           }
-          resolve(response[10]);
+          resolve(response[response.length - 1]);
         });
       });
     });

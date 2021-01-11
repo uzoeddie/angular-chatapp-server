@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 import JWT from 'jsonwebtoken';
-
 import { BadRequestError } from '@global/error-handler';
 import { Helpers } from '@global/helpers';
 import { UserModel } from '@user/models/user.schema';
