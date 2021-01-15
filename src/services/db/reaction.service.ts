@@ -15,7 +15,6 @@ class Reaction {
     if (previousReaction) {
       delete reactionObject._id;
     }
-    console.log(reactionObject);
     const updatedReaction: [IUserDocument, UpdateQuery<IReactionDocument>, UpdateQuery<IPostDocument>] = (await Promise.all([
       getUserFromCache(userTo),
       ReactionsModel.replaceOne({ postId, type: previousReaction, username: username }, reactionObject, { upsert: true }),

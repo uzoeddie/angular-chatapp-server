@@ -1,11 +1,11 @@
-import express, { Response, Request } from 'express';
+import { Response, Request, json, urlencoded, Application } from 'express';
 import http from 'http';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 import hpp from 'hpp';
 import 'express-async-errors';
-import cookieParser from 'cookie-parser';
+import cookieSession from 'cookie-session';
 import HTTP_STATUS from 'http-status-codes';
 import Logger from 'bunyan';
 import { authRoutes, currentUserRoute, healthRoute } from '@user/routes/authRoutes';
@@ -34,9 +34,9 @@ import { router } from 'bull-board';
 const log: Logger = config.createLogger('main');
 const PORT: number = parseInt(config.REDIS_PORT!, 10) || 6379;
 export class ChatServer {
-  private app: express.Application;
+  private app: Application;
 
-  constructor(app: express.Application) {
+  constructor(app: Application) {
     this.app = app;
   }
 
@@ -49,28 +49,39 @@ export class ChatServer {
     this.startServer(this.app);
   }
 
-  private securityMiddleWares(app: express.Application): void {
-    app.set('trust proxy', true);
+  private securityMiddleWares(app: Application): void {
+    app.set('trust proxy', 1);
+    app.use(
+      cookieSession({
+        name: 'session',
+        keys: ['secret', 'secret2'],
+        maxAge: 1 * 60 * 60 * 1000
+      })
+    );
     app.use(hpp());
     app.use(helmet());
-    app.use(cors());
+    app.use(
+      cors({
+        origin: true,
+        credentials: true
+      })
+    );
   }
 
-  private standardMiddlewares(app: express.Application): void {
+  private standardMiddlewares(app: Application): void {
     app.use(compression());
-    app.use(cookieParser());
-    app.use(express.json({ limit: '50mb' }));
-    app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+    app.use(json({ limit: '50mb' }));
+    app.use(urlencoded({ extended: true, limit: '50mb' }));
     app.use(responseTime());
     app.use('/api/v1/admin/queues', router);
   }
 
-  // private devMiddlewares(app: express.Application): void {
+  // private devMiddlewares(app: Application): void {
   //   app.use(responseTime());
   //   app.use('/api/v1/admin/queues', router);
   // }
 
-  private routeMiddleWares(app: express.Application): void {
+  private routeMiddleWares(app: Application): void {
     app.use('', healthRoute.routes());
     app.use('/api/v1/chatapp', authRoutes.routes());
     app.use('/api/v1/chatapp', authRoutes.SignOutRoute());
@@ -85,7 +96,7 @@ export class ChatServer {
     app.use('/api/v1/chatapp', authMiddleware.verifyUser, chatRoutes.routes());
   }
 
-  private globalErrorHandler(app: express.Application): void {
+  private globalErrorHandler(app: Application): void {
     app.all('*', async (req: Request, res: Response) => {
       res.status(HTTP_STATUS.NOT_FOUND).json({ message: `${req.originalUrl} not found...` });
     });
@@ -98,14 +109,10 @@ export class ChatServer {
           message: err.serializeErrors().message
         });
       }
-      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
-        message: 'Error occurred on the server',
-        errors: { message: 'Error occurred on the server', statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR, err }
-      });
     });
   }
 
-  private startServer(app: express.Application): void {
+  private startServer(app: Application): void {
     if (!config.JWT_TOKEN) {
       throw new Error('JWT_TOKEN must be provided');
     }

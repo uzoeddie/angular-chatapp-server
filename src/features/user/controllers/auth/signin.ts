@@ -32,6 +32,10 @@ export class SignIn {
       },
       config.JWT_TOKEN!
     );
+    req.session = { jwt: userJwt };
+    if (req.body.keepLoggedIn) {
+      req.sessionOptions.maxAge = 30 * 24 * 60 * 60 * 1000;
+    }
     res.status(HTTP_STATUS.OK).json({ message: 'User login successfully', user: existingAuthUser, token: userJwt });
   }
 }

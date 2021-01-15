@@ -17,7 +17,8 @@ const schema: ObjectSchema = Joi.object().keys({
     'string.min': 'Password must have a minimum length of {#limit}',
     'string.max': 'Password should have a maximum length of {#limit}',
     'string.empty': 'Password is a required field'
-  })
+  }),
+  keepLoggedIn: Joi.boolean().optional()
 });
 
 export { schema as signupSchema };

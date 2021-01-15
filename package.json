@@ -24,7 +24,7 @@
     "@types/bull-board": "^0.6.0",
     "@types/bunyan": "^1.8.6",
     "@types/compression": "^1.7.0",
-    "@types/cookie-parser": "^1.4.2",
+    "@types/cookie-session": "^2.0.42",
     "@types/cors": "^2.8.9",
     "@types/dotenv": "^8.2.0",
     "@types/ejs": "^3.0.5",
@@ -41,7 +41,6 @@
     "@types/nodemailer": "^6.4.0",
     "@types/redis": "^2.8.28",
     "@types/response-time": "^2.3.4",
-    "@types/uuid": "^8.3.0",
     "@typescript-eslint/eslint-plugin": "^4.11.0",
     "@typescript-eslint/parser": "^4.11.0",
     "eslint": "^7.16.0",
@@ -64,7 +63,7 @@
     "bunyan": "^1.8.14",
     "cloudinary": "^1.23.0",
     "compression": "^1.7.4",
-    "cookie-parser": "^1.4.5",
+    "cookie-session": "^1.4.0",
     "cors": "^2.8.5",
     "D": "^1.0.0",
     "dotenv": "^8.2.0",
@@ -90,7 +89,6 @@
     "response-time": "^2.3.2",
     "socket.io": "^3.0.4",
     "socket.io-redis": "^6.0.1",
-    "util": "^0.12.3",
-    "uuid": "^8.3.2"
+    "util": "^0.12.3"
   }
 }
