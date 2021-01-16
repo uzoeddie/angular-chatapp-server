@@ -55,7 +55,8 @@ export class ChatServer {
       cookieSession({
         name: 'session',
         keys: ['secret', 'secret2'],
-        maxAge: 1 * 60 * 60 * 1000
+        maxAge: 1 * 60 * 60 * 1000,
+        secure: process.env.NODE_ENV !== 'local'
       })
     );
     app.use(hpp());
@@ -102,11 +103,11 @@ export class ChatServer {
     });
 
     app.use((err: IErrorResponse, _req: Request, res: Response) => {
-      log.error(err);
+      log.error(err.serializeErrors());
       if (err instanceof CustomError) {
         return res.status(err.statusCode).json({
-          errors: err.serializeErrors(),
-          message: err.serializeErrors().message
+          error: err,
+          message: err
         });
       }
     });
