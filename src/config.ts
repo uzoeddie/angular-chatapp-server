@@ -21,6 +21,8 @@ class Config {
   public SESSION_SECRET: string | undefined;
   public PORT: string | undefined;
   public NODE_ENV: string | undefined;
+  public SECRET_KEY_ONE: string | undefined;
+  public SECRET_KEY_TWO: string | undefined;
 
   constructor() {
     this.LOG_LEVEL = (process.env.LOG_LEVEL || 'info') as bunyan.LogLevel;
@@ -39,6 +41,8 @@ class Config {
     this.SESSION_SECRET = process.env.SESSION_SECRET || undefined;
     this.PORT = process.env.PORT || undefined;
     this.NODE_ENV = process.env.NODE_ENV || undefined;
+    this.SECRET_KEY_ONE = process.env.SECRET_KEY_ONE || undefined;
+    this.SECRET_KEY_TWO = process.env.SECRET_KEY_TWO || undefined;
   }
 
   public createLogger(name: string): bunyan {

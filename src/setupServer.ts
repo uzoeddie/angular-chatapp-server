@@ -43,7 +43,6 @@ export class ChatServer {
   public start(): void {
     this.securityMiddleWares(this.app);
     this.standardMiddlewares(this.app);
-    // this.devMiddlewares(this.app);
     this.routeMiddleWares(this.app);
     this.globalErrorHandler(this.app);
     this.startServer(this.app);
@@ -54,16 +53,17 @@ export class ChatServer {
     app.use(
       cookieSession({
         name: 'session',
-        keys: ['secret', 'secret2'],
+        keys: [process.env.SECRET_KEY_ONE!, process.env.SECRET_KEY_TWO!],
         maxAge: 1 * 60 * 60 * 1000,
-        secure: process.env.NODE_ENV !== 'local'
+        secure: process.env.NODE_ENV !== 'local',
+        sameSite: 'none'
       })
     );
     app.use(hpp());
     app.use(helmet());
     app.use(
       cors({
-        origin: true,
+        origin: config.CLIENT_URL,
         credentials: true
       })
     );
@@ -76,11 +76,6 @@ export class ChatServer {
     app.use(responseTime());
     app.use('/api/v1/admin/queues', router);
   }
-
-  // private devMiddlewares(app: Application): void {
-  //   app.use(responseTime());
-  //   app.use('/api/v1/admin/queues', router);
-  // }
 
   private routeMiddleWares(app: Application): void {
     app.use('', healthRoute.routes());
@@ -106,8 +101,8 @@ export class ChatServer {
       log.error(err.serializeErrors());
       if (err instanceof CustomError) {
         return res.status(err.statusCode).json({
-          error: err,
-          message: err
+          error: err.serializeErrors(),
+          message: err.serializeErrors()
         });
       }
     });
