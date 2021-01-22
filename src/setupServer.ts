@@ -32,7 +32,8 @@ import responseTime from 'response-time';
 import { router } from 'bull-board';
 
 const log: Logger = config.createLogger('main');
-const PORT: number = parseInt(config.REDIS_PORT!, 10) || 6379;
+const REDIS_PORT = 6379;
+const SERVER_PORT = 5000;
 export class ChatServer {
   private app: Application;
 
@@ -130,17 +131,17 @@ export class ChatServer {
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
       }
     });
-    const pubClient: RedisClient = new RedisClient({ host: config.REDIS_HOST! || 'localhost', port: PORT });
+    const pubClient: RedisClient = new RedisClient({ host: config.REDIS_HOST! || 'localhost', port: REDIS_PORT });
     const subClient: RedisClient = pubClient.duplicate();
     io.adapter(createAdapter({ pubClient, subClient }));
     return io;
   }
 
   private startHttpServer(httpServer: http.Server): void {
-    log.info(`Worker ${process.pid} started...`);
-    const PORT: string = config.PORT!;
-    httpServer.listen(PORT, () => {
-      log.info(`Successfully started running server on port ${PORT}`);
+    log.info(`Worker with a process id of ${process.pid} has started...`);
+    log.info(`Server has started for process ${process.pid}`);
+    httpServer.listen(SERVER_PORT, () => {
+      log.info(`Successfully started running server on port ${SERVER_PORT}`);
     });
   }
 

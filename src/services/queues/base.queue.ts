@@ -9,13 +9,14 @@ import { IPostJobData } from '@posts/interface/post.interface';
 import { IUserJob, IUserJobInfo } from '@user/interface/user.interface';
 
 type IBaseJobData = IChatJobData | IFollowerJobData | IPostJobData | IUserJobInfo | IUserJob;
+const REDIS_PORT = 6379;
 
 export abstract class BaseQueue {
   queue: Queue.Queue;
   log: Logger;
 
   constructor(queueName: string) {
-    this.queue = new Queue(queueName, `redis://${config.REDIS_HOST}:${config.REDIS_PORT}`);
+    this.queue = new Queue(queueName, `redis://${config.REDIS_HOST}:${REDIS_PORT}`);
     setQueues([new BullAdapter(this.queue)]);
     this.log = config.createLogger(`${queueName}Queue`);
 

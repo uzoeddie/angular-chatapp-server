@@ -6,8 +6,8 @@ import { ICommentDocument, IReactionDocument, IRedisCommentList } from '@comment
 import { Helpers } from '@global/helpers';
 import _ from 'lodash';
 
-const PORT: number = parseInt(config.REDIS_PORT!, 10) || 6379;
-const client: RedisClient = redis.createClient({ host: config.REDIS_HOST! || 'localhost', port: PORT });
+const REDIS_PORT = 6379;
+const client: RedisClient = redis.createClient({ host: config.REDIS_HOST! || 'localhost', port: REDIS_PORT });
 const log: Logger = config.createLogger('commentsCache');
 
 client.on('error', function (error) {

@@ -17,9 +17,6 @@ class Config {
   public TESTING_RECEIVER_EMAIL: string | undefined;
   public CLIENT_URL: string | undefined;
   public REDIS_HOST: string | undefined;
-  public REDIS_PORT: string | undefined;
-  public SESSION_SECRET: string | undefined;
-  public PORT: string | undefined;
   public NODE_ENV: string | undefined;
   public SECRET_KEY_ONE: string | undefined;
   public SECRET_KEY_TWO: string | undefined;
@@ -37,9 +34,6 @@ class Config {
     this.TESTING_RECEIVER_EMAIL = process.env.TESTING_RECEIVER_EMAIL || undefined;
     this.CLIENT_URL = process.env.CLIENT_URL || undefined;
     this.REDIS_HOST = process.env.REDIS_HOST || undefined;
-    this.REDIS_PORT = process.env.REDIS_PORT || undefined;
-    this.SESSION_SECRET = process.env.SESSION_SECRET || undefined;
-    this.PORT = process.env.PORT || undefined;
     this.NODE_ENV = process.env.NODE_ENV || undefined;
     this.SECRET_KEY_ONE = process.env.SECRET_KEY_ONE || undefined;
     this.SECRET_KEY_TWO = process.env.SECRET_KEY_TWO || undefined;

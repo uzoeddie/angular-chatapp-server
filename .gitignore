@@ -145,3 +145,4 @@ infrastructure/*_override.tf
 infrastructure/*_override.tf.json
 
 terraform-steps.txt
+setup.sh
