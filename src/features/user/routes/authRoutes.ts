@@ -5,6 +5,7 @@ import { Password } from '@user/controllers/auth/password';
 import { SignIn } from '@user/controllers/auth/signin';
 import { SignOut } from '@user/controllers/auth/signout';
 import { SignUp } from '@user/controllers/auth/signup';
+import { performance } from 'perf_hooks';
 
 class AuthRoutes {
   private router: Router;
@@ -55,6 +56,26 @@ class HealthRoute {
     });
 
     return this.router;
+  }
+
+  public fiboRoutes(): Router {
+    this.router.get('/fibo/:num', (req: Request, res: Response) => {
+      const start = performance.now();
+      const result = this.fibo(parseInt(req.params.num));
+      const end = performance.now();
+      res.status(200).send(`Fibonacci number of ${req.params.num} is ${result} and it took ${end - start} ms`);
+    });
+
+    return this.router;
+  }
+
+  private fibo(n: number) {
+    if (n < 2) {
+      return 1;
+    } else {
+      const res: number = this.fibo(n - 2) + this.fibo(n - 1);
+      return res;
+    }
   }
 }
 

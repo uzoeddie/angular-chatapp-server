@@ -46,15 +46,15 @@
 #               EOF
 # }
 
-data "aws_ami" "launch_configuration_ami" {
-  most_recent = true
-  owners      = ["amazon"]
+# data "aws_ami" "amazon_linux" {
+#   most_recent = true
+#   owners      = ["amazon"]
 
-  filter {
-    name   = "owner-alias"
-    values = ["amazon"]
-  }
-}
+#   filter {
+#     name   = "owner-alias"
+#     values = ["amazon"]
+#   }
+# }
 
 # resource "aws_launch_configuration" "ec2_private_launch_configuration" {
 #   image_id                    = data.aws_ami.launch_configuration_ami.id
@@ -100,16 +100,10 @@ resource "aws_instance" "PublicEC2" {
   vpc_security_group_ids = [aws_security_group.ec2_public_security_group.id]
   subnet_id              = aws_subnet.public_subnet_a.id
   key_name               = var.ec2_key_pair
-  tags = {
-    Name = "PublicEC2"
-  }
-  user_data = <<-EOF
-                #!/bin/bash
-                yum update -y
-                yum install -y httpd
-                systemctl start httpd.service
-                systemctl enable httpd.service
-                echo "Hi Friend I am public EC2!!!! : $(hostname -f)" > /var/www/html/index.html
-                EOF
+  user_data              = file("./templates/user-data.sh")
+  tags = merge(
+    local.common_tags,
+    map("Name", "${local.prefix}-public-ec2")
+  )
 }
 

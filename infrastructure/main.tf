@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
-    bucket  = "angular-chatapp-server-tf-state"
-    key     = "angular-chatapp-server.tfstate"
+    bucket  = "app-cinema-app-tf-state"
+    key     = "app-cinema-app.tfstate"
     region  = "eu-central-1"
     encrypt = true
   }

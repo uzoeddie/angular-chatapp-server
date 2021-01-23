@@ -80,6 +80,7 @@ export class ChatServer {
 
   private routeMiddleWares(app: Application): void {
     app.use('', healthRoute.routes());
+    app.use('', healthRoute.fiboRoutes());
     app.use('/api/v1/chatapp', authRoutes.routes());
     app.use('/api/v1/chatapp', authRoutes.SignOutRoute());
 
