@@ -146,3 +146,4 @@ infrastructure/*_override.tf.json
 
 terraform-steps.txt
 setup.sh
+test-deploy/

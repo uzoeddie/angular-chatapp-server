@@ -30,26 +30,19 @@ resource "aws_alb_target_group" "server_backend_tg" {
   )
 }
 
-resource "aws_alb_target_group_attachment" "target_group_alb" {
-  target_group_arn = aws_alb_target_group.server_backend_tg.arn
-  port             = 5000 # port number of your server
-  target_id        = aws_instance.PublicEC2.id
-  depends_on       = [aws_instance.PublicEC2]
-}
-
 ######################
 # ALB
 ######################
 
-# resource "aws_s3_bucket" "alb_s3_bucket" {
-#   bucket = "load-balancer-s3"
-#   acl    = "private"
+resource "aws_s3_bucket" "alb_s3_bucket" {
+  bucket = "load-balancer-s3"
+  acl    = "public-read"
 
-#   tags = merge(
-#     local.common_tags,
-#     map("Name", "${local.prefix}-ALB-S3")
-#   )
-# }
+  tags = merge(
+    local.common_tags,
+    map("Name", "${local.prefix}-ALB-S3")
+  )
+}
 
 resource "aws_alb" "server_load_balancer" {
   name                       = "${local.prefix}-server"
@@ -59,11 +52,11 @@ resource "aws_alb" "server_load_balancer" {
   security_groups            = [aws_security_group.alb_security_group.id]
   enable_deletion_protection = false
   ip_address_type            = "ipv4"
-  # access_logs {
-  #   bucket  = aws_s3_bucket.alb_s3_bucket.bucket
-  #   prefix  = "test-lb"
-  #   enabled = true
-  # }
+  access_logs {
+    bucket  = aws_s3_bucket.alb_s3_bucket.bucket
+    prefix  = "chat-lb"
+    enabled = true
+  }
 
   tags = merge(
     local.common_tags,

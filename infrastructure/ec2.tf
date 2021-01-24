@@ -83,27 +83,27 @@
 #   iam_instance_profile        = aws_iam_instance_profile.ec2_instance_profile.name
 #   security_groups             = [aws_security_group.ec2_public_security_group.id]
 
-#   user_data = <<EOF
-#     #!/bin/bash
-#     yum update -y
-#     yum install httpd -y
-#     service httpd start
-#     chkconfig httpd on
-#     export INSTANCE_ID=$(curl http://169.254.169.254/latest/meta-data/instance-id)
-#     echo "<html><body><h1>Hello from Production Web App at instance <b>"$INSTANCE_ID"</b></h1></body></html>" > /var/www/html/index.html
-#   EOF
+  # user_data = <<EOF
+  #   #!/bin/bash
+  #   yum update -y
+  #   yum install httpd -y
+  #   service httpd start
+  #   chkconfig httpd on
+  #   export INSTANCE_ID=$(curl http://169.254.169.254/latest/meta-data/instance-id)
+  #   echo "<html><body><h1>Hello from Production Web App at instance <b>"$INSTANCE_ID"</b></h1></body></html>" > /var/www/html/index.html
+  # EOF
 # }
 
-resource "aws_instance" "PublicEC2" {
-  ami                    = "ami-03c3a7e4263fd998c"
-  instance_type          = "t2.micro"
-  vpc_security_group_ids = [aws_security_group.ec2_public_security_group.id]
-  subnet_id              = aws_subnet.public_subnet_a.id
-  key_name               = var.ec2_key_pair
-  user_data              = file("./templates/user-data.sh")
-  tags = merge(
-    local.common_tags,
-    map("Name", "${local.prefix}-public-ec2")
-  )
-}
+# resource "aws_instance" "PublicEC2" {
+#   ami                    = "ami-03c3a7e4263fd998c"
+#   instance_type          = "t2.micro"
+#   vpc_security_group_ids = [aws_security_group.ec2_public_security_group.id]
+#   subnet_id              = aws_subnet.public_subnet_a.id
+#   key_name               = var.ec2_key_pair
+#   user_data              = file("./templates/user-data.sh")
+#   tags = merge(
+#     local.common_tags,
+#     map("Name", "${local.prefix}-public-ec2")
+#   )
+# }
 

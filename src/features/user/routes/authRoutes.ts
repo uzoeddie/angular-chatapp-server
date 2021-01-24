@@ -6,6 +6,7 @@ import { SignIn } from '@user/controllers/auth/signin';
 import { SignOut } from '@user/controllers/auth/signout';
 import { SignUp } from '@user/controllers/auth/signup';
 import { performance } from 'perf_hooks';
+import axios from 'axios';
 
 class AuthRoutes {
   private router: Router;
@@ -51,25 +52,29 @@ class HealthRoute {
   }
 
   public routes(): Router {
-    this.router.get('/health', (req: Request, res: Response) => {
-      res.status(200).send('Server is healthy.');
+    this.router.get('/health', async (req: Request, res: Response) => {
+      res.status(200).send(`Server instance is healthy with process id ${process.pid}`);
     });
 
     return this.router;
   }
 
   public fiboRoutes(): Router {
-    this.router.get('/fibo/:num', (req: Request, res: Response) => {
-      const start = performance.now();
-      const result = this.fibo(parseInt(req.params.num));
-      const end = performance.now();
-      res.status(200).send(`Fibonacci number of ${req.params.num} is ${result} and it took ${end - start} ms`);
+    this.router.get('/fibo/:num', async (req: Request, res: Response) => {
+      const start: number = performance.now();
+      const result: number = this.fibo(parseInt(req.params.num));
+      const end: number = performance.now();
+      const response = await axios({
+        method: 'get',
+        url: 'http://169.254.169.254/latest/meta-data/instance-id'
+      });
+      res.status(200).send(`Fibonacci series of ${req.params.num} is ${result} and it took ${end - start} ms with EC2 instance id ${response.data} and process id ${process.pid}.`);
     });
 
     return this.router;
   }
 
-  private fibo(n: number) {
+  private fibo(n: number): number {
     if (n < 2) {
       return 1;
     } else {

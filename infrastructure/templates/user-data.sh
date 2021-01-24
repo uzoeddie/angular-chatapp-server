@@ -56,22 +56,17 @@ fi
 if [ $(program_is_installed pm2) == 1 ]; then
   echo "pm2 is installed"
 else
-  sudo npm install -g pm2
+  npm install -g pm2
 fi
 
-# Check if awscli is installed
-if [ $(program_is_installed aws) == 1 ]; then
-  echo "aws cli is installed"
-else
-  sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-  sudo unzip awscliv2.zip
-  sudo ./aws/install
-fi
-
-# replace the keys with circleci config vars
-aws configure set aws_access_key_id <access_key_id>
-aws configure set aws_secret_access_key <secret_access>
-aws configure set default.region <region>
+# # Check if awscli is installed
+# if [ $(program_is_installed aws) == 1 ]; then
+#   echo "aws cli is installed"
+# else
+#   sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+#   sudo unzip awscliv2.zip
+#   sudo ./aws/install
+# fi
 
 DIR="/home/ec2-user/angular-chatapp-server"
 if [ -d "$DIR" ]; then
