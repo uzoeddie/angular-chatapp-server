@@ -34,15 +34,15 @@ resource "aws_alb_target_group" "server_backend_tg" {
 # ALB
 ######################
 
-resource "aws_s3_bucket" "alb_s3_bucket" {
-  bucket = "load-balancer-s3"
-  acl    = "public-read"
+# resource "aws_s3_bucket" "alb_s3_bucket" {
+#   bucket = "load-balancer-s3"
+#   acl    = "public-read"
 
-  tags = merge(
-    local.common_tags,
-    map("Name", "${local.prefix}-ALB-S3")
-  )
-}
+#   tags = merge(
+#     local.common_tags,
+#     map("Name", "${local.prefix}-ALB-S3")
+#   )
+# }
 
 resource "aws_alb" "server_load_balancer" {
   name                       = "${local.prefix}-server"
@@ -52,11 +52,11 @@ resource "aws_alb" "server_load_balancer" {
   security_groups            = [aws_security_group.alb_security_group.id]
   enable_deletion_protection = false
   ip_address_type            = "ipv4"
-  access_logs {
-    bucket  = aws_s3_bucket.alb_s3_bucket.bucket
-    prefix  = "chat-lb"
-    enabled = true
-  }
+  # access_logs {
+  #   bucket  = aws_s3_bucket.alb_s3_bucket.bucket
+  #   prefix  = "chat-lb"
+  #   enabled = true
+  # }
 
   tags = merge(
     local.common_tags,

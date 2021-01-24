@@ -59,20 +59,11 @@ else
   npm install -g pm2
 fi
 
-# # Check if awscli is installed
-# if [ $(program_is_installed aws) == 1 ]; then
-#   echo "aws cli is installed"
-# else
-#   sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-#   sudo unzip awscliv2.zip
-#   sudo ./aws/install
-# fi
-
 DIR="/home/ec2-user/angular-chatapp-server"
 if [ -d "$DIR" ]; then
   echo "Directory in the specified path ${DIR} already exists."
   cd angular-chatapp-server
-  git pull origin master # find a way to make the branch name dynamic
+  git pull
   npm install
   npm run build
 else

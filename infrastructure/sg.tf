@@ -4,7 +4,7 @@
 
 resource "aws_security_group" "ec2_public_security_group" {
   name        = "${local.prefix}-public-ec2-sg"
-  description = "Internet access for public EC2"
+  description = "Allows internet access for public EC2"
   vpc_id      = aws_vpc.main.id
 
   ingress {

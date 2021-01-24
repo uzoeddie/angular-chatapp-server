@@ -6,7 +6,7 @@ resource "aws_launch_configuration" "ec2_public_launch_configuration" {
   associate_public_ip_address = true
   iam_instance_profile        = aws_iam_instance_profile.ec2_instance_profile.name
   security_groups             = [aws_security_group.ec2_public_security_group.id]
-  user_data                   = file("./templates/user-data.sh")
+  user_data                   = file("./scripts/user-data.sh")
   lifecycle {
     create_before_destroy = true
   }
@@ -68,7 +68,7 @@ resource "aws_cloudwatch_metric_alarm" "ec2_scale_up_alarm" {
   alarm_name          = "ec2-scale-up"
   alarm_description   = "This metric monitors ec2 cpu utilization"
   comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods  = "2"
+  evaluation_periods  = "1"
   metric_name         = "CPUUtilization"
   namespace           = "AWS/EC2"
   period              = "120"
@@ -95,7 +95,7 @@ resource "aws_cloudwatch_metric_alarm" "ec2_scale_down_alarm" {
   alarm_name          = "ec2-scale-down"
   alarm_description   = "This metric monitors ec2 cpu utilization"
   comparison_operator = "LessThanOrEqualToThreshold"
-  evaluation_periods  = "2"
+  evaluation_periods  = "1"
   metric_name         = "CPUUtilization"
   namespace           = "AWS/EC2"
   period              = "120"
