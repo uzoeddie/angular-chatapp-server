@@ -65,6 +65,10 @@ if [ -d "$DIR" ]; then
   cd angular-chatapp-server
   git pull
   npm install
+  rm -rf env-file.zip
+  rm -rf .env
+  aws s3 sync s3://env-zip-file .
+  unzip env-file.zip
   npm run build
 else
   echo "Directory does not exists"

@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
-    bucket  = "app-cinema-app-tf-state"
-    key     = "app-cinema-app.tfstate"
+    bucket  = "env-zip-file-dev"
+    key     = "app-cinema-dev.tfstate"
     region  = "eu-central-1"
     encrypt = true
   }

@@ -1,9 +1,9 @@
 variable "prefix" {
-  default = "ng-chat-server"
+  default = "chat-server"
 }
 
 variable "project" {
-  default = "ng-chat-server"
+  default = "chat-server"
 }
 
 variable "region" {}

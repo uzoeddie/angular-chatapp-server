@@ -32,7 +32,7 @@ resource "aws_security_group" "ec2_public_security_group" {
     from_port   = 22
     to_port     = 22
     protocol    = "TCP"
-    cidr_blocks = ["37.201.224.13/32"] # My own ip for ssh access
+    cidr_blocks = ["37.201.224.30/32"] # My own ip for ssh access. Check the for the correct ip
   }
 
   egress {

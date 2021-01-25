@@ -9,7 +9,7 @@ resource "aws_subnet" "public_subnet_a" {
 
   tags = merge(
     local.common_tags,
-    map("Name", "${local.prefix}-pulic-subnet-a")
+    map("Name", "${local.prefix}-public-a")
   )
 }
 
@@ -21,7 +21,7 @@ resource "aws_subnet" "public_subnet_b" {
 
   tags = merge(
     local.common_tags,
-    map("Name", "${local.prefix}-public-subnet-b")
+    map("Name", "${local.prefix}-public-b")
   )
 }
 resource "aws_subnet" "public_subnet_c" {
@@ -32,6 +32,6 @@ resource "aws_subnet" "public_subnet_c" {
 
   tags = merge(
     local.common_tags,
-    map("Name", "${local.prefix}-public-subnet-c")
+    map("Name", "${local.prefix}-public-c")
   )
 }
