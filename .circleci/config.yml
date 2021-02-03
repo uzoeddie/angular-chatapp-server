@@ -2,7 +2,7 @@ version: 2.1
 executors:
   app-executor:
     docker:
-      - image: circleci/node:15.5.0
+      - image: circleci/node:15.6.0
     working_directory: ~/repo
   terraform-executor:
     docker:
@@ -38,6 +38,7 @@ jobs:
       - *restore-cache
       - *install-dependencies
       - *save-cache
+
   linting:
     executor: app-executor
     steps:
@@ -80,13 +81,68 @@ jobs:
       - run:
           name: Terraform Plan
           command: |
-            cd artifacts/infrastructure/
+            cd infrastructure/
             terraform init
             terraform workspace select ${CIRCLE_BRANCH} || terraform workspace new ${CIRCLE_BRANCH}
             terraform plan
       - run:
           name: Terraform Apply
           command: |
-            cd artifacts/infrastructure/
+            cd infrastructure/
             terraform workspace select ${CIRCLE_BRANCH}
             terraform apply --auto-approve
+
+
+workflows:
+  build_and_deploy:
+    jobs:
+      - build
+      - linting:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - develop
+                - staging
+                - master
+      - prettier:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - develop
+                - staging
+                - master
+      - terraform-validate:
+          requires:
+            - prettier
+          filters:
+            branches:
+              only:
+                - develop
+                - staging
+                - master
+      - terraform-plan-and-apply:
+          requires:
+            - terraform-validate
+          filters:
+            branches:
+              only:
+                - develop
+                - staging
+                - master
+      - hold:
+          type: approval
+          requires:
+            - terraform-plan-and-apply
+      - terraform-destroy:
+          requires:
+            - hold
+          filters:
+            branches:
+              only:
+                - develop
+                - staging
+                - master

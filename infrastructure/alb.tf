@@ -3,17 +3,18 @@
 ######################
 
 resource "aws_alb_target_group" "server_backend_tg" {
-  name     = "${local.prefix}-be"
-  vpc_id   = aws_vpc.main.id
-  port     = 5000 # port number of your server
-  protocol = "HTTP"
+  name                 = "${local.prefix}-be"
+  vpc_id               = aws_vpc.main.id
+  port                 = 5000 # port number of your server
+  protocol             = "HTTP"
+  deregistration_delay = 60
 
   health_check {
     path                = "/health"
     port                = "traffic-port"
     protocol            = "HTTP"
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
+    healthy_threshold   = 10
+    unhealthy_threshold = 10
     interval            = 300
     timeout             = 60
     matcher             = "200"
@@ -24,17 +25,19 @@ resource "aws_alb_target_group" "server_backend_tg" {
     enabled = true
   }
 
+
   tags = merge(
     local.common_tags,
     map("Name", "${local.prefix}-tg")
   )
 }
 
-resource "aws_alb_target_group_attachment" "dev_target_group_attachment" {
-  target_group_arn = aws_alb_target_group.server_backend_tg.arn
-  target_id        = aws_instance.ec2_server.id
-  port             = 5000 # port number of your server
-}
+# This is for when you directly create an EC2 instance
+# resource "aws_alb_target_group_attachment" "dev_target_group_attachment" {
+#   target_group_arn = aws_alb_target_group.server_backend_tg.arn
+#   target_id        = aws_instance.ec2_server.id
+#   port             = 5000 # port number of your server
+# }
 
 ######################
 # ALB

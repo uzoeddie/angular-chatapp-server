@@ -8,7 +8,7 @@ resource "aws_iam_role" "ec2_iam_role" {
     {
       "Effect" : "Allow",
       "Principal" : {
-        "Service" : ["ec2.amazonaws.com", "application-autoscaling.amazonaws.com"]
+        "Service" : ["ec2.amazonaws.com", "application-autoscaling.amazonaws.com", "codedeploy.amazonaws.com"]
       },
       "Action" : "sts:AssumeRole"
     }
@@ -31,7 +31,11 @@ resource "aws_iam_role_policy" "ec2_iam_role_policy" {
         "s3:*",
         "elasticloadbalancing:*",
         "cloudwatch:*",
-        "logs:*"
+        "logs:*",
+        "autoscaling:*",
+        "codedeploy:*",
+        "sns:Publish",
+        "tag:GetResources"
       ],
       "Resource": "*"
     }

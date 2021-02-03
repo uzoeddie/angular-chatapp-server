@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { IReactionDocument } from '@comments/interface/comment.interface';
 import { ReactionsModel } from '@comments/models/reactions.schema';
 import { IPostDocument } from '@posts/interface/post.interface';
@@ -32,13 +33,14 @@ class Reaction {
     const data = (updatedReaction[2].reactions as unknown) as string;
     await updateSinglePostPropInRedisCache(postId, 'reactions', data);
     if (updatedReaction[0].notifications.reactions && userFrom !== userTo) {
-      const notifications = await NotificationModel.schema.methods.insertNotification({
+      const notificationModel = new NotificationModel();
+      const notifications = await notificationModel.insertNotification({
         userFrom,
         userTo,
         message: `${username} reacted to your post.`,
         notificationType: 'reactions',
         entityId: postId,
-        createdItemId: updatedReaction[1]._id
+        createdItemId: updatedReaction[1]._id as string
       });
       socketIONotificationObject.emit('insert notification', notifications, { userTo });
     }
@@ -46,7 +48,7 @@ class Reaction {
 
   public async removeReactionFromDB(reactionData: any): Promise<void> {
     const { postId, previousReaction, username } = reactionData;
-    const updatedReaction: [this, UpdateQuery<IPostDocument>] = (await Promise.all([
+    const updatedReaction: [any, UpdateQuery<IPostDocument>] = (await Promise.all([
       ReactionsModel.deleteOne({
         postId,
         type: previousReaction,
@@ -61,7 +63,7 @@ class Reaction {
         },
         { new: true }
       )
-    ])) as [this, UpdateQuery<IPostDocument>];
+    ])) as [any, UpdateQuery<IPostDocument>];
     const data = (updatedReaction[1].reactions as unknown) as string;
     await updateSinglePostPropInRedisCache(postId, 'reactions', data);
   }

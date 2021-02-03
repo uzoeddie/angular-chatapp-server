@@ -4,7 +4,7 @@ import Logger from 'bunyan';
 import { config } from '@root/config';
 import { IChatRedisData } from '@chat/interface/chat.interface';
 import { Helpers } from '@global/helpers';
-import { IConversationDocument } from '@chat/interface/converation.interface';
+// import { IConversationDocument } from '@chat/interface/converation.interface';
 
 const REDIS_PORT = 6379;
 const client: RedisClient = redis.createClient({ host: config.REDIS_HOST! || 'localhost', port: REDIS_PORT });

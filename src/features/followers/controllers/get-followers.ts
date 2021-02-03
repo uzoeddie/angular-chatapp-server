@@ -26,7 +26,7 @@ export class Get {
   public async following(req: Request, res: Response): Promise<void> {
     const userObjectId: ObjectId = mongoose.Types.ObjectId(req.currentUser?.userId);
     const cachedFollowers: IFollower[] = await getFollowersFromRedisCache(`followers:${req.currentUser?.userId}`);
-    const following: Promise<IFollower[]> = cachedFollowers.length
+    const following = cachedFollowers.length
       ? cachedFollowers
       : await FollowerModel.find({ followerId: userObjectId }, { _id: 0, followeeId: 1, followerId: 1 })
           .lean()
@@ -45,7 +45,7 @@ export class Get {
   public async userFollowers(req: Request, res: Response): Promise<void> {
     const userObjectId: ObjectId = mongoose.Types.ObjectId(req.params.userId);
     const cachedFollowers: IFollower[] = await getFollowersFromRedisCache(`following:${req.params.userId}`);
-    const followers: Promise<IFollower[]> = cachedFollowers.length
+    const followers = cachedFollowers.length
       ? cachedFollowers
       : await FollowerModel.find({ followeeId: userObjectId }, { _id: 0, followeeId: 1, followerId: 1 })
           .lean()

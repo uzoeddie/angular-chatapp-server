@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ICommentDocument } from '@comments/interface/comment.interface';
 import { CommentsModel } from '@comments/models/comment.schema';
 import { NotificationModel } from '@notifications/models/notification.schema';
@@ -18,13 +19,14 @@ class Comment {
     const response: [ICommentDocument, UpdateQuery<IPostDocument>, IUserDocument] = await Promise.all([comments, posts, user]);
     await updateSinglePostPropInRedisCache(postId, 'comments', `${response[1].comments}`);
     if (response[2].notifications.comments && userFrom !== userTo) {
-      const notifications = await NotificationModel.schema.methods.insertNotification({
+      const notificationModel = new NotificationModel();
+      const notifications = await notificationModel.insertNotification({
         userFrom,
         userTo,
         message: `${username} commented on your post.`,
         notificationType: 'comment',
         entityId: postId,
-        createdItemId: response[0]._id
+        createdItemId: response[0]._id!
       });
       socketIONotificationObject.emit('insert notification', notifications, { userTo });
     }

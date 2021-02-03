@@ -92,7 +92,7 @@ export class Helpers {
 
   static async getPostReactions(query: any, skip: number, limit: number, sort: any): Promise<[IReactionDocument[], number]> {
     const reactions: Aggregate<IReactionDocument[]> = ReactionsModel.aggregate([{ $match: query }, { $sort: sort }, { $skip: skip }, { $limit: limit }]);
-    const count: number = ReactionsModel.find(query).countDocuments();
+    const count = ReactionsModel.find(query).countDocuments();
     const response: [IReactionDocument[], number] = await Promise.all([reactions, count]);
     return response;
   }

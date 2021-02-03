@@ -7,6 +7,8 @@ import { SignOut } from '@user/controllers/auth/signout';
 import { SignUp } from '@user/controllers/auth/signup';
 import { performance } from 'perf_hooks';
 import axios from 'axios';
+import moment from 'moment';
+import publicIP from 'public-ip';
 
 class AuthRoutes {
   private router: Router;
@@ -52,8 +54,17 @@ class HealthRoute {
   }
 
   public routes(): Router {
-    this.router.get('/health', async (req: Request, res: Response) => {
-      res.status(200).send(`Server instance is healthy with process id ${process.pid}`);
+    this.router.get('/health', (req: Request, res: Response) => {
+      res.status(200).send(`Dev server instance is healthy with process id ${process.pid}`);
+    });
+
+    return this.router;
+  }
+
+  public appRoutes(): Router {
+    this.router.get('/', async (req: Request, res: Response) => {
+      const ip = await publicIP.v4();
+      res.status(200).send(`This is the dev server and todays date is ${moment(new Date()).format('DD/MM/YYYY HH:mm')} from IP ${ip}`);
     });
 
     return this.router;
@@ -73,6 +84,14 @@ class HealthRoute {
 
     return this.router;
   }
+
+  // optimized fibo using memoization
+  // public fib(n: number, memo = {}) {
+  //   if (n in memo) return memo[n];
+  //   if (n <= 2) return 1;
+  //   memo[n] = fib(n - 1, memo) + fib(n - 2, memo);
+  //   return memo[n];
+  // }
 
   private fibo(n: number): number {
     if (n < 2) {

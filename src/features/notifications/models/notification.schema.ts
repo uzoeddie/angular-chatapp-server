@@ -12,7 +12,7 @@ const notificationSchema: mongoose.Schema = new mongoose.Schema({
   date: { type: Date, default: Date.now() }
 });
 
-notificationSchema.methods.insertNotification = async (body: INotification) => {
+notificationSchema.methods.insertNotification = async function (body: INotification) {
   const { userTo, userFrom, message, notificationType, entityId, createdItemId } = body;
   await NotificationModel.create({
     userTo,

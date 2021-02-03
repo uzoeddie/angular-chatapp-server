@@ -2,7 +2,7 @@
 import Queue from 'bull';
 import { chatWorker } from '@workers/chat.worker';
 import { BaseQueue } from '@queues/base.queue';
-import { IChatJobData } from '@chat/interface/chat.interface';
+// import { IChatJobData } from '@chat/interface/chat.interface';
 
 class ChatQueue extends BaseQueue {
   constructor() {

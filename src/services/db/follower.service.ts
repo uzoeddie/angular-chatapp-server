@@ -35,7 +35,8 @@ class Follower {
     const response: [IFollowerDocument, BulkWriteOpResultObject, IUserDocument | null] = await Promise.all([following, users, UserModel.findOne({ _id: followerId })]);
 
     if (response[2]!.notifications.follows && userId !== followerId) {
-      const notifications = await NotificationModel.schema.methods.insertNotification({
+      const notificationModel = new NotificationModel();
+      const notifications = await notificationModel.insertNotification({
         userFrom: userId,
         userTo: followerId,
         message: `${username} is now following you.`,
@@ -51,7 +52,7 @@ class Follower {
     const followerObjectId: ObjectId = mongoose.Types.ObjectId(followerId);
     const userObjectId: ObjectId = mongoose.Types.ObjectId(userId);
 
-    const unFollowing: Promise<this> = FollowerModel.deleteOne({ followerId: userObjectId, followeeId: followerObjectId });
+    const unFollowing = FollowerModel.deleteOne({ followerId: userObjectId, followeeId: followerObjectId });
     const users: Promise<BulkWriteOpResultObject> = UserModel.bulkWrite([
       {
         updateOne: {

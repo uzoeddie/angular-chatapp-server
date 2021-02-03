@@ -41,10 +41,10 @@ class Post {
   }
 
   public async deletePost(postId: string, userId: string): Promise<void> {
-    const deletPost: Promise<this> = PostModel.deleteOne({ _id: postId });
+    const deletPost = PostModel.deleteOne({ _id: postId });
     const decrementPostNumber: UpdateQuery<IUserDocument> = UserModel.updateOne({ _id: userId }, { $inc: { postCount: -1 } });
-    const deleteComments: Promise<this> = CommentsModel.deleteMany({ postId: postId });
-    const deleteReactions: Promise<this> = ReactionsModel.deleteMany({ postId: postId });
+    const deleteComments = CommentsModel.deleteMany({ postId: postId });
+    const deleteReactions = ReactionsModel.deleteMany({ postId: postId });
     await Promise.all([deletPost, decrementPostNumber, deleteComments, deleteReactions]);
   }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import redis, { Multi, RedisClient } from 'redis';
 import _ from 'lodash';
 import Logger from 'bunyan';
