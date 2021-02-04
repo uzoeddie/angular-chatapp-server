@@ -56,7 +56,7 @@ fi
 
 cd /home/ec2-user
 
-git clone https://github.com/uzoeddie/angular-chatapp-server.git
+git clone -b develop https://github.com/uzoeddie/angular-chatapp-server.git
 cd angular-chatapp-server
 npm install
 sudo rm -rf ./node_modules/@types/mongoose
