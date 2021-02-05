@@ -82,28 +82,28 @@ resource "aws_cloudwatch_metric_alarm" "ec2_scale_up_alarm" {
 }
 
 # scale down alarm
-resource "aws_autoscaling_policy" "backend_scaledown_policy" {
-  name                   = "Backend-Scaledown-Policy"
-  autoscaling_group_name = aws_autoscaling_group.ec2_public_autoscaling_group.name
-  adjustment_type        = "ChangeInCapacity"
-  policy_type            = "SimpleScaling"
-  scaling_adjustment     = -1
-  cooldown               = 150
-}
+# resource "aws_autoscaling_policy" "backend_scaledown_policy" {
+#   name                   = "Backend-Scaledown-Policy"
+#   autoscaling_group_name = aws_autoscaling_group.ec2_public_autoscaling_group.name
+#   adjustment_type        = "ChangeInCapacity"
+#   policy_type            = "SimpleScaling"
+#   scaling_adjustment     = -1
+#   cooldown               = 150
+# }
 
-resource "aws_cloudwatch_metric_alarm" "ec2_scale_down_alarm" {
-  alarm_name          = "ec2-scale-down"
-  alarm_description   = "This metric monitors ec2 cpu utilization"
-  comparison_operator = "LessThanOrEqualToThreshold"
-  evaluation_periods  = "1"
-  metric_name         = "CPUUtilization"
-  namespace           = "AWS/EC2"
-  period              = "120"
-  statistic           = "Average"
-  threshold           = 10
+# resource "aws_cloudwatch_metric_alarm" "ec2_scale_down_alarm" {
+#   alarm_name          = "ec2-scale-down"
+#   alarm_description   = "This metric monitors ec2 cpu utilization"
+#   comparison_operator = "LessThanOrEqualToThreshold"
+#   evaluation_periods  = "1"
+#   metric_name         = "CPUUtilization"
+#   namespace           = "AWS/EC2"
+#   period              = "120"
+#   statistic           = "Average"
+#   threshold           = 10
 
-  dimensions = {
-    AutoScalingGroupName = aws_autoscaling_group.ec2_public_autoscaling_group.name
-  }
-  alarm_actions = [aws_autoscaling_policy.backend_scaledown_policy.arn]
-}
+#   dimensions = {
+#     AutoScalingGroupName = aws_autoscaling_group.ec2_public_autoscaling_group.name
+#   }
+#   alarm_actions = [aws_autoscaling_policy.backend_scaledown_policy.arn]
+# }

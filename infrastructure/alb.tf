@@ -13,10 +13,10 @@ resource "aws_alb_target_group" "server_backend_tg" {
     path                = "/health"
     port                = "traffic-port"
     protocol            = "HTTP"
-    healthy_threshold   = 10
+    healthy_threshold   = 2
     unhealthy_threshold = 10
-    interval            = 300
-    timeout             = 60
+    interval            = 30
+    timeout             = 20
     matcher             = "200"
   }
 
