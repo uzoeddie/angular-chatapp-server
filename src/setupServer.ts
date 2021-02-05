@@ -82,6 +82,7 @@ export class ChatServer {
     app.use('', healthRoute.routes());
     app.use('', healthRoute.fiboRoutes());
     app.use('', healthRoute.appRoutes());
+    app.use('', healthRoute.instance());
     app.use('/api/v1/chatapp', authRoutes.routes());
     app.use('/api/v1/chatapp', authRoutes.SignOutRoute());
 

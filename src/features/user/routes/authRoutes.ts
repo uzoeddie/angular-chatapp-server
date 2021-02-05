@@ -85,6 +85,18 @@ class HealthRoute {
     return this.router;
   }
 
+  public instance(): Router {
+    this.router.get('/instance', async (req: Request, res: Response) => {
+      const response = await axios({
+        method: 'get',
+        url: 'http://169.254.169.254/latest/meta-data/instance-id'
+      });
+      res.status(200).send(`Dev server is running on EC2 instance with id ${response.data}`);
+    });
+
+    return this.router;
+  }
+
   // optimized fibo using memoization
   // public fib(n: number, memo = {}) {
   //   if (n in memo) return memo[n];

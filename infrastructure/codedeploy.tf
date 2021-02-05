@@ -33,7 +33,7 @@ resource "aws_codedeploy_app" "server_code_deploy" {
 resource "aws_codedeploy_deployment_group" "server_code_deploy_group" {
   app_name               = aws_codedeploy_app.server_code_deploy.name
   deployment_group_name  = "${local.prefix}-group"
-  deployment_config_name = "CodeDeployDefault.AllAtOnce"
+  deployment_config_name = "CodeDeployDefault.OneAtATime"
   service_role_arn       = aws_iam_role.ec2_iam_role.arn
   autoscaling_groups     = [aws_autoscaling_group.ec2_public_autoscaling_group.name]
 
