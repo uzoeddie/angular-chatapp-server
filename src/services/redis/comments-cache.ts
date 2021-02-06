@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import redis, { Multi, RedisClient } from 'redis';
 import Logger from 'bunyan';
 import { config } from '@root/config';
-import { ICommentDocument, IReactionDocument, IRedisCommentList } from '@comments/interface/comment.interface';
+import { ICommentDocument, IReactionDocument, IReactionObject, IRedisCommentList } from '@comments/interface/comment.interface';
 import { Helpers } from '@global/helpers';
 import _ from 'lodash';
 
@@ -28,16 +27,17 @@ export function savePostCommentToRedisCache(key: string, value: string): Promise
 export function savePostReactionToRedisCache(key: string, value: string, previousReaction?: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const multi: Multi = client.multi();
-    let reaction = Helpers.parseJson(value);
+    let reaction: IReactionDocument | undefined = Helpers.parseJson(value);
+    console.log(reaction);
     client.lrange(`reactions:${key}`, 0, -1, (error: Error | null, response: string[]) => {
       if (error) {
         reject(error);
       }
       if (previousReaction) {
-        const reactionObject = {
-          postId: reaction.postId,
+        const reactionObject: IReactionObject = {
+          postId: reaction!.postId,
           previousReaction,
-          username: reaction.username
+          username: reaction!.username
         };
         reaction = updateReaction(multi, key, response, reactionObject, reaction);
       }
@@ -59,7 +59,7 @@ export function removeReactionFromCache(key: string, previousReaction: string, u
       if (error) {
         reject(error);
       }
-      const reactionObject = {
+      const reactionObject: IReactionObject = {
         postId: key,
         previousReaction,
         username
@@ -145,7 +145,7 @@ export function getReactionsFromCache(key: string, start: number, end: number): 
   });
 }
 
-function updateReaction(multi: Multi, key: string, response: string[], reactionObject: any, reaction?: any): any {
+function updateReaction(multi: Multi, key: string, response: string[], reactionObject: IReactionObject, reaction?: IReactionDocument): IReactionDocument | undefined {
   const { postId, previousReaction, username } = reactionObject;
   const list = [];
   for (const value of response) {

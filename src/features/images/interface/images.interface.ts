@@ -19,3 +19,12 @@ export interface IFileImageDocument extends mongoose.Document {
   profilePicture: string;
   images: Images[];
 }
+
+export interface IFileImageJobData {
+  key?: string;
+  value?: string;
+  imgId?: string;
+  imgVersion?: string;
+  userId?: string;
+  imageId?: string;
+}

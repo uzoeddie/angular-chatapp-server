@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
-import { ICommentDocument } from '@comments/interface/comment.interface';
+import { ICommentDocument, ICommentJob } from '@comments/interface/comment.interface';
 import { addCommentSchema } from '@comments/schemes/comments';
 import { joiValidation } from '@global/decorators/joi-validation.decorator';
 import { ObjectID } from 'mongodb';
@@ -21,11 +21,11 @@ export class Add {
       createdAt: new Date()
     } as unknown) as ICommentDocument;
     await savePostCommentToRedisCache(req.body.postId, JSON.stringify(commentData));
-    const dbCommentData = {
+    const dbCommentData: ICommentJob = {
       postId: req.body.postId,
       userTo: req.body.userTo,
-      userFrom: req.currentUser?.userId,
-      username: req.currentUser?.username,
+      userFrom: req.currentUser!.userId,
+      username: req.currentUser!.username,
       comment: commentData
     };
     commentQueue.addCommentJob('addCommentToDB', dbCommentData);

@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import Queue from 'bull';
 import { BaseQueue } from '@queues/base.queue';
 import { imageWorker } from '@workers/image.worker';
+import { IFileImageJobData } from '@images/interface/images.interface';
 
 class ImageQueue extends BaseQueue {
   constructor() {
@@ -11,11 +11,11 @@ class ImageQueue extends BaseQueue {
     this.processImageJob('removeImageFromDB', 5, imageWorker.removeImageFromDB);
   }
 
-  public addImageJob(name: string, data: any): void {
+  public addImageJob(name: string, data: IFileImageJobData): void {
     this.addJob(name, data);
   }
 
-  private processImageJob(name: string, concurrency: number, callback: Queue.ProcessCallbackFunction<any>): void {
+  private processImageJob(name: string, concurrency: number, callback: Queue.ProcessCallbackFunction<void>): void {
     this.processJob(name, concurrency, callback);
   }
 }

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 import { reactionsSchema } from '@comments/schemes/comments';
 import { joiValidation } from '@global/decorators/joi-validation.decorator';
-import { IReactionDocument } from '@comments/interface/comment.interface';
+import { IReactionDocument, IReactionJob } from '@comments/interface/comment.interface';
 import { ObjectID } from 'mongodb';
 import { savePostReactionToRedisCache } from '@redis/comments-cache';
 import { reactionQueue } from '@queues/reaction.queue';
@@ -25,11 +25,11 @@ export class AddReaction {
     } as unknown) as IReactionDocument;
 
     await savePostReactionToRedisCache(postId, JSON.stringify(reactionObject), previousReaction);
-    const dbReactionData = {
+    const dbReactionData: IReactionJob = {
       postId,
       userTo,
-      userFrom: req.currentUser?.userId,
-      username: req.currentUser?.username,
+      userFrom: req.currentUser!.userId,
+      username: req.currentUser!.username,
       type,
       previousReaction,
       reactionObject

@@ -16,7 +16,7 @@ export interface IReactionDocument extends mongoose.Document {
   username: string;
   profilePicture: string;
   avatarColor: string;
-  createdAt: Date;
+  createdAt?: Date;
   userTo?: string;
 }
 export interface IRedisCommentList {
@@ -34,4 +34,28 @@ export interface IReactions {
   wow: number;
   sad: number;
   angry: number;
+}
+
+export interface IReactionObject {
+  postId: string | mongoose.Types.ObjectId;
+  previousReaction: string;
+  username: string;
+}
+
+export interface ICommentJob {
+  postId: string;
+  userTo: string;
+  userFrom: string;
+  username: string;
+  comment: ICommentDocument;
+}
+
+export interface IReactionJob {
+  postId: string;
+  username: string;
+  previousReaction: string;
+  userTo?: string;
+  userFrom?: string;
+  type?: string;
+  reactionObject?: IReactionDocument;
 }

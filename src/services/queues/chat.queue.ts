@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import Queue from 'bull';
+import { ProcessCallbackFunction } from 'bull';
 import { chatWorker } from '@workers/chat.worker';
 import { BaseQueue } from '@queues/base.queue';
-// import { IChatJobData } from '@chat/interface/chat.interface';
+import { IChatJobData } from '@chat/interface/chat.interface';
 
 class ChatQueue extends BaseQueue {
   constructor() {
@@ -11,11 +10,11 @@ class ChatQueue extends BaseQueue {
     this.processChatJob('markMessagesAsReadInDB', 5, chatWorker.markMessagesAsReadInDB);
   }
 
-  public addChatJob(name: string, data: any): void {
+  public addChatJob(name: string, data: IChatJobData): void {
     this.addJob(name, data);
   }
 
-  private processChatJob(name: string, concurrency: number, callback: Queue.ProcessCallbackFunction<any>): void {
+  private processChatJob(name: string, concurrency: number, callback: ProcessCallbackFunction<void>): void {
     this.processJob(name, concurrency, callback);
   }
 }

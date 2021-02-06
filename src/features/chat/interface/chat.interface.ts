@@ -56,12 +56,8 @@ export interface IChatMessage {
 }
 
 export interface IChatJobData {
-  keys?: string[];
-  key?: string;
-  value?: IChatRedisData;
-  keyOne?: string;
-  keyTwo?: string;
-  conversationId?: string;
+  value?: IMessageDocument;
+  conversationId?: mongoose.Types.ObjectId;
 }
 
 export interface IChatRedisData {
@@ -92,4 +88,11 @@ export interface ISearchUser {
   username: string;
   email: string;
   avatarColor: string;
+}
+
+export interface ISenderReceiver {
+  sender: string;
+  receiver: string;
+  senderName: string;
+  receiverName: string;
 }

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Aggregate } from 'mongoose';
+import { Aggregate, Query } from 'mongoose';
 import { ICommentDocument, IFormattedReactions, IReactionDocument, IReactions } from '@comments/interface/comment.interface';
 import { CommentsModel } from '@comments/models/comment.schema';
 import { ReactionsModel } from '@comments/models/reactions.schema';
@@ -38,7 +38,7 @@ export class Helpers {
     return postReactions;
   }
 
-  static parseJson(str: any): any {
+  static parseJson(str: string): any {
     try {
       JSON.parse(str);
     } catch (e) {
@@ -49,7 +49,7 @@ export class Helpers {
 
   static async getUserPosts(query: any, skip = 0, limit = 0, sort?: any): Promise<IPostDocument[]> {
     return new Promise((resolve) => {
-      const posts: Aggregate<any[]> = PostModel.aggregate([
+      const posts: Aggregate<IPostDocument[]> = PostModel.aggregate([
         { $match: query },
         { $sort: sort },
         { $skip: skip },
@@ -92,13 +92,13 @@ export class Helpers {
 
   static async getPostReactions(query: any, skip: number, limit: number, sort: any): Promise<[IReactionDocument[], number]> {
     const reactions: Aggregate<IReactionDocument[]> = ReactionsModel.aggregate([{ $match: query }, { $sort: sort }, { $skip: skip }, { $limit: limit }]);
-    const count = ReactionsModel.find(query).countDocuments();
+    const count: Query<number, IReactionDocument> = ReactionsModel.find(query).countDocuments();
     const response: [IReactionDocument[], number] = await Promise.all([reactions, count]);
     return response;
   }
 
   static async getMessages(query: any, sort?: any): Promise<IChatMessage[]> {
-    const messages = await MessageModel.aggregate([
+    const messages: IChatMessage[] = await MessageModel.aggregate([
       { $match: query },
       { $lookup: { from: 'User', localField: 'receiverId', foreignField: '_id', as: 'receiverId' } },
       { $unwind: '$receiverId' },

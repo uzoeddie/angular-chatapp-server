@@ -2,7 +2,6 @@ import { Server, Socket } from 'socket.io';
 import { ICommentDocument, IReactionDocument } from '@comments/interface/comment.interface';
 
 let socketIOPostObject: Server;
-
 export class SocketIOPostHandler {
   private io: Server;
 

@@ -1,16 +1,8 @@
-import { ITyping } from '@chat/interface/chat.interface';
+import { ISenderReceiver, ITyping } from '@chat/interface/chat.interface';
 import { connectedUsersMap } from '@sockets/users';
 import { Server, Socket } from 'socket.io';
 
-interface ISenderReceiver {
-  sender: string;
-  receiver: string;
-  senderName: string;
-  receiverName: string;
-}
-
 let socketIOChatObject: Server;
-
 export class SocketIOChatHandler {
   private io: Server;
 

@@ -22,3 +22,7 @@ export interface INotification {
   entityId: string;
   createdItemId: mongoose.Types.ObjectId | string;
 }
+
+export interface INotificationJobData {
+  key: string;
+}

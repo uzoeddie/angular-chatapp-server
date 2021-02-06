@@ -101,15 +101,15 @@ export interface ILogin {
 export interface IUserJobInfo {
   key?: string;
   prop?: string;
-  value?: string | number | IUserBirthDay | IUserPlacesLived | IUserWork | IUserSchool | null;
+  value?: string | IUserBirthDay | IUserPlacesLived | IUserWork | IUserSchool | null;
   type?: string;
   data?: IUserPlacesLived[] | IUserWork[] | IUserSchool[];
-  paramId?: string;
+  paramsId?: string;
 }
 
 export interface IUserJob {
+  keyOne?: string;
+  keyTwo?: string;
   key?: string;
-  prop?: string;
-  value?: string | number | INotificationSettings;
-  type?: string;
+  value?: string | INotificationSettings | IUserDocument;
 }

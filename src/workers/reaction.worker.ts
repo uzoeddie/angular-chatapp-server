@@ -1,12 +1,11 @@
 import { DoneCallback, Job } from 'bull';
 import { reactionService } from '@db/reaction.service';
-
-class ReactionWorker {
+import { BaseWorker } from '@workers/base.worker';
+class ReactionWorker extends BaseWorker {
   async addReactionToDB(jobQueue: Job, done: DoneCallback): Promise<void> {
     try {
       await reactionService.addReactionDataToDB(jobQueue.data);
-      jobQueue.progress(100);
-      done(null, jobQueue.data);
+      this.progress(jobQueue, done);
     } catch (error) {
       done(error);
     }
@@ -15,8 +14,7 @@ class ReactionWorker {
   async removeReactionFromDB(jobQueue: Job, done: DoneCallback): Promise<void> {
     try {
       await reactionService.removeReactionFromDB(jobQueue.data);
-      jobQueue.progress(100);
-      done(null, jobQueue.data);
+      this.progress(jobQueue, done);
     } catch (error) {
       done(error);
     }

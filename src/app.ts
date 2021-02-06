@@ -29,6 +29,7 @@ class Application {
     config.cloudinaryConfig();
   }
 
+  // to be removed
   masterProcess() {
     console.log(`Master ${process.pid} is running`);
 
@@ -45,19 +46,19 @@ class Application {
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    process.on('unhandledRejection', (reason: any | undefined) => {
+    process.on('unhandledRejection', (reason: Error | any) => {
       log.error('Unhandled Rejection at promise', reason);
       Application.shutdownProperly(2);
     });
 
     process.on('SIGINT', () => {
       log.info('Caught SIGINT');
-      Application.shutdownProperly(128 + 2);
+      Application.shutdownProperly(2);
     });
 
     process.on('SIGTERM', () => {
       log.info('Caught SIGTERM');
-      Application.shutdownProperly(128 + 2);
+      Application.shutdownProperly(2);
     });
 
     process.on('exit', () => {

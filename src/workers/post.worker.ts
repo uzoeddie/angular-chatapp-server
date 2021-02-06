@@ -1,13 +1,12 @@
 import { DoneCallback, Job } from 'bull';
 import { postService } from '@db/post.service';
-
-class PostWorker {
+import { BaseWorker } from '@workers/base.worker';
+class PostWorker extends BaseWorker {
   async savePostWorker(jobQueue: Job, done: DoneCallback): Promise<void> {
     try {
       const { key, value } = jobQueue.data;
       await postService.addPostToDB(key, value);
-      jobQueue.progress(100);
-      done(null, jobQueue.data);
+      this.progress(jobQueue, done);
     } catch (error) {
       done(error);
     }
@@ -17,8 +16,7 @@ class PostWorker {
     try {
       const { key, value } = jobQueue.data;
       await postService.editPost(key, value);
-      jobQueue.progress(100);
-      done(null, jobQueue.data);
+      this.progress(jobQueue, done);
     } catch (error) {
       done(error);
     }
@@ -28,8 +26,7 @@ class PostWorker {
     try {
       const { keyOne, keyTwo } = jobQueue.data;
       await postService.deletePost(keyOne, keyTwo);
-      jobQueue.progress(100);
-      done(null, jobQueue.data);
+      this.progress(jobQueue, done);
     } catch (error) {
       done(error);
     }

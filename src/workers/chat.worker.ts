@@ -1,13 +1,12 @@
 import { DoneCallback, Job } from 'bull';
 import { chatService } from '@db/chat.service';
-
-class ChatWorker {
+import { BaseWorker } from '@workers/base.worker';
+class ChatWorker extends BaseWorker {
   async addChatMessagesToDB(jobQueue: Job, done: DoneCallback): Promise<void> {
     try {
       const { value } = jobQueue.data;
       await chatService.addMessageToDB(value);
-      jobQueue.progress(100);
-      done(null, jobQueue.data);
+      this.progress(jobQueue, done);
     } catch (error) {
       done(error);
     }
@@ -17,8 +16,7 @@ class ChatWorker {
     try {
       const { conversationId } = jobQueue.data;
       await chatService.markMessageAsRead(conversationId);
-      jobQueue.progress(100);
-      done(null, jobQueue.data);
+      this.progress(jobQueue, done);
     } catch (error) {
       done(error);
     }

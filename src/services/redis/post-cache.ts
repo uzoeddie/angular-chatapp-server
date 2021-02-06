@@ -107,7 +107,7 @@ export function getSinglePostFromCache(key: string): Promise<IPostDocument[]> {
       reply.comments = Helpers.parseJson(reply.comments);
       reply.privacy = Helpers.parseJson(reply.privacy);
       reply.userId = Helpers.parseJson(reply.userId);
-      reply.reactions = (Object.keys(Helpers.parseJson(reply.reactions)).length ? Helpers.formattedReactions(Helpers.parseJson(reply.reactions)) : []) as any;
+      reply.reactions = Object.keys(Helpers.parseJson(reply.reactions)).length ? Helpers.formattedReactions(Helpers.parseJson(reply.reactions)) : [];
       reply.createdAt = Helpers.parseJson(reply.createdAt);
       resolve([reply]);
     });

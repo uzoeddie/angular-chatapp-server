@@ -14,30 +14,6 @@ client.on('error', function (error) {
   log.error(error);
 });
 
-// export function addUsersConversationToCache(key: string, conversationData: IConversationDocument): Promise<void> {
-//   const { _id, participants } = conversationData;
-//   const dataToSave: string[] = ['_id', `${_id}`, 'participants', `${participants}`];
-//   return new Promise((resolve, reject) => {
-//     client.hmset(`conversations:${key}`, dataToSave, (error) => {
-//       if (error) {
-//         reject(error);
-//       }
-//       resolve();
-//     });
-//   });
-// }
-
-// export function getConversationFromCache(key: string): Promise<IConversationDocument> {
-//   return new Promise((resolve, reject) => {
-//     client.hgetall(`conversations:${key}`, (err: Error | null, reply: any) => {
-//       if (err) {
-//         reject(err);
-//       }
-//       resolve(reply);
-//     });
-//   });
-// }
-
 export function addChatListToRedisCache(keys: string[], value: IChatRedisData): Promise<void> {
   return new Promise((resolve, reject) => {
     for (const key of keys) {

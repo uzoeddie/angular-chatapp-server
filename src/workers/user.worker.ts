@@ -2,14 +2,13 @@ import { DoneCallback, Job } from 'bull';
 import { userService } from '@db/user.service';
 import { updateSingleUserItemInRedisCache } from '@redis/user-info-cache';
 import { blockUserService } from '@db/block-user.service';
-
-class UserWorker {
+import { BaseWorker } from '@workers/base.worker';
+class UserWorker extends BaseWorker {
   async addBlockedUserToDB(jobQueue: Job, done: DoneCallback): Promise<void> {
     try {
       const { keyOne, keyTwo } = jobQueue.data;
       await blockUserService.blockUser(keyOne, keyTwo);
-      jobQueue.progress(100);
-      done(null, jobQueue.data);
+      this.progress(jobQueue, done);
     } catch (error) {
       done(error);
     }
@@ -19,8 +18,7 @@ class UserWorker {
     try {
       const { keyOne, keyTwo } = jobQueue.data;
       await blockUserService.unblockUser(keyOne, keyTwo);
-      jobQueue.progress(100);
-      done(null, jobQueue.data);
+      this.progress(jobQueue, done);
     } catch (error) {
       done(error);
     }
@@ -30,8 +28,7 @@ class UserWorker {
     try {
       const { key, value } = jobQueue.data;
       await userService.updateNotificationSettings(key, value);
-      jobQueue.progress(100);
-      done(null, jobQueue.data);
+      this.progress(jobQueue, done);
     } catch (error) {
       done(error);
     }
@@ -39,9 +36,9 @@ class UserWorker {
 
   async addUserToDB(jobQueue: Job, done: DoneCallback): Promise<void> {
     try {
-      await userService.addUserDataToDB(jobQueue.data);
-      jobQueue.progress(100);
-      done(null, jobQueue.data);
+      const { value } = jobQueue.data;
+      await userService.addUserDataToDB(value);
+      this.progress(jobQueue, done);
     } catch (error) {
       done(error);
     }
@@ -51,8 +48,7 @@ class UserWorker {
     try {
       const { key, prop, value } = jobQueue.data;
       await updateSingleUserItemInRedisCache(key, prop, value);
-      jobQueue.progress(100);
-      done(null, jobQueue.data);
+      this.progress(jobQueue, done);
     } catch (error) {
       done(error);
     }

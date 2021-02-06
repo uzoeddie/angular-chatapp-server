@@ -3,6 +3,7 @@ import HTTP_STATUS from 'http-status-codes';
 import { removeReactionFromCache } from '@redis/comments-cache';
 import { socketIOPostObject } from '@sockets/posts';
 import { reactionQueue } from '@queues/reaction.queue';
+import { IReactionJob } from '@comments/interface/comment.interface';
 
 export class Remove {
   public async reaction(req: Request, res: Response): Promise<void> {
@@ -13,10 +14,10 @@ export class Remove {
       previousReaction,
       username: req.currentUser!.username
     });
-    const dbReactionData = {
+    const dbReactionData: IReactionJob = {
       postId,
       previousReaction,
-      username: req.currentUser?.username
+      username: req.currentUser!.username
     };
     reactionQueue.addReactionJob('removeReactionFromDB', dbReactionData);
     res.status(HTTP_STATUS.OK).json({ message: 'Reaction removed from post' });

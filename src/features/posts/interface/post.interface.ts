@@ -1,6 +1,5 @@
 import { IFormattedReactions } from '@comments/interface/comment.interface';
 import mongoose from 'mongoose';
-import { ObjectId } from 'mongodb';
 
 interface IFeeling {
   name: string;
@@ -62,10 +61,8 @@ export interface IReactions {
 }
 
 export interface IPostJobData {
-  type?: string;
-  key?: string | ObjectId | undefined;
-  value?: string | IPostDocument | number | IFormattedReactions[] | IReactions;
-  username?: string;
-  uId?: string;
-  prop?: string;
+  key?: string;
+  value?: IPostDocument;
+  keyOne?: string;
+  keyTwo?: string;
 }

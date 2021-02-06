@@ -76,7 +76,7 @@ export class SignUp {
     );
     const dataFile: string = await image.getBase64Async('image/png');
     await Promise.all([uploads(dataFile, `${createdObjectId}`, true, true), saveUserToRedisCache(`${createdObjectId}`, uId, data)]);
-    userQueue.addUserJob('addUserToDB', data);
+    userQueue.addUserJob('addUserToDB', { value: data });
     const userJwt: string = JWT.sign(
       {
         userId: data._id,

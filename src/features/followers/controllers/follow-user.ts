@@ -48,7 +48,7 @@ export class Add {
     followerQueue.addFollowerJob('addFollowerDB', {
       keyOne: `${req.currentUser?.userId}`,
       keyTwo: `${req.params.followerId}`,
-      username: req.currentUser?.username,
+      username: req.currentUser!.username,
       followerDocumentId: followerObjectId
     });
     res.status(HTTP_STATUS.OK).json({ message: 'Following user now', notification: true });

@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import Queue from 'bull';
 import { BaseQueue } from '@queues/base.queue';
 import { reactionWorker } from '@workers/reaction.worker';
+import { IReactionJob } from '@comments/interface/comment.interface';
 
 class ReactionQueue extends BaseQueue {
   constructor() {
@@ -10,11 +10,11 @@ class ReactionQueue extends BaseQueue {
     this.processReactionJob('removeReactionFromDB', 5, reactionWorker.removeReactionFromDB);
   }
 
-  public addReactionJob(name: string, data: any): void {
+  public addReactionJob(name: string, data: IReactionJob): void {
     this.addJob(name, data);
   }
 
-  private processReactionJob(name: string, concurrency: number, callback: Queue.ProcessCallbackFunction<any>): void {
+  private processReactionJob(name: string, concurrency: number, callback: Queue.ProcessCallbackFunction<void>): void {
     this.processJob(name, concurrency, callback);
   }
 }

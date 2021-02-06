@@ -1,13 +1,12 @@
 import { DoneCallback, Job } from 'bull';
 import { notificationService } from '@db/notification.service';
-
-class NotificationWorker {
+import { BaseWorker } from '@workers/base.worker';
+class NotificationWorker extends BaseWorker {
   async updateNotification(jobQueue: Job, done: DoneCallback): Promise<void> {
     try {
       const { key } = jobQueue.data;
       await notificationService.updateNotification(key);
-      jobQueue.progress(100);
-      done(null, jobQueue.data);
+      this.progress(jobQueue, done);
     } catch (error) {
       done(error);
     }
@@ -17,8 +16,7 @@ class NotificationWorker {
     try {
       const { key } = jobQueue.data;
       await notificationService.deleteNotification(key);
-      jobQueue.progress(100);
-      done(null, jobQueue.data);
+      this.progress(jobQueue, done);
     } catch (error) {
       done(error);
     }

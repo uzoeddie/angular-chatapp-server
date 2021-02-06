@@ -1,4 +1,5 @@
 import { IUserBirthDay } from '@user/interface/user.interface';
+import { ObjectID } from 'mongodb';
 import mongoose from 'mongoose';
 
 export interface IFollowing {
@@ -35,6 +36,8 @@ export interface IFollowerData {
 }
 
 export interface IFollowerJobData {
-  key: string;
-  value: string;
+  keyOne?: string;
+  keyTwo?: string;
+  username?: string;
+  followerDocumentId?: ObjectID;
 }

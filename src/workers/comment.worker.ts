@@ -1,11 +1,11 @@
 import { DoneCallback, Job } from 'bull';
 import { commentService } from '@db/comment.service';
-class CommentWorker {
+import { BaseWorker } from '@workers/base.worker';
+class CommentWorker extends BaseWorker {
   async addCommentToDB(jobQueue: Job, done: DoneCallback): Promise<void> {
     try {
       await commentService.addCommentToDB(jobQueue.data);
-      jobQueue.progress(100);
-      done(null, jobQueue.data);
+      this.progress(jobQueue, done);
     } catch (error) {
       done(error);
     }
