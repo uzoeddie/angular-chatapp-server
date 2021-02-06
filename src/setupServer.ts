@@ -1,4 +1,4 @@
-import { Response, Request, json, urlencoded, Application } from 'express';
+import { Response, Request, json, urlencoded, Application, NextFunction } from 'express';
 import http from 'http';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -101,14 +101,11 @@ export class ChatServer {
       res.status(HTTP_STATUS.NOT_FOUND).json({ message: `${req.originalUrl} not found...` });
     });
 
-    app.use((err: IErrorResponse, _req: Request, res: Response) => {
-      log.error(err.serializeErrors());
+    app.use((err: IErrorResponse, _req: Request, res: Response, next: NextFunction) => {
       if (err instanceof CustomError) {
-        return res.status(err.statusCode).json({
-          error: err.serializeErrors(),
-          message: err.serializeErrors()
-        });
+        return res.status(err.statusCode).json(err.serializeErrors());
       }
+      next(err);
     });
   }
 
@@ -154,12 +151,12 @@ export class ChatServer {
     const chatSocketIOHandler: SocketIOChatHandler = new SocketIOChatHandler(io);
     const imageHandler: SocketIOImageHandler = new SocketIOImageHandler();
     const notificationHandler: SocketIONotificationsHandler = new SocketIONotificationsHandler();
-    const followersSocketIOHandler: SocketIOFollowerHandler = new SocketIOFollowerHandler(io);
+    const followersSocketIOHandler: SocketIOFollowerHandler = new SocketIOFollowerHandler();
     postsSocketIOHandler.listen();
     userSocketIOHandler.listen();
     chatSocketIOHandler.listen();
     imageHandler.listen(io);
     notificationHandler.listen(io);
-    followersSocketIOHandler.listen();
+    followersSocketIOHandler.listen(io);
   }
 }

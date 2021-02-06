@@ -9,6 +9,7 @@ import { IUserDocument } from '@user/interface/user.interface';
 import { UpdateQuery } from 'mongoose';
 import { socketIONotificationObject } from '@sockets/notifications';
 import { NotificationModel } from '@notifications/models/notification.schema';
+import { INotificationDocument } from '@notifications/interface/notification.interface';
 
 class Reaction {
   public async addReactionDataToDB(reactionData: any): Promise<void> {
@@ -30,11 +31,11 @@ class Reaction {
         { new: true }
       )
     ])) as [IUserDocument, UpdateQuery<IReactionDocument>, UpdateQuery<IPostDocument>];
-    const data = (updatedReaction[2].reactions as unknown) as string;
+    const data: string = (updatedReaction[2].reactions as unknown) as string;
     await updateSinglePostPropInRedisCache(postId, 'reactions', data);
     if (updatedReaction[0].notifications.reactions && userFrom !== userTo) {
-      const notificationModel = new NotificationModel();
-      const notifications = await notificationModel.insertNotification({
+      const notificationModel: INotificationDocument = new NotificationModel();
+      const notifications: void = await notificationModel.insertNotification({
         userFrom,
         userTo,
         message: `${username} reacted to your post.`,
@@ -64,7 +65,7 @@ class Reaction {
         { new: true }
       )
     ])) as [any, UpdateQuery<IPostDocument>];
-    const data = (updatedReaction[1].reactions as unknown) as string;
+    const data: string = (updatedReaction[1].reactions as unknown) as string;
     await updateSinglePostPropInRedisCache(postId, 'reactions', data);
   }
 }

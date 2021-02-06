@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request } from 'express';
 import { ObjectSchema } from 'joi';
-import { RequestValidationError } from '@global/error-handler';
+import { JoiRequestValidationError } from '@global/error-handler';
 
 type IJoiDescriptor = (target: any, key: string, descriptor: PropertyDescriptor) => void;
 
@@ -14,7 +14,7 @@ export function joiValidation(schema: ObjectSchema): IJoiDescriptor {
       // if you use validateAsync, you'll have to use a try/catch block
       const { error } = await schema.validate(req.body);
       if (error?.details) {
-        throw new RequestValidationError(error);
+        throw new JoiRequestValidationError(error.details[0].message);
       }
       const result = originalMethod.apply(this, args);
       return result;

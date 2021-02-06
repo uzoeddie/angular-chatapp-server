@@ -9,6 +9,7 @@ import { getUserFromCache } from '@redis/user-cache';
 import { IUserDocument } from '@user/interface/user.interface';
 import { UpdateQuery } from 'mongoose';
 import { socketIONotificationObject } from '@sockets/notifications';
+import { INotificationDocument } from '@notifications/interface/notification.interface';
 
 class Comment {
   public async addCommentToDB(commentData: any): Promise<void> {
@@ -19,8 +20,8 @@ class Comment {
     const response: [ICommentDocument, UpdateQuery<IPostDocument>, IUserDocument] = await Promise.all([comments, posts, user]);
     await updateSinglePostPropInRedisCache(postId, 'comments', `${response[1].comments}`);
     if (response[2].notifications.comments && userFrom !== userTo) {
-      const notificationModel = new NotificationModel();
-      const notifications = await notificationModel.insertNotification({
+      const notificationModel: INotificationDocument = new NotificationModel();
+      const notifications: void = await notificationModel.insertNotification({
         userFrom,
         userTo,
         message: `${username} commented on your post.`,

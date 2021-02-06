@@ -1,11 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { BulkWriteOpResultObject, ObjectID, ObjectId } from 'mongodb';
+import mongoose, { Query } from 'mongoose';
 import { IFollowerDocument } from '@followers/interface/followers.interface';
 import { FollowerModel } from '@followers/models/follower.schema';
+import { INotificationDocument } from '@notifications/interface/notification.interface';
 import { NotificationModel } from '@notifications/models/notification.schema';
 import { socketIONotificationObject } from '@sockets/notifications';
 import { IUserDocument } from '@user/interface/user.interface';
 import { UserModel } from '@user/models/user.schema';
-import { BulkWriteOpResultObject, ObjectID, ObjectId } from 'mongodb';
-import mongoose from 'mongoose';
 
 class Follower {
   public async addFollowerToDB(userId: string, followerId: string, username: string, followerDocumentId: ObjectID): Promise<void> {
@@ -35,8 +37,8 @@ class Follower {
     const response: [IFollowerDocument, BulkWriteOpResultObject, IUserDocument | null] = await Promise.all([following, users, UserModel.findOne({ _id: followerId })]);
 
     if (response[2]!.notifications.follows && userId !== followerId) {
-      const notificationModel = new NotificationModel();
-      const notifications = await notificationModel.insertNotification({
+      const notificationModel: INotificationDocument = new NotificationModel();
+      const notifications: void = await notificationModel.insertNotification({
         userFrom: userId,
         userTo: followerId,
         message: `${username} is now following you.`,
@@ -52,7 +54,7 @@ class Follower {
     const followerObjectId: ObjectId = mongoose.Types.ObjectId(followerId);
     const userObjectId: ObjectId = mongoose.Types.ObjectId(userId);
 
-    const unFollowing = FollowerModel.deleteOne({ followerId: userObjectId, followeeId: followerObjectId });
+    const unFollowing: Query<any, IFollowerDocument> = FollowerModel.deleteOne({ followerId: userObjectId, followeeId: followerObjectId });
     const users: Promise<BulkWriteOpResultObject> = UserModel.bulkWrite([
       {
         updateOne: {

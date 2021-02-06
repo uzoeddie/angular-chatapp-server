@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { ICommentDocument, IReactionDocument } from '@comments/interface/comment.interface';
 import { CommentsModel } from '@comments/models/comment.schema';
 import { ReactionsModel } from '@comments/models/reactions.schema';
 import { IFileImageDocument } from '@images/interface/images.interface';
@@ -7,7 +9,7 @@ import { PostModel } from '@posts/models/post.schema';
 import { updateSingleUserItemInRedisCache } from '@redis/user-info-cache';
 import { IUserDocument } from '@user/interface/user.interface';
 import { UserModel } from '@user/models/user.schema';
-import { UpdateQuery } from 'mongoose';
+import { Query, UpdateQuery } from 'mongoose';
 
 class Post {
   public async addPostToDB(userId: string, createdPost: IPostDocument): Promise<void> {
@@ -25,7 +27,7 @@ class Post {
 
   public async editPost(postId: string, updatedPost: IPostDocument): Promise<void> {
     let images: UpdateQuery<IFileImageDocument> | undefined;
-    const post = PostModel.updateOne({ _id: postId }, { $set: updatedPost });
+    const post: UpdateQuery<IPostDocument> = PostModel.updateOne({ _id: postId }, { $set: updatedPost });
     if (updatedPost.imgId && updatedPost.imgVersion) {
       images = ImageModel.updateOne(
         { userId: updatedPost.userId },
@@ -41,10 +43,10 @@ class Post {
   }
 
   public async deletePost(postId: string, userId: string): Promise<void> {
-    const deletPost = PostModel.deleteOne({ _id: postId });
+    const deletPost: Query<any, IPostDocument> = PostModel.deleteOne({ _id: postId });
     const decrementPostNumber: UpdateQuery<IUserDocument> = UserModel.updateOne({ _id: userId }, { $inc: { postCount: -1 } });
-    const deleteComments = CommentsModel.deleteMany({ postId: postId });
-    const deleteReactions = ReactionsModel.deleteMany({ postId: postId });
+    const deleteComments: Query<any, ICommentDocument> = CommentsModel.deleteMany({ postId: postId });
+    const deleteReactions: Query<any, IReactionDocument> = ReactionsModel.deleteMany({ postId: postId });
     await Promise.all([deletPost, decrementPostNumber, deleteComments, deleteReactions]);
   }
 }

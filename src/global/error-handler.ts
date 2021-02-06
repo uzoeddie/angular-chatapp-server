@@ -1,63 +1,46 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import HTTP_STATUS from 'http-status-codes';
 
 export interface IErrorResponse {
   message: string;
   statusCode: number;
+  status: string;
   serializeErrors(): IError;
 }
 
 export interface IError {
   message: string;
   statusCode: number;
+  status: string;
 }
 
 export abstract class CustomError extends Error {
   abstract statusCode: number;
+  status: string;
 
   constructor(message: string) {
     super(message);
-
-    Object.setPrototypeOf(this, CustomError.prototype);
-  }
-
-  abstract serializeErrors(): IError;
-}
-
-export class RequestValidationError extends CustomError {
-  statusCode = HTTP_STATUS.BAD_REQUEST;
-
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  constructor(public errors: any) {
-    super(errors);
-
-    // Only because we are extending a built in class
-    Object.setPrototypeOf(this, RequestValidationError.prototype);
+    this.status = 'error';
   }
 
   serializeErrors(): IError {
-    let errorMsg = '';
-    if (!this.errors.details) {
-      errorMsg = this.errors;
-    } else {
-      errorMsg = this.errors.details[0].message;
-    }
-    return { message: errorMsg, statusCode: this.statusCode };
+    return { message: this.message, statusCode: this.statusCode, status: this.status };
+  }
+}
+
+export class JoiRequestValidationError extends CustomError {
+  statusCode = HTTP_STATUS.BAD_REQUEST;
+
+  constructor(message: string) {
+    super(message);
   }
 }
 
 export class BadRequestError extends CustomError {
   statusCode = HTTP_STATUS.BAD_REQUEST;
 
-  constructor(public message: string) {
+  constructor(message: string) {
     super(message);
-
-    // Only because we are extending a built in class
-    Object.setPrototypeOf(this, BadRequestError.prototype);
-  }
-
-  serializeErrors(): IError {
-    return { message: this.message, statusCode: this.statusCode };
+    this.message = message;
   }
 }
 
@@ -66,13 +49,6 @@ export class NotFoundError extends CustomError {
 
   constructor(public message: string) {
     super(message);
-
-    // Only because we are extending a built in class
-    Object.setPrototypeOf(this, NotFoundError.prototype);
-  }
-
-  serializeErrors(): IError {
-    return { message: this.message, statusCode: this.statusCode };
   }
 }
 
@@ -81,13 +57,6 @@ export class NotAuthorizedError extends CustomError {
 
   constructor(public message: string) {
     super(message);
-
-    // Only because we are extending a built in class
-    Object.setPrototypeOf(this, NotAuthorizedError.prototype);
-  }
-
-  serializeErrors(): IError {
-    return { message: this.message, statusCode: this.statusCode };
   }
 }
 
@@ -96,12 +65,5 @@ export class ServerSideError extends CustomError {
 
   constructor(public message: string) {
     super(message);
-
-    // Only because we are extending a built in class
-    Object.setPrototypeOf(this, NotAuthorizedError.prototype);
-  }
-
-  serializeErrors(): IError {
-    return { message: this.message, statusCode: this.statusCode };
   }
 }

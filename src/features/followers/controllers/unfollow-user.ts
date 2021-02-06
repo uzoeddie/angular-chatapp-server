@@ -6,10 +6,10 @@ import { removeFollowerFromRedisCache } from '@redis/follower-cache';
 
 export class Remove {
   public async following(req: Request, res: Response): Promise<void> {
-    const removeFollowerToCache = removeFollowerFromRedisCache(`followers:${req.currentUser!.userId}`, req.params.objectId);
-    const removeFolloweeToCache = removeFollowerFromRedisCache(`following:${req.params.followerId}`, req.params.objectId);
-    const followersCount = updateUserFollowersInRedisCache(`${req.params.followerId}`, 'followersCount', -1);
-    const followingCount = updateUserFollowersInRedisCache(`${req.currentUser?.userId}`, 'followingCount', -1);
+    const removeFollowerToCache: Promise<void> = removeFollowerFromRedisCache(`followers:${req.currentUser!.userId}`, req.params.objectId);
+    const removeFolloweeToCache: Promise<void> = removeFollowerFromRedisCache(`following:${req.params.followerId}`, req.params.objectId);
+    const followersCount: Promise<void> = updateUserFollowersInRedisCache(`${req.params.followerId}`, 'followersCount', -1);
+    const followingCount: Promise<void> = updateUserFollowersInRedisCache(`${req.currentUser?.userId}`, 'followingCount', -1);
     await Promise.all([removeFollowerToCache, removeFolloweeToCache, followersCount, followingCount]);
     followerQueue.addFollowerJob('removeFollowerFromDB', {
       keyOne: `${req.currentUser?.userId}`,

@@ -63,8 +63,12 @@ class HealthRoute {
 
   public appRoutes(): Router {
     this.router.get('/', async (req: Request, res: Response) => {
-      const ip = await publicIP.v4();
-      res.status(200).send(`This is the dev server and todays date is ${moment(new Date()).format('DD/MM/YYYY HH:mm')} from IP ${ip}`);
+      const ip: string = await publicIP.v4();
+      const response = await axios({
+        method: 'get',
+        url: 'http://169.254.169.254/latest/meta-data/instance-id'
+      });
+      res.status(200).send(`This is the dev server on instance ${response.data} and todays date is ${moment(new Date()).utc().format('DD/MM/YYYY HH:mm')} from IP ${ip}`);
     });
 
     return this.router;

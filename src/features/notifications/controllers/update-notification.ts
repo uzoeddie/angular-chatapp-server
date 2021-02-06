@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 import { socketIONotificationObject } from '@sockets/notifications';
 import { notificationQueue } from '@queues/notification.queue';
-
 export class Update {
   public async notification(req: Request, res: Response): Promise<void> {
     socketIONotificationObject.emit('update notification', req.params.notificationId);

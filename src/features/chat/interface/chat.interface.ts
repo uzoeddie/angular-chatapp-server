@@ -85,3 +85,11 @@ export interface IChatRedisData {
   createdAt: Date;
   images: string[];
 }
+
+export interface ISearchUser {
+  _id: string;
+  profilePicture: string;
+  username: string;
+  email: string;
+  avatarColor: string;
+}

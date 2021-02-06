@@ -9,12 +9,12 @@ export class AddMessage {
   @joiValidation(addChatImageSchema)
   public async image(req: Request, res: Response): Promise<void> {
     const { selectedImages } = req.body;
-    const uploadResult = [];
+    let uploadResult: string[] = [];
 
     for (const file of selectedImages) {
       const result: UploadApiResponse = (await uploads(file)) as UploadApiResponse;
       const url = `http://res.cloudinary.com/ratingapp/image/upload/v${result.version}/${result.public_id}`;
-      uploadResult.push(url);
+      uploadResult = [...uploadResult, url];
     }
     if (uploadResult.length === selectedImages.length) {
       req.body.selectedImages = uploadResult;

@@ -1,22 +1,18 @@
 import { IFollowers } from '@followers/interface/followers.interface';
 import { Server, Socket } from 'socket.io';
 
+let socketIOFollowerObject: Server;
+
 export class SocketIOFollowerHandler {
-  private io: Server;
-
-  constructor(io: Server) {
-    this.io = io;
-  }
-
-  public listen(): void {
-    this.io.on('connection', (socket: Socket) => {
-      socket.on('follow user', (data: IFollowers) => {
-        this.io.emit('add follower', data);
-      });
+  public listen(io: Server): void {
+    socketIOFollowerObject = io;
+    io.on('connection', (socket: Socket) => {
 
       socket.on('unfollow user', (data: IFollowers) => {
-        this.io.emit('remove follower', data);
+        io.emit('remove follower', data);
       });
     });
   }
 }
+
+export { socketIOFollowerObject };
