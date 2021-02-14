@@ -1,7 +1,6 @@
 import { DoneCallback, Job } from 'bull';
 import { userInfoService } from '@db/user-info.service';
-import { BaseWorker } from '@workers/base.worker';
-class UserInfoWorker extends BaseWorker {
+class UserInfoWorker {
   async updateWork(jobQueue: Job, done: DoneCallback): Promise<void> {
     try {
       const { key, value, type, paramsId } = jobQueue.data;
@@ -12,7 +11,8 @@ class UserInfoWorker extends BaseWorker {
       } else {
         await userInfoService.deleteWork(key, paramsId);
       }
-      this.progress(jobQueue, done);
+      jobQueue.progress(100);
+      done(null, jobQueue.data);
     } catch (error) {
       done(error);
     }
@@ -28,7 +28,8 @@ class UserInfoWorker extends BaseWorker {
       } else {
         await userInfoService.deleteSchool(key, paramsId);
       }
-      this.progress(jobQueue, done);
+      jobQueue.progress(100);
+      done(null, jobQueue.data);
     } catch (error) {
       done(error);
     }
@@ -44,7 +45,8 @@ class UserInfoWorker extends BaseWorker {
       } else {
         await userInfoService.deletePlace(key, paramsId);
       }
-      this.progress(jobQueue, done);
+      jobQueue.progress(100);
+      done(null, jobQueue.data);
     } catch (error) {
       done(error);
     }
@@ -54,7 +56,8 @@ class UserInfoWorker extends BaseWorker {
     try {
       const { key, value } = jobQueue.data;
       await userInfoService.updateGender(key, value);
-      this.progress(jobQueue, done);
+      jobQueue.progress(100);
+      done(null, jobQueue.data);
     } catch (error) {
       done(error);
     }
@@ -64,7 +67,8 @@ class UserInfoWorker extends BaseWorker {
     try {
       const { key, value } = jobQueue.data;
       await userInfoService.updateBirthDay(key, value);
-      this.progress(jobQueue, done);
+      jobQueue.progress(100);
+      done(null, jobQueue.data);
     } catch (error) {
       done(error);
     }
@@ -74,7 +78,8 @@ class UserInfoWorker extends BaseWorker {
     try {
       const { key, value } = jobQueue.data;
       await userInfoService.updateRelationship(key, value);
-      this.progress(jobQueue, done);
+      jobQueue.progress(100);
+      done(null, jobQueue.data);
     } catch (error) {
       done(error);
     }
@@ -84,7 +89,8 @@ class UserInfoWorker extends BaseWorker {
     try {
       const { key, value } = jobQueue.data;
       await userInfoService.updateAbout(key, value);
-      this.progress(jobQueue, done);
+      jobQueue.progress(100);
+      done(null, jobQueue.data);
     } catch (error) {
       done(error);
     }
@@ -94,7 +100,8 @@ class UserInfoWorker extends BaseWorker {
     try {
       const { key, value } = jobQueue.data;
       await userInfoService.updateQuotes(key, value);
-      this.progress(jobQueue, done);
+      jobQueue.progress(100);
+      done(null, jobQueue.data);
     } catch (error) {
       done(error);
     }

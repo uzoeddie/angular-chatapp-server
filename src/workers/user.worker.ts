@@ -2,13 +2,13 @@ import { DoneCallback, Job } from 'bull';
 import { userService } from '@db/user.service';
 import { updateSingleUserItemInRedisCache } from '@redis/user-info-cache';
 import { blockUserService } from '@db/block-user.service';
-import { BaseWorker } from '@workers/base.worker';
-class UserWorker extends BaseWorker {
+class UserWorker {
   async addBlockedUserToDB(jobQueue: Job, done: DoneCallback): Promise<void> {
     try {
       const { keyOne, keyTwo } = jobQueue.data;
       await blockUserService.blockUser(keyOne, keyTwo);
-      this.progress(jobQueue, done);
+      jobQueue.progress(100);
+      done(null, jobQueue.data);
     } catch (error) {
       done(error);
     }
@@ -18,7 +18,8 @@ class UserWorker extends BaseWorker {
     try {
       const { keyOne, keyTwo } = jobQueue.data;
       await blockUserService.unblockUser(keyOne, keyTwo);
-      this.progress(jobQueue, done);
+      jobQueue.progress(100);
+      done(null, jobQueue.data);
     } catch (error) {
       done(error);
     }
@@ -28,7 +29,8 @@ class UserWorker extends BaseWorker {
     try {
       const { key, value } = jobQueue.data;
       await userService.updateNotificationSettings(key, value);
-      this.progress(jobQueue, done);
+      jobQueue.progress(100);
+      done(null, jobQueue.data);
     } catch (error) {
       done(error);
     }
@@ -38,7 +40,8 @@ class UserWorker extends BaseWorker {
     try {
       const { value } = jobQueue.data;
       await userService.addUserDataToDB(value);
-      this.progress(jobQueue, done);
+      jobQueue.progress(100);
+      done(null, jobQueue.data);
     } catch (error) {
       done(error);
     }
@@ -48,7 +51,8 @@ class UserWorker extends BaseWorker {
     try {
       const { key, prop, value } = jobQueue.data;
       await updateSingleUserItemInRedisCache(key, prop, value);
-      this.progress(jobQueue, done);
+      jobQueue.progress(100);
+      done(null, jobQueue.data);
     } catch (error) {
       done(error);
     }

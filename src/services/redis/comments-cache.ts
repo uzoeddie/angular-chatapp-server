@@ -28,7 +28,6 @@ export function savePostReactionToRedisCache(key: string, value: string, previou
   return new Promise((resolve, reject) => {
     const multi: Multi = client.multi();
     let reaction: IReactionDocument | undefined = Helpers.parseJson(value);
-    console.log(reaction);
     client.lrange(`reactions:${key}`, 0, -1, (error: Error | null, response: string[]) => {
       if (error) {
         reject(error);
@@ -154,8 +153,8 @@ function updateReaction(multi: Multi, key: string, response: string[], reactionO
   const result = _.find(list, (item) => {
     return item.postId === postId && item.type === previousReaction && item.username === username;
   });
-  if (reaction) {
-    reaction._id = result._id;
+  if (reaction && result?._id) {
+    reaction._id = result?._id;
   }
   const index: number = _.findIndex(list, (item) => {
     return item.postId === postId && item.type === previousReaction && item.username === username;

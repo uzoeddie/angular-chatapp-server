@@ -1,12 +1,12 @@
 import { DoneCallback, Job } from 'bull';
 import { followerService } from '@db/follower.service';
-import { BaseWorker } from '@workers/base.worker';
-class FollowerWorker extends BaseWorker {
+class FollowerWorker {
   async addFollowerToDB(jobQueue: Job, done: DoneCallback): Promise<void> {
     try {
       const { keyOne, keyTwo, username, followerDocumentId } = jobQueue.data;
       await followerService.addFollowerToDB(keyOne, keyTwo, username, followerDocumentId);
-      this.progress(jobQueue, done);
+      jobQueue.progress(100);
+      done(null, jobQueue.data);
     } catch (error) {
       done(error);
     }
@@ -16,7 +16,8 @@ class FollowerWorker extends BaseWorker {
     try {
       const { keyOne, keyTwo } = jobQueue.data;
       await followerService.unfollowerFromDB(keyOne, keyTwo);
-      this.progress(jobQueue, done);
+      jobQueue.progress(100);
+      done(null, jobQueue.data);
     } catch (error) {
       done(error);
     }

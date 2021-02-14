@@ -1,12 +1,12 @@
 import { DoneCallback, Job } from 'bull';
 import { imageService } from '@db/image.service';
-import { BaseWorker } from '@workers/base.worker';
-class ImageWorker extends BaseWorker {
+class ImageWorker {
   async updateImageInDB(jobQueue: Job, done: DoneCallback): Promise<void> {
     try {
       const { key, value } = jobQueue.data;
       await imageService.addImageToDB(key, value);
-      this.progress(jobQueue, done);
+      jobQueue.progress(100);
+      done(null, jobQueue.data);
     } catch (error) {
       done(error);
     }
@@ -16,7 +16,8 @@ class ImageWorker extends BaseWorker {
     try {
       const { key, imgId, imgVersion } = jobQueue.data;
       await imageService.addBackgroundImageToDB(key, imgId, imgVersion);
-      this.progress(jobQueue, done);
+      jobQueue.progress(100);
+      done(null, jobQueue.data);
     } catch (error) {
       done(error);
     }
@@ -26,7 +27,8 @@ class ImageWorker extends BaseWorker {
     try {
       const { userId, imageId } = jobQueue.data;
       await imageService.removeImageFromDB(userId, imageId);
-      this.progress(jobQueue, done);
+      jobQueue.progress(100);
+      done(null, jobQueue.data);
     } catch (error) {
       done(error);
     }
