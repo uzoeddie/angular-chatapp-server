@@ -27,6 +27,12 @@ export class SocketIOChatHandler {
       socket.join(receiverSocketId);
     });
 
+    socket.on('new message with image', (data: any) => {
+      const senderSocketId: string = connectedUsersMap.get(data.senderId?._id) as string;
+      const receiverSocketId: string = connectedUsersMap.get(data.receiverId?._id) as string;
+      this.io.to(senderSocketId).to(receiverSocketId).emit('message received', data);
+    });
+
     socket.on('start_typing', (data: ITyping) => {
       const receiverSocketId: string = connectedUsersMap.get(data.receiver) as string;
       this.io.to(receiverSocketId).emit('is_typing', data);

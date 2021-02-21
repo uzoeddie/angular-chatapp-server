@@ -116,7 +116,7 @@ export class ChatServer {
 
     try {
       const httpServer: http.Server = new http.Server(app);
-      const socketIO = this.createSocketIO(httpServer);
+      const socketIO: Server = this.createSocketIO(httpServer);
       this.startHttpServer(httpServer);
       this.socketIOConnections(socketIO);
     } catch (error) {

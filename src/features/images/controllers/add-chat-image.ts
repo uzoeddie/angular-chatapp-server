@@ -2,11 +2,11 @@ import { Request, Response } from 'express';
 import { AddChat } from '@chat/controllers/add-chat-message';
 import { uploads } from '@global/cloudinary-upload';
 import { joiValidation } from '@global/decorators/joi-validation.decorator';
-import { addChatImageSchema } from '@images/schemes/images';
 import { UploadApiResponse } from 'cloudinary';
+import { addChatSchema } from '@chat/schemes/chat';
 
 export class AddMessage {
-  @joiValidation(addChatImageSchema)
+  @joiValidation(addChatSchema)
   public async image(req: Request, res: Response): Promise<void> {
     const { selectedImages } = req.body;
     let uploadResult: string[] = [];

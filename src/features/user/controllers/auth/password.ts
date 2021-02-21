@@ -30,7 +30,7 @@ export class Password {
     const resetLink = `${config.CLIENT_URL}/auth/reset-password?token=${randomCharacters}`;
     const template: string = forgotPasswordTemplate.passwordResetTemplate(existingAuthUser.username, resetLink);
     await mailTransport.sendEmail(config.TESTING_RECEIVER_EMAIL!, 'Reset your password', template);
-    res.status(HTTP_STATUS.OK).json({ message: 'Password reset email sent.', user: {}, token: '' });
+    res.status(HTTP_STATUS.OK).json({ message: 'Password reset email sent.', user: {}, token: '', notification: false });
   }
 
   @joiValidation(passwordUpdateSchema)
@@ -55,6 +55,6 @@ export class Password {
     };
     const template: string = resetPasswordTemplate.passwordResetConfirmationTemplate(templateParams);
     await mailTransport.sendEmail(config.TESTING_RECEIVER_EMAIL!, 'Password Reset Confirmation', template);
-    res.status(HTTP_STATUS.OK).json({ message: 'Password successfully updated.', user: {}, token: '' });
+    res.status(HTTP_STATUS.OK).json({ message: 'Password successfully updated.', user: {}, token: '', notification: false });
   }
 }

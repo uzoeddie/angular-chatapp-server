@@ -91,6 +91,6 @@ export class SignUp {
     if (req.body.keepLoggedIn) {
       req.sessionOptions.maxAge = 30 * 24 * 60 * 60 * 1000;
     }
-    res.status(HTTP_STATUS.CREATED).json({ message: 'User created successfully', user: data, token: userJwt });
+    res.status(HTTP_STATUS.CREATED).json({ message: 'User created successfully', user: data, token: userJwt, notification: false });
   }
 }

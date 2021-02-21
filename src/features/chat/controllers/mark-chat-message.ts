@@ -41,6 +41,6 @@ export class MarkChat {
     const response: string = await updateIsReadPropInRedisCache(`${req.currentUser?.userId}`, `${receiverId}`, `${conversationMessageId}`);
     socketIOChatObject.emit('message collection update', unflatten(JSON.parse(response)));
     chatQueue.addChatJob('markMessagesAsReadInDB', { conversationId: conversationMessageId });
-    res.status(HTTP_STATUS.OK).json({});
+    res.status(HTTP_STATUS.OK).json({ message: 'Message marked as read', notification: false });
   }
 }

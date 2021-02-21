@@ -64,7 +64,10 @@ export class AddChat {
       createdAt: createdAt,
       images: selectedImages
     };
-    chatMessage(data);
+    // if chat has image, don't send
+    if (!selectedImages.length) {
+      chatMessage(data);
+    }
 
     const addChatList: Promise<void> = addChatListToRedisCache([`${req.currentUser?.userId}`, `${receiverId._id}`], data);
     const addChatMessage: Promise<void> = addChatmessageToRedisCache(`${conversationObjectId}`, data);
@@ -84,7 +87,7 @@ export class AddChat {
       createdAt
     } as unknown) as IMessageDocument;
     chatQueue.addChatJob('addChatMessagesToDB', { value: message });
-    res.status(HTTP_STATUS.OK).json({ message: 'User added to chat list.', conversation: conversationObjectId });
+    res.status(HTTP_STATUS.OK).json({ message: 'Message added', conversation: conversationObjectId });
   }
 }
 
