@@ -11,15 +11,13 @@ export class Get {
     const cachedFollowers: IFollower[] = await getFollowersFromRedisCache(`followers:${req.currentUser?.userId}`);
     const following: IFollower[] = (cachedFollowers.length
       ? cachedFollowers
-      : await FollowerModel.find({ followerId: userObjectId }, { _id: 0, followeeId: 1, followerId: 1 })
+      : await FollowerModel.find({ followerId: userObjectId }, { _id: 1, followeeId: 1, followerId: 1 })
           .lean()
           .populate({
-            path: 'followerId',
-            select: 'username avatarColor postCount followersCount followingCount birthDay profilePicture'
+            path: 'followerId'
           })
           .populate({
-            path: 'followeeId',
-            select: 'username avatarColor postCount followersCount followingCount birthDay profilePicture'
+            path: 'followeeId'
           })
           .exec()) as IFollower[];
     res.status(HTTP_STATUS.OK).json({ message: 'User following', following });
@@ -30,15 +28,13 @@ export class Get {
     const cachedFollowers: IFollower[] = await getFollowersFromRedisCache(`following:${req.params.userId}`);
     const followers: IFollower[] = (cachedFollowers.length
       ? cachedFollowers
-      : await FollowerModel.find({ followeeId: userObjectId }, { _id: 0, followeeId: 1, followerId: 1 })
+      : await FollowerModel.find({ followeeId: userObjectId }, { _id: 1, followeeId: 1, followerId: 1 })
           .lean()
           .populate({
-            path: 'followerId',
-            select: 'username avatarColor postCount followersCount followingCount birthDay profilePicture'
+            path: 'followerId'
           })
           .populate({
-            path: 'followeeId',
-            select: 'username avatarColor postCount followersCount followingCount birthDay profilePicture'
+            path: 'followeeId'
           })
           .exec()) as IFollower[];
     res.status(HTTP_STATUS.OK).json({ message: 'User followers', followers });

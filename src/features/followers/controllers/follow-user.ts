@@ -24,7 +24,8 @@ export class Add {
         followersCount: response[0].followersCount,
         followingCount: response[0].followingCount,
         birthDay: response[0].birthDay,
-        profilePicture: response[0].profilePicture
+        profilePicture: response[0].profilePicture,
+        userProfile: response[0]
       },
       followeeId: {
         _id: response[1]._id,
@@ -34,7 +35,8 @@ export class Add {
         followersCount: response[1].followersCount,
         followingCount: response[1].followingCount,
         birthDay: response[1].birthDay,
-        profilePicture: response[1].profilePicture
+        profilePicture: response[1].profilePicture,
+        userProfile: response[1]
       },
       createdAt: new Date()
     };

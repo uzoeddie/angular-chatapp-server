@@ -1,4 +1,4 @@
-import { IUserBirthDay } from '@user/interface/user.interface';
+import { IUserBirthDay, IUserDocument } from '@user/interface/user.interface';
 import { ObjectID } from 'mongodb';
 import mongoose from 'mongoose';
 
@@ -33,6 +33,7 @@ export interface IFollowerData {
   username: string;
   _id?: mongoose.Types.ObjectId | string;
   birthDay?: IUserBirthDay;
+  userProfile?: IUserDocument;
 }
 
 export interface IFollowerJobData {

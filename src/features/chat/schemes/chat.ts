@@ -8,7 +8,8 @@ const addChatSchema: ObjectSchema = Joi.object().keys({
   gifUrl: Joi.string().optional().allow(null, ''),
   isRead: Joi.boolean().optional(),
   profilePicture: Joi.string().optional().allow(null, ''),
-  selectedImages: Joi.array()
+  selectedImages: Joi.array(),
+  createdAt: Joi.date().optional()
 });
 
 const markChatSchema: ObjectSchema = Joi.object().keys({
