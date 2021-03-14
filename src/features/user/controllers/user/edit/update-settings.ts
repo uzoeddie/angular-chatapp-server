@@ -13,6 +13,6 @@ export class Settings {
       key: `${req.currentUser?.username}`,
       value: req.body
     });
-    res.status(HTTP_STATUS.OK).json({ message: 'Notification settings updated successfully.', notification: true });
+    res.status(HTTP_STATUS.OK).json({ message: 'Notification settings updated successfully.', notification: true, settings: req.body });
   }
 }
