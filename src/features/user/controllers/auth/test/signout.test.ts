@@ -1,0 +1,25 @@
+import { Request, Response } from 'express';
+import { authMockRequest, authMockResponse } from '@mock/auth.mock';
+import { SignOut } from '@user/controllers/auth/signout';
+
+describe('SignOut', () => {
+  it('should set session to null', async () => {
+    const req: Request = authMockRequest({}, { username: 'Manny', password: 'manny1' }) as Request;
+    const res: Response = authMockResponse();
+    await SignOut.prototype.update(req, res);
+    expect(req.session).toBeNull();
+  });
+
+  it('should set correct json object', async () => {
+    const req: Request = authMockRequest({}, { username: 'Manny', password: 'manny1' }) as Request;
+    const res: Response = authMockResponse();
+    await SignOut.prototype.update(req, res);
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      message: 'Logout successful',
+      user: {},
+      token: '',
+      notification: false
+    });
+  });
+});

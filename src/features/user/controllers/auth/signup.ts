@@ -5,7 +5,7 @@ import { ObjectID } from 'mongodb';
 import { NotAuthorizedError } from '@global/error-handler';
 import { Helpers } from '@global/helpers';
 import { UserModel } from '@user/models/user.schema';
-import { IUserDocument } from '@user/interface/user.interface';
+import { ISignUpData, IUserDocument } from '@user/interface/user.interface';
 import { saveUserToRedisCache } from '@redis/user-cache';
 import { config } from '@root/config';
 import { joiValidation } from '@global/decorators/joi-validation.decorator';
@@ -18,7 +18,7 @@ const MAX = 10000;
 export class SignUp {
   @joiValidation(signupSchema)
   public async create(req: Request, res: Response): Promise<void> {
-    const { username, email, password } = req.body as IUserDocument;
+    const { username, email, password } = req.body;
     const checkIfUserExist: IUserDocument = (await UserModel.findOne({
       username: Helpers.firstLetterUppercase(username),
       email: Helpers.lowerCase(email)
@@ -28,37 +28,13 @@ export class SignUp {
     }
     const uId = `${Math.floor(Math.random() * Math.floor(MAX))}${Date.now()}`;
     const createdObjectId: ObjectID = new ObjectID();
-    const data: IUserDocument = ({
-      _id: createdObjectId,
-      uId,
-      username: Helpers.firstLetterUppercase(username),
-      email: Helpers.lowerCase(email),
-      avatarColor: Helpers.avatarColor(),
+    const data: IUserDocument = signUpData({
+      createdObjectId,
+      username,
+      email,
       password,
-      birthDay: { month: '', day: '' },
-      postCount: 0,
-      gender: '',
-      quotes: '',
-      about: '',
-      relationship: '',
-      blocked: [],
-      blockedBy: [],
-      bgImageVersion: '',
-      bgImageId: '',
-      work: [],
-      school: [],
-      placesLived: [],
-      createdAt: new Date(),
-      followersCount: 0,
-      followingCount: 0,
-      notifications: {
-        messages: true,
-        reactions: true,
-        comments: true,
-        follows: true
-      },
-      profilePicture: `https://res.cloudinary.com/ratingapp/image/upload/${createdObjectId}`
-    } as unknown) as IUserDocument;
+      uId
+    });
 
     const image: Jimp = await new Jimp(256, 256, data.avatarColor);
     const font = await Jimp.loadFont(Jimp.FONT_SANS_128_WHITE);
@@ -93,4 +69,39 @@ export class SignUp {
     }
     res.status(HTTP_STATUS.CREATED).json({ message: 'User created successfully', user: data, token: userJwt, notification: false });
   }
+}
+
+export function signUpData(data: ISignUpData): IUserDocument {
+  const { createdObjectId, username, email, uId, password } = data;
+  return ({
+    _id: createdObjectId,
+    uId,
+    username: Helpers.firstLetterUppercase(username),
+    email: Helpers.lowerCase(email),
+    avatarColor: Helpers.avatarColor(),
+    password,
+    birthDay: { month: '', day: '' },
+    postCount: 0,
+    gender: '',
+    quotes: '',
+    about: '',
+    relationship: '',
+    blocked: [],
+    blockedBy: [],
+    bgImageVersion: '',
+    bgImageId: '',
+    work: [],
+    school: [],
+    placesLived: [],
+    createdAt: new Date(),
+    followersCount: 0,
+    followingCount: 0,
+    notifications: {
+      messages: true,
+      reactions: true,
+      comments: true,
+      follows: true
+    },
+    profilePicture: `https://res.cloudinary.com/ratingapp/image/upload/${createdObjectId}`
+  } as unknown) as IUserDocument;
 }

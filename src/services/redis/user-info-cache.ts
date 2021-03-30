@@ -97,4 +97,4 @@ export function updateUserPropListInfoInRedisCache(key: string, prop: string, va
   });
 }
 
-export { client as redisClient };
+export { client as userInfoClient };

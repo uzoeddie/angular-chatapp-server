@@ -161,4 +161,4 @@ export function deletePostFromCache(key: string): Promise<void> {
   });
 }
 
-export { client as redisClient };
+export { client as postCacheRedisClient };

@@ -143,4 +143,4 @@ export function updateNotificationSettingInCache(key: string, prop: string, valu
   });
 }
 
-export { client as redisClient };
+export { client as userCacheRedisClient };

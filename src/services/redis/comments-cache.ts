@@ -163,4 +163,4 @@ function updateReaction(multi: Multi, key: string, response: string[], reactionO
   return reaction;
 }
 
-export { client as redisClient };
+export { client as commentsCacheRedisClient };

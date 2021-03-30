@@ -22,6 +22,7 @@ const quotesSchema: ObjectSchema = Joi.object().keys({
 });
 
 const placesSchema: ObjectSchema = Joi.object().keys({
+  _id: Joi.string().allow(null, ''),
   city: Joi.string().allow(null, ''),
   country: Joi.string().allow(null, ''),
   year: Joi.string().allow(null, ''),
@@ -29,6 +30,7 @@ const placesSchema: ObjectSchema = Joi.object().keys({
 });
 
 const workSchema: ObjectSchema = Joi.object().keys({
+  _id: Joi.string().allow(null, ''),
   company: Joi.string().allow(null, ''),
   position: Joi.string().allow(null, ''),
   city: Joi.string().allow(null, ''),
@@ -38,6 +40,7 @@ const workSchema: ObjectSchema = Joi.object().keys({
 });
 
 const educationSchema: ObjectSchema = Joi.object().keys({
+  _id: Joi.string().allow(null, ''),
   name: Joi.string().allow(null, ''),
   course: Joi.string().allow(null, ''),
   degree: Joi.string().allow(null, ''),

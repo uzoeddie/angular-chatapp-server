@@ -143,4 +143,4 @@ function updateChatList(multi: Multi, response: string[], key: string, conversat
   }
 }
 
-export { client as redisClient };
+export { client as messageCacheRedisClient };

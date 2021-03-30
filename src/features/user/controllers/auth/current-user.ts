@@ -8,10 +8,10 @@ export class CurrentUser {
     const cachedUser: IUserDocument = await getUserFromCache(`${req.currentUser?.userId}`);
     const existingAuthUser: IUserDocument = cachedUser ? cachedUser : ((await UserModel.findById({ _id: req.currentUser?.userId })) as IUserDocument);
     if (!existingAuthUser) {
-      res.status(HTTP_STATUS.OK).send({ token: null, isUser: false });
+      res.status(HTTP_STATUS.OK).json({ token: null, isUser: false });
       return;
     }
-    res.status(HTTP_STATUS.OK).send({ token: req.session?.jwt, isUser: true });
+    res.status(HTTP_STATUS.OK).json({ token: req.session?.jwt, isUser: true });
     return;
   }
 }

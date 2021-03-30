@@ -63,4 +63,4 @@ export function getFollowersFromRedisCache(key: string): Promise<IFollower[]> {
   });
 }
 
-export { client as redisClient };
+export { client as followerCacheRedisClient };

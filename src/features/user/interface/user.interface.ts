@@ -50,6 +50,14 @@ export interface AuthPayload {
   iat?: number;
 }
 
+export interface ISignUpData {
+  createdObjectId: ObjectID;
+  uId: string;
+  email: string;
+  username: string;
+  password: string;
+}
+
 export interface IUserWork {
   _id: mongoose.Types.ObjectId | string;
   company: string;

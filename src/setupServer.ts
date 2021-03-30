@@ -34,6 +34,7 @@ import { router } from 'bull-board';
 const log: Logger = config.createLogger('main');
 const REDIS_PORT = 6379;
 const SERVER_PORT = 5000;
+const BASE_PATH = '/api/v1/chatapp';
 export class ChatServer {
   private app: Application;
 
@@ -83,17 +84,17 @@ export class ChatServer {
     app.use('', healthRoute.fiboRoutes());
     app.use('', healthRoute.appRoutes());
     app.use('', healthRoute.instance());
-    app.use('/api/v1/chatapp', authRoutes.routes());
-    app.use('/api/v1/chatapp', authRoutes.SignOutRoute());
+    app.use(BASE_PATH, authRoutes.routes());
+    app.use(BASE_PATH, authRoutes.SignOutRoute());
 
-    app.use('/api/v1/chatapp', authMiddleware.verifyUser, currentUserRoute.routes());
-    app.use('/api/v1/chatapp', authMiddleware.verifyUser, userRoutes.routes());
-    app.use('/api/v1/chatapp', authMiddleware.verifyUser, postRoutes.routes());
-    app.use('/api/v1/chatapp', authMiddleware.verifyUser, commentRoutes.routes());
-    app.use('/api/v1/chatapp', authMiddleware.verifyUser, imagesRoutes.routes());
-    app.use('/api/v1/chatapp', authMiddleware.verifyUser, followersRoutes.routes());
-    app.use('/api/v1/chatapp', authMiddleware.verifyUser, notificationRoutes.routes());
-    app.use('/api/v1/chatapp', authMiddleware.verifyUser, chatRoutes.routes());
+    app.use(BASE_PATH, authMiddleware.verifyUser, currentUserRoute.routes());
+    app.use(BASE_PATH, authMiddleware.verifyUser, userRoutes.routes());
+    app.use(BASE_PATH, authMiddleware.verifyUser, postRoutes.routes());
+    app.use(BASE_PATH, authMiddleware.verifyUser, commentRoutes.routes());
+    app.use(BASE_PATH, authMiddleware.verifyUser, imagesRoutes.routes());
+    app.use(BASE_PATH, authMiddleware.verifyUser, followersRoutes.routes());
+    app.use(BASE_PATH, authMiddleware.verifyUser, notificationRoutes.routes());
+    app.use(BASE_PATH, authMiddleware.verifyUser, chatRoutes.routes());
   }
 
   private globalErrorHandler(app: Application): void {

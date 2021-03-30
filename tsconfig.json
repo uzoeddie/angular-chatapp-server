@@ -26,6 +26,7 @@
     ],
     "paths": {
       "@global/*": ["src/global/*"],
+      "@mock/*": ["src/mocks/*"],
       "@comments/*": ["src/features/comments/*"],
       "@followers/*": ["src/features/followers/*"],
       "@images/*": ["src/features/images/*"],
@@ -39,7 +40,7 @@
       "@queues/*": ["src/services/queues/*"],
       "@db/*": ["src/services/db/*"],
       "@workers/*": ["src/workers/*"],
-      "@root/*": ["src/*"],
+      "@root/*": ["src/*"]
     }
   }
 }
