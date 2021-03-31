@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AuthPayload } from '@user/interface/user.interface';
 import { Response } from 'express';
 

@@ -49,10 +49,12 @@ export interface IChatMessage {
   images: string[];
   conversationId: string;
   senderName: string;
+  receiverName?: string;
   gifUrl: string;
   createdAt: Date;
   senderId: IChatUser;
   receiverId: IChatUser;
+  _id?: string;
 }
 
 export interface IChatJobData {

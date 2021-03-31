@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 import mongoose from 'mongoose';
+import { ObjectId } from 'mongodb';
+import { unflatten } from 'flat';
 import { getChatFromRedisCache } from '@redis/message-cache';
 import { IConversationDocument } from '@chat/interface/converation.interface';
 import { ConversationModel } from '@chat/models/conversation.schema';
 import { Helpers } from '@global/helpers';
 import { IChatMessage } from '@chat/interface/chat.interface';
-import { ObjectId } from 'mongodb';
-import { unflatten } from 'flat';
 
 export class GetChat {
   public async list(req: Request, res: Response): Promise<void> {
