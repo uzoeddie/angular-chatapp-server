@@ -44,8 +44,7 @@ describe('MarkChat', () => {
         authUserPayload
       ) as Request;
       const res: Response = chatMockResponse();
-      const mock: jest.SpyInstance<Promise<string>> = jest.spyOn(cache, 'updateIsReadPropInRedisCache');
-      mock.mockImplementation((): any => JSON.stringify('testing'));
+      jest.spyOn(cache, 'updateIsReadPropInRedisCache').mockImplementation((): any => JSON.stringify('testing'));
       jest.spyOn(ConversationModel, 'aggregate').mockResolvedValueOnce(conversationParticipants);
       jest.spyOn(socketIOChatObject, 'emit');
       jest.spyOn(chatQueue, 'addChatJob');
@@ -71,8 +70,7 @@ describe('MarkChat', () => {
         authUserPayload
       ) as Request;
       const res: Response = chatMockResponse();
-      const mock: jest.SpyInstance<Promise<string>> = jest.spyOn(cache, 'updateIsReadPropInRedisCache');
-      mock.mockImplementation((): any => JSON.stringify('testing'));
+      jest.spyOn(cache, 'updateIsReadPropInRedisCache').mockImplementation((): any => JSON.stringify('testing'));
       jest.spyOn(socketIOChatObject, 'emit');
       jest.spyOn(chatQueue, 'addChatJob');
 

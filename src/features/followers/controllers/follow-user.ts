@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
+import { ObjectID } from 'mongodb';
 import { followerQueue } from '@queues/follower.queue';
 import { getUserFromCache, updateUserFollowersInRedisCache } from '@redis/user-cache';
 import { IUserDocument } from '@user/interface/user.interface';
 import { IFollower } from '@followers/interface/followers.interface';
 import { saveFollowerToRedisCache } from '@redis/follower-cache';
-import { ObjectID } from 'mongodb';
 import { socketIOFollowerObject } from '@sockets/follower';
 
 export class Add {

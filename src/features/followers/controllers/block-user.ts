@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 import { userQueue } from '@queues/user.queue';
 import { updateBlockedUserPropInRedisCache } from '@redis/user-cache';
-
 export class Block {
   public async block(req: Request, res: Response): Promise<void> {
     const blockedBy: Promise<void> = updateBlockedUserPropInRedisCache(`${req.params.followerId}`, 'blockedBy', `${req.currentUser?.userId}`, 'block');

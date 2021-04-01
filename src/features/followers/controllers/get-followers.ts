@@ -1,9 +1,9 @@
 import HTTP_STATUS from 'http-status-codes';
 import mongoose from 'mongoose';
 import { Request, Response } from 'express';
+import { ObjectId } from 'mongodb';
 import { FollowerModel } from '@followers/models/follower.schema';
 import { getFollowersFromRedisCache } from '@redis/follower-cache';
-import { ObjectId } from 'mongodb';
 import { IFollower } from '@followers/interface/followers.interface';
 export class Get {
   public async following(req: Request, res: Response): Promise<void> {

@@ -37,6 +37,7 @@ export interface IMessage {
   profilePicture?: string;
   createdAt?: Date;
   userId?: string;
+  image?: string;
 }
 
 export const chatMessage: IMessage = {
