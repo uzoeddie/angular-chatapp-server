@@ -34,7 +34,6 @@ describe('GetPost', () => {
       }) as Request;
       const res: Response = commentMockResponse();
       jest.spyOn(cache, 'getCommentsFromCache').mockImplementation((): any => [commentsData]);
-      jest.spyOn(Helpers, 'getPostComments').mockImplementation(() => Promise.resolve([]));
 
       await GetPost.prototype.comments(req, res);
       expect(res.status).toHaveBeenCalledWith(200);

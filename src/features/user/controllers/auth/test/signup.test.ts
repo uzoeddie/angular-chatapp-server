@@ -10,21 +10,11 @@ import redis, { RedisClient } from 'redis-mock';
 // import * as SignUpClass from '@user/controllers/auth/signup';
 // import { uploads } from '@global/cloudinary-upload';
 // import { saveUserToRedisCache } from '@redis/user-cache';
-// import dotenv from 'dotenv';
-// import { config } from '@root/config';
-// import cloudinary from 'cloudinary';
 // import Jimp from 'jimp';
 
-// dotenv.config({});
-
-// cloudinary.v2.config({
-//   cloud_name: config.CLOUD_NAME,
-//   api_key: config.CLOUD_API_KEY,
-//   api_secret: config.CLOUD_API_SECRET
-// });
-// jest.useFakeTimers();
+jest.useFakeTimers();
 // jest.setTimeout(10000);
-// // jest.mock('@global/cloudinary-upload');
+// jest.mock('@global/cloudinary-upload');
 // jest.mock('@redis/user-cache');
 // jest.mock('jimp');
 
@@ -129,37 +119,59 @@ describe('SignUp', () => {
     });
   });
 
-  // fit('should send the success json response', async () => {
-  //   // jest.setTimeout(10000);
-  //   // jest.runOnlyPendingTimers();
-  //   const req: Request = mockRequest({}, { username: 'manny', email: 'manny@test.com', password: 'manny1' }) as Request;
-  //   const res: Response = mockResponse();
-  //   jest.spyOn(mongoose.Query.prototype, 'exec').mockResolvedValue(null);
-  //   // jest.spyOn(Promise, 'all');
-  //   const image: Jimp = await new Jimp(256, 256, '#9c27b0');
-  //   image.bitmap = {
-  //     data: Buffer.from([0x62, 0x75, 0x66, 0x66, 0x65, 0x72]),
-  //     width: 256,
-  //     height: 256
-  //   };
-  //   const font = await Jimp.loadFont(Jimp.FONT_SANS_128_WHITE);
-  //   const mockImage = jest.spyOn(image, 'print');
-  //   mockImage.mockImplementation((): any => image);
-  //   // const mockBase64Image = jest.spyOn(image, 'getBase64Async');
-  //   // mockBase64Image.mockImplementation((): any => image);
-  //   // const dataFile: string = await image.getBase64Async('image/png');
-  //   // console.log(dataFile);
-  //   // const mockSignUpData = jest.spyOn(SignUpClass, 'signUpData');
-  //   // // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //   // mockSignUpData.mockImplementation((): any => existingUser);
-  //   const saveToCache = saveUserToRedisCache(existingUser._id, existingUser.uId, existingUser as any);
-  //   jest.spyOn(Promise, 'all').mockImplementationOnce(() => Promise.resolve([image, font]));
-  //   // jest.spyOn(Promise, 'all').mockImplementationOnce(() => Promise.resolve([uploads(dataFile, existingUser._id, true, true), saveToCache]));
-  //   // jest.spyOn(Promise, 'all');
-  //   jest.spyOn(userQueue, 'addUserJob');
-  //   await SignUp.prototype.create(req, res);
-  //   console.log(req);
+  // describe('create', () => {
+  //   // beforeEach(() => {
+  //   //   jest.mock('jimp');
+  //   // });
+
+  //   // jest.mock('jimp');
+
+  //   it('should send the success json response', async () => {
+  //     // jest.mock('jimp', () => {
+  //     //   console.log('testing');
+  //     //   return new Jimp(256, 256, '#9c27b0', (err, image) => {
+  //     //     // this image is 1280 x 768, pixels are loaded from the given buffer.
+  //     //     return image;
+  //     //   });
+  //     // });
+  //     const req: Request = authMockRequest({}, { username: 'manny', email: 'manny@test.com', password: 'manny1' }) as Request;
+  //     const res: Response = authMockResponse();
+  //     jest.spyOn(mongoose.Query.prototype, 'exec').mockResolvedValue(null);
+  //     const image = new Jimp(256, 256, '#9c27b0');
+  //     Object.defineProperty(image, 'bitmap', {
+  //       value: {
+  //         data: Buffer.from([0x62, 0x75, 0x66, 0x66, 0x65, 0x72]),
+  //         width: 256,
+  //         height: 256
+  //       },
+  //       writable: true,
+  //       enumerable: true,
+  //       configurable: true
+  //     });
+  //     console.log(image.bitmap);
+  //     // const image: Jimp = new Jimp(256, 256, '#9c27b0');
+  //     // // jest.setTimeout(10000);
+  //     // console.log(image.bitmap);
+  //     // image.bitmap = {
+  //     //   data: Buffer.from([0x62, 0x75, 0x66, 0x66, 0x65, 0x72]),
+  //     //   width: 256,
+  //     //   height: 256
+  //     // };
+  //     // const font = Jimp.loadFont(Jimp.FONT_SANS_128_WHITE);
+  //     // jest.spyOn(image, 'print');
+  //     // const saveToCache = saveUserToRedisCache(existingUser._id, existingUser.uId, existingUser as any);
+  //     // console.log('first bitmap', image.bitmap);
+  //     // jest.spyOn(Promise, 'all').mockImplementationOnce(() => Promise.resolve([image, font]));
+  //     // await Promise.all([image, font]);
+  //     // jest.spyOn(Promise, 'all').mockImplementationOnce(() => Promise.resolve([uploads(dataFile, existingUser._id, true, true), saveToCache]));
+  //     // jest.spyOn(Promise, 'all');
+  //     // jest.spyOn(userQueue, 'addUserJob');
+  //     SignUp.prototype
+  //       .create(req, res)
+  //       .then(() => {
+  //         console.log(req);
+  //       })
+  //       .catch((error) => console.log(error));
+  //   });
   // });
 });
-
-// npm test --verbose --runInBand --detectOpenHandles src/features/user/controllers/auth/test/signup.test.ts

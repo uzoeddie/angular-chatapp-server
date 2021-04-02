@@ -36,7 +36,7 @@ export class SignUp {
       uId
     });
 
-    const image: Jimp = await new Jimp(256, 256, data.avatarColor);
+    const image: Jimp = new Jimp(256, 256, data.avatarColor);
     const font = await Jimp.loadFont(Jimp.FONT_SANS_128_WHITE);
     image.print(
       font,

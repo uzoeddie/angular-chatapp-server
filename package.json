@@ -17,11 +17,14 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
+    "verbose": true,
     "moduleDirectories": [
       "node_modules",
       "src"
     ],
-    "setupFilesAfterEnv": ["./jest.setup.redis-mock.js"],
+    "setupFilesAfterEnv": [
+      "./jest.setup.redis-mock.js"
+    ],
     "moduleNameMapper": {
       "@global/(.*)": "<rootDir>/src/global/$1",
       "@mock/(.*)": "<rootDir>/src/mocks/$1",

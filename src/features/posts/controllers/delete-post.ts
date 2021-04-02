@@ -9,7 +9,6 @@ export class Delete {
     await deletePostFromCache(req.params.postId);
     socketIOPostObject.emit('delete message', req.params.postId);
     postQueue.addPostJob('deletePostFromDB', { keyOne: req.params.postId, keyTwo: req.currentUser?.userId });
-
     res.status(HTTP_STATUS.OK).json({ message: 'Post deleted successfully', notification: true });
   }
 }
