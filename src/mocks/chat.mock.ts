@@ -2,7 +2,7 @@
 import { Response } from 'express';
 import { AuthPayload } from '@user/interface/user.interface';
 import { IJwt } from './auth.mock';
-import { IChatMessage, IChatUser, ISearchUser } from '@chat/interface/chat.interface';
+import { IChatMessage, IChatRedisData, IChatUser, ISearchUser } from '@chat/interface/chat.interface';
 import { unflatten } from 'flat';
 import mongoose from 'mongoose';
 
@@ -130,6 +130,28 @@ export const parsedChatMessage: IChatMessage[] = [
     images: []
   }
 ];
+
+export const redisChatData: IChatRedisData = {
+  _id: '6064799e091bf02b6a710680',
+  conversationId: '6064799e091bf02b6a71067f',
+  'senderId._id': '6064793b091bf02b6a71067a',
+  'senderId.username': 'Manny',
+  'senderId.avatarColor': '#9c27b0',
+  'senderId.email': 'manny@me.com',
+  'senderId.profilePicture': 'https://res.cloudinary.com/ratingapp/image/upload/6064793b091bf02b6a71067a',
+  'receiverId._id': '60647959091bf02b6a71067d',
+  'receiverId.username': 'Danny',
+  'receiverId.avatarColor': '#009688',
+  'receiverId.email': 'dan@me.com',
+  'receiverId.profilePicture': 'https://res.cloudinary.com/ratingapp/image/upload/6064793b091bf02b6a71067a',
+  body: 'hello man',
+  isRead: false,
+  gifUrl: '',
+  senderName: 'Manny',
+  receiverName: 'Danny',
+  createdAt: new Date(),
+  images: []
+};
 
 export const conversationParticipants: any[] = [
   {

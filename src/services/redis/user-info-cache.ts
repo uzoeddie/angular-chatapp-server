@@ -35,7 +35,7 @@ export function updateSingleUserItemInRedisCache(key: string, prop: string, valu
         if (error) {
           reject(error);
         }
-        response[0].createdAt = Helpers.parseJson(response[0].createdAt);
+        response[0].createdAt = new Date(Helpers.parseJson(response[0].createdAt));
         response[0].uId = Helpers.parseJson(response[0].uId);
         response[0].postCount = Helpers.parseJson(response[0].postCount);
         response[0].birthDay = Helpers.parseJson(response[0].birthDay);
@@ -50,7 +50,6 @@ export function updateSingleUserItemInRedisCache(key: string, prop: string, valu
         resolve(response[0]);
       });
     });
-    // resolve();
   });
 }
 
@@ -79,7 +78,7 @@ export function updateUserPropListInfoInRedisCache(key: string, prop: string, va
         if (error) {
           reject(error);
         }
-        response[1].createdAt = Helpers.parseJson(response[1].createdAt);
+        response[1].createdAt = new Date(Helpers.parseJson(response[1].createdAt));
         response[1].uId = Helpers.parseJson(response[1].uId);
         response[1].postCount = Helpers.parseJson(response[1].postCount);
         response[1].birthDay = Helpers.parseJson(response[1].birthDay);

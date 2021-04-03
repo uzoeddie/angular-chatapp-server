@@ -34,7 +34,7 @@ export interface IUserDocument extends mongoose.Document {
   bgImageId: string;
   profilePicture: string;
   passwordResetToken?: string;
-  passwordResetExpires?: number;
+  passwordResetExpires?: number | string;
   notifications: INotificationSettings;
 
   comparePassword(password: string): Promise<boolean>;

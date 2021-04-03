@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import redis, { Multi, RedisClient } from 'redis';
 import _ from 'lodash';
-import { IUserDocument } from '@user/interface/user.interface';
+import { INotificationSettings, IUserDocument } from '@user/interface/user.interface';
 import Logger from 'bunyan';
 import { config } from '@root/config';
 import { Helpers } from '@global/helpers';
@@ -41,7 +41,7 @@ export function getUserFromCache(key: string): Promise<IUserDocument> {
       if (response === null || response === undefined) {
         return;
       }
-      response.createdAt = Helpers.parseJson(response.createdAt);
+      response.createdAt = new Date(Helpers.parseJson(response.createdAt));
       response.uId = Helpers.parseJson(response.uId);
       response.postCount = Helpers.parseJson(response.postCount);
       response.birthDay = Helpers.parseJson(response.birthDay);
@@ -75,7 +75,7 @@ export function getUsersFromCache(start: number, end: number, excludedKey: strin
           reject(error);
         }
         for (const reply of replies) {
-          reply.createdAt = Helpers.parseJson(reply.createdAt);
+          reply.createdAt = new Date(Helpers.parseJson(reply.createdAt));
           reply.uId = Helpers.parseJson(reply.uId);
           reply.birthDay = Helpers.parseJson(reply.birthDay);
           reply.postCount = Helpers.parseJson(reply.postCount);
@@ -131,7 +131,7 @@ export function updateBlockedUserPropInRedisCache(key: string, prop: string, val
   });
 }
 
-export function updateNotificationSettingInCache(key: string, prop: string, value: string): Promise<void> {
+export function updateNotificationSettingInCache(key: string, prop: string, value: INotificationSettings): Promise<void> {
   const dataToSave: string[] = [`${prop}`, JSON.stringify(value)];
   return new Promise((resolve, reject) => {
     client.hmset(`users:${key}`, dataToSave, (error: Error | null) => {

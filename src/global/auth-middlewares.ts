@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { NotAuthorizedError } from '@global/error-handler';
 import { AuthPayload } from '@user/interface/user.interface';
 import { config } from '@root/config';
-class AuthMiddleware {
+export class AuthMiddleware {
   public verifyUser(req: Request, _res: Response, next: NextFunction): void {
     if (!req.session!.jwt) {
       throw new NotAuthorizedError('Token is not available.');

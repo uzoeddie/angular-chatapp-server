@@ -27,6 +27,7 @@ export class SocketIOChatHandler {
       socket.join(receiverSocketId);
     });
 
+    // Check if this is used on the client side
     socket.on('new message with image', (data: any) => {
       const senderSocketId: string = connectedUsersMap.get(data.senderId?._id) as string;
       const receiverSocketId: string = connectedUsersMap.get(data.receiverId?._id) as string;

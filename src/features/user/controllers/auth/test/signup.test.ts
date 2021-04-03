@@ -30,6 +30,7 @@ describe('SignUp', () => {
     jest.clearAllTimers();
     client.flushall(done);
     client.quit(done);
+    client.removeAllListeners();
   });
 
   it('should throw an error if username is not available', () => {

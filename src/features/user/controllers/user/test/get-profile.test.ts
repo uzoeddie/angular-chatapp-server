@@ -5,8 +5,9 @@ import { GetUser } from '@user/controllers/user/get-profile';
 import * as cache from '@redis/user-cache';
 import * as postCache from '@redis/post-cache';
 import { authMockRequest, authMockResponse } from '@mock/auth.mock';
-import { existingUser, followerData } from '@mock/user.mock';
+import { existingUser } from '@mock/user.mock';
 import { postMockData } from '@mock/post.mock';
+import { followerData } from '@mock/followers.mock';
 
 jest.useFakeTimers();
 

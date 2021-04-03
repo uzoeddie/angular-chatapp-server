@@ -108,7 +108,7 @@ export function getSinglePostFromCache(key: string): Promise<IPostDocument[]> {
       reply.privacy = Helpers.parseJson(reply.privacy);
       reply.userId = Helpers.parseJson(reply.userId);
       reply.reactions = Object.keys(Helpers.parseJson(reply.reactions)).length ? Helpers.formattedReactions(Helpers.parseJson(reply.reactions)) : [];
-      reply.createdAt = Helpers.parseJson(reply.createdAt);
+      reply.createdAt = new Date(Helpers.parseJson(reply.createdAt));
       resolve([reply]);
     });
   });
@@ -134,7 +134,7 @@ export function getUserPostsFromCache(key: string, uId: number): Promise<IPostDo
           reply.privacy = Helpers.parseJson(reply.privacy);
           reply.userId = Helpers.parseJson(reply.userId);
           reply.reactions = Object.keys(Helpers.parseJson(reply.reactions)).length ? Helpers.formattedReactions(Helpers.parseJson(reply.reactions)) : [];
-          reply.createdAt = Helpers.parseJson(reply.createdAt);
+          reply.createdAt = new Date(Helpers.parseJson(reply.createdAt));
         }
         resolve(replies);
       });

@@ -1,7 +1,7 @@
-import { IFollower, IFollowerDocument } from '@followers/interface/followers.interface';
-import mongoose from 'mongoose';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { IUserDocument } from '@user/interface/user.interface';
 
-export const existingUser = {
+export const existingUser: IUserDocument | any = {
   birthDay: {
     month: '',
     day: ''
@@ -27,7 +27,7 @@ export const existingUser = {
   bgImageId: '',
   profilePicture: 'https://res.cloudinary.com/ratingapp/image/upload/60263f14648fed5246e322d9',
   _id: '60263f14648fed5246e322d9',
-  uId: '1621613119252066',
+  uId: 1621613119252066,
   username: 'Manny',
   email: 'manny@me.com',
   avatarColor: '#9c27b0',
@@ -64,29 +64,3 @@ export const existingUser = {
   ],
   createdAt: new Date()
 };
-
-export const followerData: IFollower = {
-  _id: '605727cd646cb50e668a4e13',
-  followerId: {
-    username: 'Manny',
-    postCount: 5,
-    avatarColor: '#ff9800',
-    followersCount: 3,
-    followingCount: 5,
-    profilePicture: 'https://res.cloudinary.com/ratingapp/image/upload/605727cd646eb50e668a4e13'
-  },
-  followeeId: {
-    username: 'Danny',
-    postCount: 10,
-    avatarColor: '#ff9800',
-    followersCount: 3,
-    followingCount: 5,
-    profilePicture: 'https://res.cloudinary.com/ratingapp/image/upload/605727cd646eb50e668a4e13'
-  }
-};
-
-export const followerDocument: IFollowerDocument = {
-  _id: mongoose.Types.ObjectId('605727cd646cb50e668a4e13'),
-  followerId: mongoose.Types.ObjectId('605727cd646cb50e668a4e13'),
-  followeeId: mongoose.Types.ObjectId('605727cd646cb50e668a4e14')
-} as IFollowerDocument;
