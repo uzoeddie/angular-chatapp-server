@@ -5,10 +5,9 @@ import { CustomError } from '@global/error-handler';
 import { ChangePassword } from '@user/controllers/user/edit/change-password';
 import { UserModel } from '@user/models/user.schema';
 import { existingUser } from '@mock/user.mock';
+import { emailQueue } from '@queues/email.queue';
 
 jest.useFakeTimers();
-jest.mock('@redis/user-cache');
-jest.mock('@email/mail-transport');
 
 describe('ChangePassword', () => {
   beforeEach(() => {
@@ -91,7 +90,7 @@ describe('ChangePassword', () => {
       });
     });
 
-    it('should call UserModel "updateOne" method', async () => {
+    it('should send correct json response', async () => {
       const req: Request = authMockRequest(
         {},
         {
@@ -108,9 +107,11 @@ describe('ChangePassword', () => {
       };
       jest.spyOn(UserModel, 'updateOne').mockResolvedValueOnce(mockUser);
       jest.spyOn(mongoose.Query.prototype, 'exec').mockResolvedValueOnce(mockUser);
+      jest.spyOn(emailQueue, 'addEmailJob');
 
       await ChangePassword.prototype.update(req, res);
       expect(UserModel.updateOne).toHaveBeenCalled();
+      expect(emailQueue.addEmailJob).toHaveBeenCalled();
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
         message: 'Password updated successfully. You will be redirected shortly to the login page.',

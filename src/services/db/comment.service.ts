@@ -10,6 +10,8 @@ import { IUserDocument } from '@user/interface/user.interface';
 import { UpdateQuery } from 'mongoose';
 import { socketIONotificationObject } from '@sockets/notifications';
 import { INotificationDocument } from '@notifications/interface/notification.interface';
+import { emailQueue } from '@queues/email.queue';
+import { notificationTemplate } from '@email/templates/notification/notification-template';
 
 class Comment {
   public async addCommentToDB(commentData: any): Promise<void> {
@@ -19,7 +21,7 @@ class Comment {
     const user: Promise<IUserDocument> = getUserFromCache(userTo);
     const response: [ICommentDocument, UpdateQuery<IPostDocument>, IUserDocument] = await Promise.all([comments, posts, user]);
     await updateSinglePostPropInRedisCache(postId, 'comments', `${response[1].comments}`);
-    if (response[2].notifications.comments && userFrom !== userTo) {
+    if (userFrom !== userTo) {
       const notificationModel: INotificationDocument = new NotificationModel();
       const notifications: void = await notificationModel.insertNotification({
         userFrom,
@@ -30,6 +32,16 @@ class Comment {
         createdItemId: response[0]._id!
       });
       socketIONotificationObject.emit('insert notification', notifications, { userTo });
+    }
+
+    if (response[2].notifications.comments) {
+      const templateParams = {
+        username: response[2].username,
+        message: `${response[1].comments}`,
+        header: 'Comments Notification'
+      };
+      const template: string = notificationTemplate.notificationMessageTemplate(templateParams);
+      emailQueue.addEmailJob('commentsMail', { receiverEmail: response[2].email, template, type: `${username} commented on your post.` });
     }
   }
 }

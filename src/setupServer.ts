@@ -8,7 +8,7 @@ import 'express-async-errors';
 import cookieSession from 'cookie-session';
 import HTTP_STATUS from 'http-status-codes';
 import Logger from 'bunyan';
-import { authRoutes, currentUserRoute, healthRoute } from '@user/routes/authRoutes';
+import { authRoutes, currentUserRoute } from '@user/routes/authRoutes';
 import { authMiddleware } from '@global/auth-middlewares';
 import { chatRoutes } from '@chat/routes/chatRoutes';
 import { commentRoutes } from '@comments/routes/commentRoutes';
@@ -30,6 +30,7 @@ import { RedisClient } from 'redis';
 import { Server } from 'socket.io';
 import responseTime from 'response-time';
 import { router } from 'bull-board';
+import { healthRoute } from '@user/routes/healthRoutes';
 
 const log: Logger = config.createLogger('main');
 const REDIS_PORT = 6379;

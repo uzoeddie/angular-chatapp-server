@@ -10,6 +10,10 @@ import { addChatListToRedisCache, addChatmessageToRedisCache } from '@redis/mess
 import { unflatten } from 'flat';
 import { socketIOChatObject } from '@sockets/chat';
 import { connectedUsersMap } from '@sockets/users';
+import { notificationTemplate } from '@email/templates/notification/notification-template';
+import { emailQueue } from '@queues/email.queue';
+import { getUserFromCache } from '@redis/user-cache';
+import { IUserDocument, AuthPayload } from '@user/interface/user.interface';
 
 export class AddChat {
   @joiValidation(addChatSchema)
@@ -87,6 +91,7 @@ export class AddChat {
       createdAt
     } as unknown) as IMessageDocument;
     chatQueue.addChatJob('addChatMessagesToDB', { value: message });
+    messageNotification(req.currentUser!, body, receiverName, receiverId._id!);
     res.status(HTTP_STATUS.OK).json({ message: 'Message added', conversation: conversationObjectId });
   }
 }
@@ -98,4 +103,17 @@ function chatMessage(data: IChatRedisData): void {
   socketIOChatObject.to(senderSocketId).to(receiverSocketId).emit('message received', unflattenedMessageData);
   socketIOChatObject.to(senderSocketId).to(receiverSocketId).emit('chat list', unflattenedMessageData);
   socketIOChatObject.emit('trigger message notification', unflattenedMessageData);
+}
+
+async function messageNotification(currentUser: AuthPayload, message: string, receiverName: string, receiverId: string): Promise<void> {
+  const cachedUser: IUserDocument = await getUserFromCache(`${receiverId}`);
+  if (cachedUser.notifications.messages) {
+    const templateParams = {
+      username: receiverName,
+      message,
+      header: `Message Notification from ${currentUser.username}`
+    };
+    const template: string = notificationTemplate.notificationMessageTemplate(templateParams);
+    emailQueue.addEmailJob('directMessageMail', { receiverEmail: currentUser.email, template, type: `You've received messages from ${receiverName}` });
+  }
 }

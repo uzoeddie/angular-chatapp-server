@@ -121,3 +121,9 @@ export interface IUserJob {
   key?: string;
   value?: string | INotificationSettings | IUserDocument;
 }
+
+export interface IEmailJob {
+  receiverEmail: string;
+  template: string;
+  type: string;
+}

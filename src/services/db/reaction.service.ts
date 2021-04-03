@@ -10,6 +10,8 @@ import { UpdateQuery } from 'mongoose';
 import { socketIONotificationObject } from '@sockets/notifications';
 import { NotificationModel } from '@notifications/models/notification.schema';
 import { INotificationDocument } from '@notifications/interface/notification.interface';
+import { emailQueue } from '@queues/email.queue';
+import { notificationTemplate } from '@email/templates/notification/notification-template';
 
 class Reaction {
   public async addReactionDataToDB(reactionData: any): Promise<void> {
@@ -33,7 +35,7 @@ class Reaction {
     ])) as [IUserDocument, UpdateQuery<IReactionDocument>, UpdateQuery<IPostDocument>];
     const data: string = (updatedReaction[2].reactions as unknown) as string;
     await updateSinglePostPropInRedisCache(postId, 'reactions', data);
-    if (updatedReaction[0].notifications.reactions && userFrom !== userTo) {
+    if (userFrom !== userTo) {
       const notificationModel: INotificationDocument = new NotificationModel();
       const notifications: void = await notificationModel.insertNotification({
         userFrom,
@@ -44,6 +46,16 @@ class Reaction {
         createdItemId: updatedReaction[1]._id as string
       });
       socketIONotificationObject.emit('insert notification', notifications, { userTo });
+    }
+
+    if (updatedReaction[0].notifications.reactions && userFrom !== userTo) {
+      const templateParams = {
+        username: updatedReaction[0].username,
+        message: `${username} reacted to your post.`,
+        header: 'Post Reaction Notification'
+      };
+      const template: string = notificationTemplate.notificationMessageTemplate(templateParams);
+      emailQueue.addEmailJob('reactionsMail', { receiverEmail: updatedReaction[0].email, template, type: `${username} reacted to your post.` });
     }
   }
 

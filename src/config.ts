@@ -14,12 +14,12 @@ class Config {
   public NEW_RELIC_KEY: string | undefined;
   public SENDER_EMAIL: string | undefined;
   public SENDER_EMAIL_PASSWORD: string | undefined;
-  public TESTING_RECEIVER_EMAIL: string | undefined;
   public CLIENT_URL: string | undefined;
   public REDIS_HOST: string | undefined;
   public NODE_ENV: string | undefined;
   public SECRET_KEY_ONE: string | undefined;
   public SECRET_KEY_TWO: string | undefined;
+  public SENDGRID_API_KEY: string | undefined;
 
   constructor() {
     this.LOG_LEVEL = (process.env.LOG_LEVEL || 'info') as bunyan.LogLevel;
@@ -31,12 +31,12 @@ class Config {
     this.NEW_RELIC_KEY = process.env.NEW_RELIC_KEY || undefined;
     this.SENDER_EMAIL = process.env.SENDER_EMAIL || undefined;
     this.SENDER_EMAIL_PASSWORD = process.env.SENDER_EMAIL_PASSWORD || undefined;
-    this.TESTING_RECEIVER_EMAIL = process.env.TESTING_RECEIVER_EMAIL || undefined;
     this.CLIENT_URL = process.env.CLIENT_URL || undefined;
     this.REDIS_HOST = process.env.REDIS_HOST || undefined;
     this.NODE_ENV = process.env.NODE_ENV || undefined;
     this.SECRET_KEY_ONE = process.env.SECRET_KEY_ONE || undefined;
     this.SECRET_KEY_TWO = process.env.SECRET_KEY_TWO || undefined;
+    this.SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || undefined;
   }
 
   public createLogger(name: string): bunyan {

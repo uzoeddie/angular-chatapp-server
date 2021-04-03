@@ -1,13 +1,10 @@
 import { Request, Response } from 'express';
 import { authMockRequest, authMockResponse } from '@mock/auth.mock';
 import mongoose from 'mongoose';
-import { mailTransport } from '@email/mail-transport';
+import { emailQueue } from '@queues/email.queue';
 import { Password } from '@user/controllers/auth/password';
 import { CustomError } from '@global/error-handler';
 import { existingUser } from '@mock/user.mock';
-
-jest.mock('@redis/user-cache');
-jest.mock('@email/mail-transport');
 
 describe('Password', () => {
   beforeEach(() => {
@@ -45,10 +42,10 @@ describe('Password', () => {
         ...existingUser,
         save: () => Promise.resolve(existingUser)
       };
-      jest.spyOn(mailTransport, 'sendEmail');
+      jest.spyOn(emailQueue, 'addEmailJob');
       jest.spyOn(mongoose.Query.prototype, 'exec').mockResolvedValueOnce(mockUser);
       await Password.prototype.create(req, res);
-      expect(mailTransport.sendEmail).toHaveBeenCalled();
+      expect(emailQueue.addEmailJob).toHaveBeenCalled();
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
         message: 'Password reset email sent.',
@@ -95,10 +92,10 @@ describe('Password', () => {
         ...existingUser,
         save: () => Promise.resolve(existingUser)
       };
-      jest.spyOn(mailTransport, 'sendEmail');
+      jest.spyOn(emailQueue, 'addEmailJob');
       jest.spyOn(mongoose.Query.prototype, 'exec').mockResolvedValueOnce(mockUser);
       await Password.prototype.update(req, res);
-      expect(mailTransport.sendEmail).toHaveBeenCalled();
+      expect(emailQueue.addEmailJob).toHaveBeenCalled();
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
         message: 'Password successfully updated.',

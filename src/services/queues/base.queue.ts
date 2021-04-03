@@ -6,9 +6,9 @@ import Logger from 'bunyan';
 import { IChatJobData } from '@chat/interface/chat.interface';
 import { IFollowerJobData } from '@followers/interface/followers.interface';
 import { IPostJobData } from '@posts/interface/post.interface';
-import { IUserJob, IUserJobInfo } from '@user/interface/user.interface';
+import { IEmailJob, IUserJob, IUserJobInfo } from '@user/interface/user.interface';
 
-type IBaseJobData = IChatJobData | IFollowerJobData | IPostJobData | IUserJobInfo | IUserJob;
+type IBaseJobData = IChatJobData | IFollowerJobData | IPostJobData | IUserJobInfo | IUserJob | IEmailJob;
 const REDIS_PORT = 6379;
 
 export abstract class BaseQueue {
