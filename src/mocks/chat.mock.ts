@@ -71,7 +71,8 @@ export const chatUser: IChatUser = {
   senderId: '602740b43eaf201998cd9297'
 };
 
-export const cachedList: string[] = ['{\
+export const cachedList: string[] = [
+  '{\
   "_id":"606479f0091bf02b6a710684",\
   "conversationId":"6064799e091bf02b6a71067f",\
   "senderId._id":"60647959091bf02b6a71067d",\
@@ -91,7 +92,8 @@ export const cachedList: string[] = ['{\
   "receiverName":"Manny",\
   "createdAt":"2021-03-31T13:32:32.946Z",\
   "images":[]\
-}'];
+}'
+];
 
 export const flattenedChatList: IChatMessage[] = [
   {
@@ -121,7 +123,8 @@ export const flattenedChatList: IChatMessage[] = [
   }
 ];
 
-export const cachedMessage: string[] = ['{\
+export const cachedMessage: string[] = [
+  '{\
   "_id":"6064799e091bf02b6a710680",\
   "conversationId":"6064799e091bf02b6a71067f",\
   "senderId._id":"6064793b091bf02b6a71067a",\
@@ -141,7 +144,8 @@ export const cachedMessage: string[] = ['{\
   "receiverName":"Danny",\
   "createdAt":"2021-03-31T13:31:10.441Z",\
   "images":[]\
-}'];
+}'
+];
 
 export const parsedChatMessage: IChatMessage[] = [
   {
