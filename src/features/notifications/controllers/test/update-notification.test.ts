@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import redis, { RedisClient } from 'redis-mock';
 import { Server } from 'socket.io';
 import { authUserPayload } from '@root/mocks/auth.mock';
-import { Delete } from '@notifications/controllers/delete-notification';
 import { socketIONotificationObject } from '@sockets/notifications';
 import { notificationQueue } from '@queues/notification.queue';
 import { notificationMockRequest, notificationMockResponse } from '@mock/notification.mock';

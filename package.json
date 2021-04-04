@@ -5,9 +5,9 @@
   "main": "app.js",
   "scripts": {
     "preinstall": "npm install pm2 -g",
-    "start": "pm2 start ./build/app.js -i 5 --watch | ./node_modules/.bin/bunyan",
+    "start": "NODE_ENV=production pm2 start ./build/app.js -i 5 --watch | ./node_modules/.bin/bunyan",
     "dev": "nodemon -r tsconfig-paths/register src/app.ts | ./node_modules/.bin/bunyan",
-    "test": "jest --watchAll --no-cache --runInBand --detectOpenHandles",
+    "test": "jest --coverage --silent",
     "lint": "eslint 'src/**/*.ts*'",
     "lint:fix": "eslint 'src/**/*.ts*' --fix",
     "prettier:check": "prettier --check 'src/**/*.{ts,json}'",
@@ -18,6 +18,28 @@
     "preset": "ts-jest",
     "testEnvironment": "node",
     "verbose": true,
+    "coverageDirectory": "coverage",
+    "collectCoverage": true,
+    "testPathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!src/**/test/*.ts?(x)",
+      "!**/node_modules/**"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 1,
+        "functions": 1,
+        "lines": 1,
+        "statements": 1
+      }
+    },
+    "coverageReporters": [
+      "text-summary",
+      "lcov"
+    ],
     "moduleDirectories": [
       "node_modules",
       "src"
@@ -65,7 +87,6 @@
     "@types/jest": "^26.0.21",
     "@types/jsonwebtoken": "^8.5.0",
     "@types/lodash": "^4.14.166",
-    "@types/mocha": "^8.2.1",
     "@types/mongodb": "^3.6.3",
     "@types/mongoose-autopopulate": "^0.10.1",
     "@types/node": "^14.14.16",
@@ -73,24 +94,20 @@
     "@types/redis": "^2.8.28",
     "@types/redis-mock": "^0.17.0",
     "@types/response-time": "^2.3.4",
-    "@types/sinon": "^9.0.11",
-    "@types/supertest": "^2.0.10",
     "@typescript-eslint/eslint-plugin": "^4.11.0",
     "@typescript-eslint/parser": "^4.11.0",
     "chai": "^4.3.4",
+    "coveralls": "^3.1.0",
     "eslint": "^7.16.0",
     "eslint-config-prettier": "^7.1.0",
     "eslint-plugin-prettier": "^3.3.0",
     "husky": "^4.3.6",
     "jest": "^26.6.3",
-    "mocha": "^8.3.2",
     "mockdate": "^3.0.5",
     "node-mocks-http": "^1.10.1",
     "nodemon": "^2.0.6",
     "prettier": "^2.2.1",
     "redis-mock": "^0.56.3",
-    "sinon": "^9.2.4",
-    "supertest": "^6.1.3",
     "ts-jest": "^26.5.4",
     "ts-node": "^9.1.1",
     "tsconfig-paths": "^3.9.0",

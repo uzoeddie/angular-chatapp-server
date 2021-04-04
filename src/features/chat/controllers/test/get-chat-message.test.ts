@@ -2,7 +2,16 @@
 import mongoose from 'mongoose';
 import { Request, Response } from 'express';
 import redis, { RedisClient } from 'redis-mock';
-import { cachedList, cachedMessage, chatMessage, chatMockRequest, chatMockResponse, conversationParticipants, flattenedChatList, parsedChatMessage } from '@mock/chat.mock';
+import {
+  cachedList,
+  cachedMessage,
+  chatMessage,
+  chatMockRequest,
+  chatMockResponse,
+  conversationParticipants,
+  flattenedChatList,
+  parsedChatMessage
+} from '@mock/chat.mock';
 import { authUserPayload } from '@root/mocks/auth.mock';
 import { GetChat } from '@chat/controllers/get-chat-message';
 import * as cache from '@redis/message-cache';
@@ -98,7 +107,10 @@ describe('GetChat', () => {
       jest.spyOn(Helpers, 'getMessages').mockImplementation(() => Promise.resolve(parsedChatMessage));
 
       await GetChat.prototype.messages(req, res);
-      expect(Helpers.getMessages).toHaveBeenCalledWith({ conversationId: mongoose.Types.ObjectId('6064799e091bf02b6a71067f') }, { createdAt: 1 });
+      expect(Helpers.getMessages).toHaveBeenCalledWith(
+        { conversationId: mongoose.Types.ObjectId('6064799e091bf02b6a71067f') },
+        { createdAt: 1 }
+      );
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
         message: 'User chat messages.',
@@ -116,7 +128,10 @@ describe('GetChat', () => {
       jest.spyOn(Helpers, 'getMessages').mockImplementation(() => Promise.resolve(parsedChatMessage));
 
       await GetChat.prototype.messages(req, res);
-      expect(Helpers.getMessages).toHaveBeenCalledWith({ conversationId: mongoose.Types.ObjectId(conversationParticipants[0]._id) }, { createdAt: 1 });
+      expect(Helpers.getMessages).toHaveBeenCalledWith(
+        { conversationId: mongoose.Types.ObjectId(conversationParticipants[0]._id) },
+        { createdAt: 1 }
+      );
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
         message: 'User chat messages.',

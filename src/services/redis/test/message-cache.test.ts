@@ -1,5 +1,11 @@
 import redis, { RedisClient } from 'redis-mock';
-import { addChatListToRedisCache, addChatmessageToRedisCache, getChatFromRedisCache, getSingleChatObjectFromRedisCache, updateIsReadPropInRedisCache } from '@redis/message-cache';
+import {
+  addChatListToRedisCache,
+  addChatmessageToRedisCache,
+  getChatFromRedisCache,
+  getSingleChatObjectFromRedisCache,
+  updateIsReadPropInRedisCache
+} from '@redis/message-cache';
 import { redisChatData } from '@mock/chat.mock';
 
 jest.useFakeTimers();
@@ -20,7 +26,9 @@ describe('MessageCache', () => {
 
   describe('addChatListToRedisCache', () => {
     it('should add users to chat list', async () => {
-      await expect(addChatListToRedisCache(['6064793b091bf02b6a71067a', '60647959091bf02b6a71067d'], redisChatData)).resolves.toBeUndefined();
+      await expect(
+        addChatListToRedisCache(['6064793b091bf02b6a71067a', '60647959091bf02b6a71067d'], redisChatData)
+      ).resolves.toBeUndefined();
     });
   });
 
@@ -35,7 +43,9 @@ describe('MessageCache', () => {
       await addChatListToRedisCache(['6064793b091bf02b6a71067a', '60647959091bf02b6a71067d'], redisChatData);
       await addChatmessageToRedisCache('6064799e091bf02b6a71067f', redisChatData);
       redisChatData.isRead = true;
-      await expect(updateIsReadPropInRedisCache('6064793b091bf02b6a71067a', '60647959091bf02b6a71067d', '6064799e091bf02b6a71067f')).resolves.toEqual(JSON.stringify(redisChatData));
+      await expect(
+        updateIsReadPropInRedisCache('6064793b091bf02b6a71067a', '60647959091bf02b6a71067d', '6064799e091bf02b6a71067f')
+      ).resolves.toEqual(JSON.stringify(redisChatData));
     });
   });
 

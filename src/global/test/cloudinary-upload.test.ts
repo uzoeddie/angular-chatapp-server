@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as cloudinaryUploads from '@global/cloudinary-upload';
 
 describe('uploads', () => {

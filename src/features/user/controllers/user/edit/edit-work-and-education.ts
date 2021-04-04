@@ -40,7 +40,12 @@ export class EditWorkAndEducation {
       from: req.body.from,
       to: req.body.to
     };
-    const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(`${req.currentUser?.userId}`, 'school', updatedSchool, 'edit');
+    const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(
+      `${req.currentUser?.userId}`,
+      'school',
+      updatedSchool,
+      'edit'
+    );
     socketIOUserObject.emit('update user', cachedUser);
     userInfoQueue.addUserInfoJob('updateUserSchoolInCache', {
       key: `${req.currentUser?.username}`,

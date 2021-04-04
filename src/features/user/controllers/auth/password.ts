@@ -54,7 +54,11 @@ export class Password {
       date: moment(new Date()).format('DD/MM/YYYY HH:mm')
     };
     const template: string = resetPasswordTemplate.passwordResetConfirmationTemplate(templateParams);
-    emailQueue.addEmailJob('resetPasswordConfirmation', { receiverEmail: existingAuthUser.email, template, type: 'Password Reset Confirmation' });
+    emailQueue.addEmailJob('resetPasswordConfirmation', {
+      receiverEmail: existingAuthUser.email,
+      template,
+      type: 'Password Reset Confirmation'
+    });
     res.status(HTTP_STATUS.OK).json({ message: 'Password successfully updated.', user: {}, token: '', notification: false });
   }
 }

@@ -17,7 +17,7 @@ export interface ILike {
   type: string;
 }
 export interface ICreatePost {
-  id: mongoose.Types.ObjectId;
+  id: mongoose.Types.ObjectId | string;
   userId?: string;
   email?: string;
   username?: string;

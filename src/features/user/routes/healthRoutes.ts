@@ -26,7 +26,13 @@ class HealthRoute {
         method: 'get',
         url: 'http://169.254.169.254/latest/meta-data/instance-id'
       });
-      res.status(200).send(`This is the server on instance ${response.data} and todays date is ${moment(new Date()).utc().format('DD/MM/YYYY HH:mm')} from IP ${ip}`);
+      res
+        .status(200)
+        .send(
+          `This is the server on instance ${response.data} and todays date is ${moment(new Date())
+            .utc()
+            .format('DD/MM/YYYY HH:mm')} from IP ${ip}`
+        );
     });
 
     return this.router;
@@ -41,7 +47,13 @@ class HealthRoute {
         method: 'get',
         url: 'http://169.254.169.254/latest/meta-data/instance-id'
       });
-      res.status(200).send(`Fibonacci series of ${req.params.num} is ${result} and it took ${end - start} ms with EC2 instance id ${response.data} and process id ${process.pid}.`);
+      res
+        .status(200)
+        .send(
+          `Fibonacci series of ${req.params.num} is ${result} and it took ${end - start} ms with EC2 instance id ${
+            response.data
+          } and process id ${process.pid}.`
+        );
     });
 
     return this.router;

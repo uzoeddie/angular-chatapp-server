@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { IUserDocument } from '@user/interface/user.interface';
 
-export const existingUser: IUserDocument | any = {
+export const existingUser: IUserDocument = {
   birthDay: {
     month: '',
     day: ''
@@ -63,4 +62,4 @@ export const existingUser: IUserDocument | any = {
     }
   ],
   createdAt: new Date()
-};
+} as IUserDocument;

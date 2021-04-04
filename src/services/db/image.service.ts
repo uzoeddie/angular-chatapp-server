@@ -19,7 +19,10 @@ class Image {
       },
       { upsert: true }
     );
-    const backgroundImage: UpdateQuery<IUserDocument> = UserModel.updateOne({ _id: userId }, { $set: { bgImageId: imgId, bgImageVersion: imgVersion } });
+    const backgroundImage: UpdateQuery<IUserDocument> = UserModel.updateOne(
+      { _id: userId },
+      { $set: { bgImageId: imgId, bgImageVersion: imgVersion } }
+    );
     await Promise.all([images, backgroundImage]);
   }
 

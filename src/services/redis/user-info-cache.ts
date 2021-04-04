@@ -53,7 +53,13 @@ export function updateSingleUserItemInRedisCache(key: string, prop: string, valu
   });
 }
 
-export function updateUserPropListInfoInRedisCache(key: string, prop: string, value: ListType, type: string, deletedItemId?: string): Promise<IUserDocument> {
+export function updateUserPropListInfoInRedisCache(
+  key: string,
+  prop: string,
+  value: ListType,
+  type: string,
+  deletedItemId?: string
+): Promise<IUserDocument> {
   return new Promise((resolve, reject) => {
     client.hget(`users:${key}`, prop, (error: Error | null, response: string) => {
       if (error) {

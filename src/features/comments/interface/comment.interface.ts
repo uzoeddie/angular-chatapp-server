@@ -1,16 +1,16 @@
 import mongoose from 'mongoose';
 export interface ICommentDocument extends mongoose.Document {
-  _id?: mongoose.Types.ObjectId;
+  _id?: mongoose.Types.ObjectId | string;
   username: string;
   avatarColor: string;
   postId: string;
   profilePicture: string;
   comment: string;
   createdAt?: Date;
-  userTo?: mongoose.Types.ObjectId;
+  userTo?: mongoose.Types.ObjectId | string;
 }
 export interface IReactionDocument extends mongoose.Document {
-  _id: mongoose.Types.ObjectId | null;
+  _id: mongoose.Types.ObjectId | string | null;
   postId: string | mongoose.Types.ObjectId;
   type: string;
   username: string;
@@ -18,6 +18,7 @@ export interface IReactionDocument extends mongoose.Document {
   avatarColor: string;
   createdAt?: Date;
   userTo?: string;
+  comment?: string;
 }
 export interface IRedisCommentList {
   count: number;

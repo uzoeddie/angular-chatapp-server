@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import dotenv from 'dotenv';
 import cloudinary from 'cloudinary';
 import bunyan from 'bunyan';

@@ -19,7 +19,20 @@ export class Helpers {
   }
 
   static avatarColor(): string {
-    const colors = ['#f44336', '#e91e63', '#2196f3', '#9c27b0', '#3f51b5', '#00bcd4', '#4caf50', '#ff9800', '#8bc34a', '#009688', '#03a9f4', '#cddc39'];
+    const colors = [
+      '#f44336',
+      '#e91e63',
+      '#2196f3',
+      '#9c27b0',
+      '#3f51b5',
+      '#00bcd4',
+      '#4caf50',
+      '#ff9800',
+      '#8bc34a',
+      '#009688',
+      '#03a9f4',
+      '#cddc39'
+    ];
     return colors[Math.floor(Math.random() * colors.length)];
   }
 
@@ -85,13 +98,23 @@ export class Helpers {
 
   static async getPostComments(query: any, skip = 0, limit = 0, sort?: any): Promise<ICommentDocument[]> {
     return new Promise((resolve) => {
-      const comments: Aggregate<ICommentDocument[]> = CommentsModel.aggregate([{ $match: query }, { $sort: sort }, { $skip: skip }, { $limit: limit }]);
+      const comments: Aggregate<ICommentDocument[]> = CommentsModel.aggregate([
+        { $match: query },
+        { $sort: sort },
+        { $skip: skip },
+        { $limit: limit }
+      ]);
       resolve(comments);
     });
   }
 
   static async getPostReactions(query: any, skip: number, limit: number, sort: any): Promise<[IReactionDocument[], number]> {
-    const reactions: Aggregate<IReactionDocument[]> = ReactionsModel.aggregate([{ $match: query }, { $sort: sort }, { $skip: skip }, { $limit: limit }]);
+    const reactions: Aggregate<IReactionDocument[]> = ReactionsModel.aggregate([
+      { $match: query },
+      { $sort: sort },
+      { $skip: skip },
+      { $limit: limit }
+    ]);
     const count: Query<number, IReactionDocument> = ReactionsModel.find(query).countDocuments();
     const response: [IReactionDocument[], number] = await Promise.all([reactions, count]);
     return response;

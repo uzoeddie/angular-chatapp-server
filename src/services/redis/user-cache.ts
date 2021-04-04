@@ -15,11 +15,85 @@ client.on('error', function (error) {
 });
 
 export function saveUserToRedisCache(key: string, userId: string, createdUser: IUserDocument): Promise<void> {
-  const { _id, uId, username, email, avatarColor, birthDay, postCount, gender, quotes, about, relationship, blocked, blockedBy, bgImageVersion, bgImageId, work, school, placesLived, createdAt, followersCount, followingCount, notifications, profilePicture } = createdUser;
-  const firstList: string[] = ['_id', `${_id}`, 'uId', `${uId}`, 'username', `${username}`, 'email', `${email}`, 'avatarColor', `${avatarColor}`, 'createdAt', `${createdAt}`, 'birthDay', JSON.stringify(birthDay), 'postCount', `${postCount}`];
-  const secondList: string[] = ['gender', `${gender}`, 'quotes', `${quotes}`, 'about', `${about}`, 'relationship', `${relationship}`, 'blocked', JSON.stringify(blocked)];
-  const thirdList: string[] = ['blockedBy', JSON.stringify(blockedBy), 'bgImageVersion', `${bgImageVersion}`, 'bgImageId', `${bgImageId}`, 'work', JSON.stringify(work), 'school', JSON.stringify(school), 'placesLived', JSON.stringify(placesLived)];
-  const fourthList: string[] = ['followersCount', `${followersCount}`, 'followingCount', `${followingCount}`, 'notifications', JSON.stringify(notifications), 'profilePicture', `${profilePicture}`];
+  const {
+    _id,
+    uId,
+    username,
+    email,
+    avatarColor,
+    birthDay,
+    postCount,
+    gender,
+    quotes,
+    about,
+    relationship,
+    blocked,
+    blockedBy,
+    bgImageVersion,
+    bgImageId,
+    work,
+    school,
+    placesLived,
+    createdAt,
+    followersCount,
+    followingCount,
+    notifications,
+    profilePicture
+  } = createdUser;
+  const firstList: string[] = [
+    '_id',
+    `${_id}`,
+    'uId',
+    `${uId}`,
+    'username',
+    `${username}`,
+    'email',
+    `${email}`,
+    'avatarColor',
+    `${avatarColor}`,
+    'createdAt',
+    `${createdAt}`,
+    'birthDay',
+    JSON.stringify(birthDay),
+    'postCount',
+    `${postCount}`
+  ];
+  const secondList: string[] = [
+    'gender',
+    `${gender}`,
+    'quotes',
+    `${quotes}`,
+    'about',
+    `${about}`,
+    'relationship',
+    `${relationship}`,
+    'blocked',
+    JSON.stringify(blocked)
+  ];
+  const thirdList: string[] = [
+    'blockedBy',
+    JSON.stringify(blockedBy),
+    'bgImageVersion',
+    `${bgImageVersion}`,
+    'bgImageId',
+    `${bgImageId}`,
+    'work',
+    JSON.stringify(work),
+    'school',
+    JSON.stringify(school),
+    'placesLived',
+    JSON.stringify(placesLived)
+  ];
+  const fourthList: string[] = [
+    'followersCount',
+    `${followersCount}`,
+    'followingCount',
+    `${followingCount}`,
+    'notifications',
+    JSON.stringify(notifications),
+    'profilePicture',
+    `${profilePicture}`
+  ];
   const dataToSave: string[] = [...firstList, ...secondList, ...thirdList, ...fourthList];
   return new Promise((resolve, reject) => {
     client.hmset(`users:${key}`, dataToSave, (error: Error | null) => {

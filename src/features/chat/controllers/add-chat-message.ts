@@ -114,6 +114,10 @@ async function messageNotification(currentUser: AuthPayload, message: string, re
       header: `Message Notification from ${currentUser.username}`
     };
     const template: string = notificationTemplate.notificationMessageTemplate(templateParams);
-    emailQueue.addEmailJob('directMessageMail', { receiverEmail: currentUser.email, template, type: `You've received messages from ${receiverName}` });
+    emailQueue.addEmailJob('directMessageMail', {
+      receiverEmail: currentUser.email,
+      template,
+      type: `You've received messages from ${receiverName}`
+    });
   }
 }

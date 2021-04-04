@@ -36,7 +36,7 @@ export interface IMessage {
   selectedImages?: string[];
   profilePicture?: string;
   createdAt?: Date;
-  userId?: string;
+  userId?: string | mongoose.Types.ObjectId;
   image?: string;
 }
 
@@ -71,7 +71,27 @@ export const chatUser: IChatUser = {
   senderId: '602740b43eaf201998cd9297'
 };
 
-export const cachedList: string[] = ['{"_id":"606479f0091bf02b6a710684","conversationId":"6064799e091bf02b6a71067f","senderId._id":"60647959091bf02b6a71067d","senderId.username":"Danny","senderId.avatarColor":"#009688","senderId.email":"dan@me.com","senderId.profilePicture":"https://res.cloudinary.com/ratingapp/image/upload/60647959091bf02b6a71067d","receiverId._id":"6064793b091bf02b6a71067a","receiverId.username":"Manny","receiverId.avatarColor":"#9c27b0","receiverId.email":"manny@me.com","receiverId.profilePicture":"https://res.cloudinary.com/ratingapp/image/upload/60647959091bf02b6a71067d","body":"sup","isRead":false,"gifUrl":"","senderName":"Danny","receiverName":"Manny","createdAt":"2021-03-31T13:32:32.946Z","images":[]}'];
+export const cachedList: string[] = ['{\
+  "_id":"606479f0091bf02b6a710684",\
+  "conversationId":"6064799e091bf02b6a71067f",\
+  "senderId._id":"60647959091bf02b6a71067d",\
+  "senderId.username":"Danny",\
+  "senderId.avatarColor":"#009688",\
+  "senderId.email":"dan@me.com",\
+  "senderId.profilePicture":"https://res.cloudinary.com/ratingapp/image/upload/60647959091bf02b6a71067d",\
+  "receiverId._id":"6064793b091bf02b6a71067a",\
+  "receiverId.username":"Manny",\
+  "receiverId.avatarColor":"#9c27b0",\
+  "receiverId.email":"manny@me.com",\
+  "receiverId.profilePicture":"https://res.cloudinary.com/ratingapp/image/upload/60647959091bf02b6a71067d",\
+  "body":"sup",\
+  "isRead":false,\
+  "gifUrl":"",\
+  "senderName":"Danny",\
+  "receiverName":"Manny",\
+  "createdAt":"2021-03-31T13:32:32.946Z",\
+  "images":[]\
+}'];
 
 export const flattenedChatList: IChatMessage[] = [
   {
@@ -101,7 +121,27 @@ export const flattenedChatList: IChatMessage[] = [
   }
 ];
 
-export const cachedMessage: string[] = ['{"_id":"6064799e091bf02b6a710680","conversationId":"6064799e091bf02b6a71067f","senderId._id":"6064793b091bf02b6a71067a","senderId.username":"Manny","senderId.avatarColor":"#9c27b0","senderId.email":"manny@me.com","senderId.profilePicture":"https://res.cloudinary.com/ratingapp/image/upload/6064793b091bf02b6a71067a","receiverId._id":"60647959091bf02b6a71067d","receiverId.username":"Danny","receiverId.avatarColor":"#009688","receiverId.email":"dan@me.com","receiverId.profilePicture":"https://res.cloudinary.com/ratingapp/image/upload/6064793b091bf02b6a71067a","body":"hello man","isRead":true,"gifUrl":"","senderName":"Manny","receiverName":"Danny","createdAt":"2021-03-31T13:31:10.441Z","images":[]}'];
+export const cachedMessage: string[] = ['{\
+  "_id":"6064799e091bf02b6a710680",\
+  "conversationId":"6064799e091bf02b6a71067f",\
+  "senderId._id":"6064793b091bf02b6a71067a",\
+  "senderId.username":"Manny",\
+  "senderId.avatarColor":"#9c27b0",\
+  "senderId.email":"manny@me.com",\
+  "senderId.profilePicture":"https://res.cloudinary.com/ratingapp/image/upload/6064793b091bf02b6a71067a",\
+  "receiverId._id":"60647959091bf02b6a71067d",\
+  "receiverId.username":"Danny",\
+  "receiverId.avatarColor":"#009688",\
+  "receiverId.email":"dan@me.com",\
+  "receiverId.profilePicture":"https://res.cloudinary.com/ratingapp/image/upload/6064793b091bf02b6a71067a",\
+  "body":"hello man",\
+  "isRead":true,\
+  "gifUrl":"",\
+  "senderName":"Manny",\
+  "receiverName":"Danny",\
+  "createdAt":"2021-03-31T13:31:10.441Z",\
+  "images":[]\
+}'];
 
 export const parsedChatMessage: IChatMessage[] = [
   {

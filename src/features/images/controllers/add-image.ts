@@ -27,7 +27,11 @@ export class Add {
   public async backgroundImage(req: Request, res: Response): Promise<void> {
     const result: UploadApiResponse = (await uploads(req.body.image)) as UploadApiResponse;
     const bgImageId: Promise<IUserDocument> = updateSingleUserItemInRedisCache(`${req.currentUser?.userId}`, 'bgImageId', result.public_id);
-    const bgImageVersion: Promise<IUserDocument> = updateSingleUserItemInRedisCache(`${req.currentUser?.userId}`, 'bgImageVersion', result.version);
+    const bgImageVersion: Promise<IUserDocument> = updateSingleUserItemInRedisCache(
+      `${req.currentUser?.userId}`,
+      'bgImageVersion',
+      result.version
+    );
     const response: [IUserDocument, IUserDocument] = await Promise.all([bgImageId, bgImageVersion]);
     socketIOImageObject.emit('insert image', {
       bgImageVersion: result.version,

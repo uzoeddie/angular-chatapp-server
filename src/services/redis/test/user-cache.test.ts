@@ -1,7 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import redis, { RedisClient } from 'redis-mock';
 import MockDate from 'mockdate';
-import { saveUserToRedisCache, getUserFromCache, getUsersFromCache, updateUserFollowersInRedisCache, updateBlockedUserPropInRedisCache, updateNotificationSettingInCache } from '@redis/user-cache';
+import {
+  saveUserToRedisCache,
+  getUserFromCache,
+  getUsersFromCache,
+  updateUserFollowersInRedisCache,
+  updateBlockedUserPropInRedisCache,
+  updateNotificationSettingInCache
+} from '@redis/user-cache';
 import { existingUser } from '@mock/user.mock';
 
 jest.useFakeTimers();
@@ -62,13 +69,17 @@ describe('UserCache', () => {
     it('should update user blockedBy list', async () => {
       await saveUserToRedisCache('60263f14648fed5246e322d9', '123', existingUser as any);
       await saveUserToRedisCache('60263f14648fed5246e322d0', '123', existingUser as any);
-      await expect(updateBlockedUserPropInRedisCache('60263f14648fed5246e322d9', 'blockedBy', '60263f14648fed5246e322d0', 'block')).resolves.toBeUndefined();
+      await expect(
+        updateBlockedUserPropInRedisCache('60263f14648fed5246e322d9', 'blockedBy', '60263f14648fed5246e322d0', 'block')
+      ).resolves.toBeUndefined();
     });
 
     it('should update user blocked list', async () => {
       await saveUserToRedisCache('60263f14648fed5246e322d9', '123', existingUser as any);
       await saveUserToRedisCache('60263f14648fed5246e322d0', '123', existingUser as any);
-      await expect(updateBlockedUserPropInRedisCache('60263f14648fed5246e322d0', 'blocked', '60263f14648fed5246e322d9', 'block')).resolves.toBeUndefined();
+      await expect(
+        updateBlockedUserPropInRedisCache('60263f14648fed5246e322d0', 'blocked', '60263f14648fed5246e322d9', 'block')
+      ).resolves.toBeUndefined();
     });
   });
 

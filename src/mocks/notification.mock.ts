@@ -19,7 +19,7 @@ export interface IParams {
   notificationId?: string;
 }
 
-export const notificationData: any = {
+export const notificationData = {
   _id: '60263f14648fed5446e322d9',
   userTo: '60263f14648fed5246e322d9',
   userFrom: '60263f14648fed5246e322d8',

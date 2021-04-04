@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Response } from 'express';
 import { AuthPayload } from '@user/interface/user.interface';
 import { IJwt } from './auth.mock';
@@ -25,7 +24,7 @@ export interface IParams {
   imageId?: string;
 }
 
-export const fileDocument: IFileImageDocument | any = {
+export const fileDocument: IFileImageDocument = {
   userId: '60263f14648fed5246e322d9',
   bgImageVersion: '',
   bgImageId: '',
@@ -38,4 +37,4 @@ export const fileDocument: IFileImageDocument | any = {
       _id: '60263f14642ded5246e322d9'
     }
   ]
-};
+} as IFileImageDocument;

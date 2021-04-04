@@ -144,7 +144,13 @@ export function getReactionsFromCache(key: string, start: number, end: number): 
   });
 }
 
-function updateReaction(multi: Multi, key: string, response: string[], reactionObject: IReactionObject, reaction?: IReactionDocument): IReactionDocument | undefined {
+function updateReaction(
+  multi: Multi,
+  key: string,
+  response: string[],
+  reactionObject: IReactionObject,
+  reaction?: IReactionDocument
+): IReactionDocument | undefined {
   const { postId, previousReaction, username } = reactionObject;
   const list = [];
   for (const value of response) {

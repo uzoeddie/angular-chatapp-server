@@ -44,7 +44,10 @@ describe('AuthMiddleware', () => {
     });
 
     it('should set currentUser payload in request', () => {
-      const req: Request = globalMockRequest({ jwt: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MDI2M2YxNDY0OGZlZDUyNDZlMzIyZDkiLCJ1SWQiOiIxNjIxNjEzMTE5MjUyMDY2IiwidXNlcm5hbWUiOiJNYW5ueSIsImVtYWlsIjoibWFubnlAbWUuY29tIiwiYXZhdGFyQ29sb3IiOiIjOWMyN2IwIn0.c9lc4M8KYgJ01fCWHC4D7reaDYRHvORhU0flMxqNCQs' }) as Request;
+      const req: Request = globalMockRequest({
+        jwt:
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MDI2M2YxNDY0OGZlZDUyNDZlMzIyZDkiLCJ1SWQiOiIxNjIxNjEzMTE5MjUyMDY2IiwidXNlcm5hbWUiOiJNYW5ueSIsImVtYWlsIjoibWFubnlAbWUuY29tIiwiYXZhdGFyQ29sb3IiOiIjOWMyN2IwIn0.c9lc4M8KYgJ01fCWHC4D7reaDYRHvORhU0flMxqNCQs'
+      }) as Request;
       const res: Response = globalMockResponse();
       const next: NextFunction = jest.fn();
       jest.spyOn(jwt, 'verify').mockImplementation(() => authUserPayload);

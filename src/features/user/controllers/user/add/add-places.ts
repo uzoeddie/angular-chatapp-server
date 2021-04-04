@@ -20,7 +20,12 @@ export class AddPlacesLived {
       year: req.body.year,
       month: req.body.month
     };
-    const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(`${req.currentUser?.userId}`, 'placesLived', placesLived, 'add');
+    const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(
+      `${req.currentUser?.userId}`,
+      'placesLived',
+      placesLived,
+      'add'
+    );
     socketIOUserObject.emit('update user', cachedUser);
     userInfoQueue.addUserInfoJob('updateUserPlaceInCache', {
       key: `${req.currentUser?.username}`,

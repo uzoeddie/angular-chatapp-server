@@ -16,7 +16,13 @@ export class DeleteWorkAndEducation {
       from: '',
       to: ''
     };
-    const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(`${req.currentUser?.userId}`, 'work', work, 'remove', req.params.workId);
+    const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(
+      `${req.currentUser?.userId}`,
+      'work',
+      work,
+      'remove',
+      req.params.workId
+    );
     socketIOUserObject.emit('update user', cachedUser);
     userInfoQueue.addUserInfoJob('updateUserWorkInCache', {
       key: `${req.currentUser?.username}`,
@@ -36,7 +42,13 @@ export class DeleteWorkAndEducation {
       from: '',
       to: ''
     };
-    const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(`${req.currentUser?.userId}`, 'school', school, 'remove', req.params.schoolId);
+    const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(
+      `${req.currentUser?.userId}`,
+      'school',
+      school,
+      'remove',
+      req.params.schoolId
+    );
     socketIOUserObject.emit('update user', cachedUser);
     userInfoQueue.addUserInfoJob('updateUserSchoolInCache', {
       key: `${req.currentUser?.username}`,

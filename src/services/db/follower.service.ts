@@ -36,7 +36,11 @@ class Follower {
         }
       }
     ]);
-    const response: [IFollowerDocument, BulkWriteOpResultObject, IUserDocument | null] = await Promise.all([following, users, UserModel.findOne({ _id: followerId })]);
+    const response: [IFollowerDocument, BulkWriteOpResultObject, IUserDocument | null] = await Promise.all([
+      following,
+      users,
+      UserModel.findOne({ _id: followerId })
+    ]);
 
     if (userId !== followerId) {
       const notificationModel: INotificationDocument = new NotificationModel();

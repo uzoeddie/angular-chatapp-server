@@ -67,13 +67,20 @@ describe('Helpers', () => {
 
   it('should return post comments (getPostComments)', async () => {
     jest.spyOn(CommentsModel, 'aggregate').mockResolvedValueOnce([commentsData]);
-    const commentsDocument: ICommentDocument[] = await Helpers.getPostComments({ _id: '6027f77087c9d9ccb1555268' }, 0, 10, { createdAt: -1 });
+    const commentsDocument: ICommentDocument[] = await Helpers.getPostComments({ _id: '6027f77087c9d9ccb1555268' }, 0, 10, {
+      createdAt: -1
+    });
     expect(commentsDocument).toEqual([commentsData]);
   });
 
   it('should return post reactions (getPostReactions)', async () => {
     jest.spyOn(Promise, 'all').mockResolvedValueOnce(Promise.resolve([[reactionData], 1]));
-    const reactionDocument: [IReactionDocument[], number] = await Helpers.getPostReactions({ postId: mongoose.Types.ObjectId('6027f77087c9d9ccb1555268') }, 0, 1, { createdAt: -1 });
+    const reactionDocument: [IReactionDocument[], number] = await Helpers.getPostReactions(
+      { postId: mongoose.Types.ObjectId('6027f77087c9d9ccb1555268') },
+      0,
+      1,
+      { createdAt: -1 }
+    );
     expect(reactionDocument).toEqual([[reactionData], 1]);
   });
 

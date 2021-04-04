@@ -14,9 +14,60 @@ client.on('error', function (error) {
 });
 
 export function savePostsToRedisCache(key: string, uId: number, createdPost: IPostDocument): Promise<void> {
-  const { _id, userId, username, email, avatarColor, post, bgColor, feelings, privacy, gifUrl, reactions, imgId, imgVersion, comments, createdAt, profilePicture } = createdPost;
-  const firstList: string[] = ['_id', `${_id}`, 'userId', `${userId}`, 'username', `${username}`, 'email', `${email}`, 'avatarColor', `${avatarColor}`, 'post', `${post}`, 'bgColor', `${bgColor}`, 'feelings', JSON.stringify(feelings), 'privacy', JSON.stringify(privacy), 'gifUrl', `${gifUrl}`];
-  const secondList: string[] = ['reactions', JSON.stringify(reactions), 'imgId', `${imgId}`, 'imgVersion', `${imgVersion}`, 'comments', JSON.stringify(comments), 'createdAt', `${createdAt}`, 'profilePicture', `${profilePicture}`];
+  const {
+    _id,
+    userId,
+    username,
+    email,
+    avatarColor,
+    post,
+    bgColor,
+    feelings,
+    privacy,
+    gifUrl,
+    reactions,
+    imgId,
+    imgVersion,
+    comments,
+    createdAt,
+    profilePicture
+  } = createdPost;
+  const firstList: string[] = [
+    '_id',
+    `${_id}`,
+    'userId',
+    `${userId}`,
+    'username',
+    `${username}`,
+    'email',
+    `${email}`,
+    'avatarColor',
+    `${avatarColor}`,
+    'post',
+    `${post}`,
+    'bgColor',
+    `${bgColor}`,
+    'feelings',
+    JSON.stringify(feelings),
+    'privacy',
+    JSON.stringify(privacy),
+    'gifUrl',
+    `${gifUrl}`
+  ];
+  const secondList: string[] = [
+    'reactions',
+    JSON.stringify(reactions),
+    'imgId',
+    `${imgId}`,
+    'imgVersion',
+    `${imgVersion}`,
+    'comments',
+    JSON.stringify(comments),
+    'createdAt',
+    `${createdAt}`,
+    'profilePicture',
+    `${profilePicture}`
+  ];
   const dataToSave: string[] = [...firstList, ...secondList];
   return new Promise((resolve, reject) => {
     client.hmset(`posts:${key}`, dataToSave, (error) => {
@@ -31,8 +82,28 @@ export function savePostsToRedisCache(key: string, uId: number, createdPost: IPo
 
 export function updatePostInRedisCache(key: string, createdPost: IPostDocument): Promise<IPostDocument> {
   const { post, bgColor, feelings, privacy, gifUrl, imgId, imgVersion, createdAt, profilePicture } = createdPost;
-  const firstList: string[] = ['post', `${post}`, 'bgColor', `${bgColor}`, 'feelings', JSON.stringify(feelings), 'privacy', JSON.stringify(privacy), 'gifUrl', `${gifUrl}`];
-  const secondList: string[] = ['imgId', `${imgId}`, 'imgVersion', `${imgVersion}`, 'createdAt', `${createdAt}`, 'profilePicture', `${profilePicture}`];
+  const firstList: string[] = [
+    'post',
+    `${post}`,
+    'bgColor',
+    `${bgColor}`,
+    'feelings',
+    JSON.stringify(feelings),
+    'privacy',
+    JSON.stringify(privacy),
+    'gifUrl',
+    `${gifUrl}`
+  ];
+  const secondList: string[] = [
+    'imgId',
+    `${imgId}`,
+    'imgVersion',
+    `${imgVersion}`,
+    'createdAt',
+    `${createdAt}`,
+    'profilePicture',
+    `${profilePicture}`
+  ];
   const dataToSave: string[] = [...firstList, ...secondList];
   return new Promise((resolve, reject) => {
     client.hmset(`posts:${key}`, dataToSave, (error: Error | null) => {
@@ -49,7 +120,9 @@ export function updatePostInRedisCache(key: string, createdPost: IPostDocument):
         reply[0].comments = Helpers.parseJson(reply[0].comments);
         reply[0].privacy = Helpers.parseJson(reply[0].privacy);
         reply[0].userId = Helpers.parseJson(reply[0].userId);
-        reply[0].reactions = Object.keys(Helpers.parseJson(reply[0].reactions)).length ? Helpers.formattedReactions(Helpers.parseJson(reply[0].reactions)) : [];
+        reply[0].reactions = Object.keys(Helpers.parseJson(reply[0].reactions)).length
+          ? Helpers.formattedReactions(Helpers.parseJson(reply[0].reactions))
+          : [];
         reply[0].createdAt = new Date(reply[0].createdAt);
         resolve(reply[0]);
       });
@@ -88,7 +161,9 @@ export function getPostsFromCache(key: string, start: number, end: number): Prom
           reply.comments = Helpers.parseJson(reply.comments);
           reply.privacy = Helpers.parseJson(reply.privacy);
           reply.userId = Helpers.parseJson(reply.userId);
-          reply.reactions = Object.keys(Helpers.parseJson(reply.reactions)).length ? Helpers.formattedReactions(Helpers.parseJson(reply.reactions)) : [];
+          reply.reactions = Object.keys(Helpers.parseJson(reply.reactions)).length
+            ? Helpers.formattedReactions(Helpers.parseJson(reply.reactions))
+            : [];
           reply.createdAt = new Date(reply.createdAt);
         }
         resolve(replies);
@@ -107,7 +182,9 @@ export function getSinglePostFromCache(key: string): Promise<IPostDocument[]> {
       reply.comments = Helpers.parseJson(reply.comments);
       reply.privacy = Helpers.parseJson(reply.privacy);
       reply.userId = Helpers.parseJson(reply.userId);
-      reply.reactions = Object.keys(Helpers.parseJson(reply.reactions)).length ? Helpers.formattedReactions(Helpers.parseJson(reply.reactions)) : [];
+      reply.reactions = Object.keys(Helpers.parseJson(reply.reactions)).length
+        ? Helpers.formattedReactions(Helpers.parseJson(reply.reactions))
+        : [];
       reply.createdAt = new Date(Helpers.parseJson(reply.createdAt));
       resolve([reply]);
     });
@@ -133,7 +210,9 @@ export function getUserPostsFromCache(key: string, uId: number): Promise<IPostDo
           reply.comments = Helpers.parseJson(reply.comments);
           reply.privacy = Helpers.parseJson(reply.privacy);
           reply.userId = Helpers.parseJson(reply.userId);
-          reply.reactions = Object.keys(Helpers.parseJson(reply.reactions)).length ? Helpers.formattedReactions(Helpers.parseJson(reply.reactions)) : [];
+          reply.reactions = Object.keys(Helpers.parseJson(reply.reactions)).length
+            ? Helpers.formattedReactions(Helpers.parseJson(reply.reactions))
+            : [];
           reply.createdAt = new Date(Helpers.parseJson(reply.createdAt));
         }
         resolve(replies);

@@ -11,10 +11,10 @@ declare global {
 
 export interface IUserDocument extends mongoose.Document {
   _id: string | ObjectID;
-  uId: string;
+  uId: string | number;
   username: string;
   email: string;
-  password: string;
+  password?: string;
   avatarColor: string;
   postCount: number;
   work: IUserWork[];

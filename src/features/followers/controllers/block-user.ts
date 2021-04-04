@@ -4,8 +4,18 @@ import { userQueue } from '@queues/user.queue';
 import { updateBlockedUserPropInRedisCache } from '@redis/user-cache';
 export class Block {
   public async block(req: Request, res: Response): Promise<void> {
-    const blockedBy: Promise<void> = updateBlockedUserPropInRedisCache(`${req.params.followerId}`, 'blockedBy', `${req.currentUser?.userId}`, 'block');
-    const blocked: Promise<void> = updateBlockedUserPropInRedisCache(`${req.currentUser?.userId}`, 'blocked', `${req.params.followerId}`, 'block');
+    const blockedBy: Promise<void> = updateBlockedUserPropInRedisCache(
+      `${req.params.followerId}`,
+      'blockedBy',
+      `${req.currentUser?.userId}`,
+      'block'
+    );
+    const blocked: Promise<void> = updateBlockedUserPropInRedisCache(
+      `${req.currentUser?.userId}`,
+      'blocked',
+      `${req.params.followerId}`,
+      'block'
+    );
     await Promise.all([blockedBy, blocked]);
     userQueue.addUserJob('addBlockedUserToDB', {
       keyOne: `${req.currentUser?.userId}`,
@@ -15,8 +25,18 @@ export class Block {
   }
 
   public async unblock(req: Request, res: Response): Promise<void> {
-    const blockedBy: Promise<void> = updateBlockedUserPropInRedisCache(`${req.params.followerId}`, 'blockedBy', `${req.currentUser?.userId}`, 'unblock');
-    const blocked: Promise<void> = updateBlockedUserPropInRedisCache(`${req.currentUser?.userId}`, 'blocked', `${req.params.followerId}`, 'unblock');
+    const blockedBy: Promise<void> = updateBlockedUserPropInRedisCache(
+      `${req.params.followerId}`,
+      'blockedBy',
+      `${req.currentUser?.userId}`,
+      'unblock'
+    );
+    const blocked: Promise<void> = updateBlockedUserPropInRedisCache(
+      `${req.currentUser?.userId}`,
+      'blocked',
+      `${req.params.followerId}`,
+      'unblock'
+    );
     await Promise.all([blockedBy, blocked]);
     userQueue.addUserJob('removeUnblockedUserFromDB', {
       keyOne: `${req.currentUser?.userId}`,

@@ -34,6 +34,8 @@ export class ChangePassword {
     };
     const template: string = resetPasswordTemplate.passwordResetConfirmationTemplate(templateParams);
     emailQueue.addEmailJob('changePassword', { receiverEmail: existingAuthUser.email, template, type: 'Password Update Confirmation' });
-    res.status(HTTP_STATUS.OK).json({ message: 'Password updated successfully. You will be redirected shortly to the login page.', notification: true });
+    res
+      .status(HTTP_STATUS.OK)
+      .json({ message: 'Password updated successfully. You will be redirected shortly to the login page.', notification: true });
   }
 }

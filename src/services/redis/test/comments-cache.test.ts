@@ -1,5 +1,12 @@
 import redis, { RedisClient } from 'redis-mock';
-import { getCommentNamesFromCache, getCommentsFromCache, getReactionsFromCache, removeReactionFromCache, savePostCommentToRedisCache, savePostReactionToRedisCache } from '@redis/comments-cache';
+import {
+  getCommentNamesFromCache,
+  getCommentsFromCache,
+  getReactionsFromCache,
+  removeReactionFromCache,
+  savePostCommentToRedisCache,
+  savePostReactionToRedisCache
+} from '@redis/comments-cache';
 import { commentsData, reactionData } from '@mock/comment.mock';
 
 jest.useFakeTimers();
@@ -47,7 +54,7 @@ describe('CommentsCache', () => {
   describe('getCommentNamesFromCache', () => {
     it('should get comments', async () => {
       await savePostCommentToRedisCache('6027f77087c9d9ccb1555268', JSON.stringify(commentsData));
-      commentsData.createdAt = JSON.parse(JSON.stringify(new Date(commentsData.createdAt)));
+      commentsData.createdAt = JSON.parse(JSON.stringify(new Date(commentsData.createdAt!)));
       await expect(getCommentsFromCache('6027f77087c9d9ccb1555268', 0, 1)).resolves.toStrictEqual([commentsData]);
     });
   });
@@ -55,7 +62,7 @@ describe('CommentsCache', () => {
   describe('getReactionsFromCache', () => {
     it('should get reactions', async () => {
       await savePostReactionToRedisCache('6027f77087c9d9ccb1555268', JSON.stringify(reactionData), 'like');
-      reactionData.createdAt = JSON.parse(JSON.stringify(new Date(reactionData.createdAt)));
+      reactionData.createdAt = JSON.parse(JSON.stringify(new Date(reactionData.createdAt!)));
       await expect(getReactionsFromCache('6027f77087c9d9ccb1555268', 0, 1)).resolves.toStrictEqual([[reactionData], 1]);
     });
   });

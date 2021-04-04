@@ -4,7 +4,7 @@ interface Images {
   imgVersion: string;
   imgId: string;
   createdAt?: Date;
-  _id?: mongoose.Types.ObjectId;
+  _id?: mongoose.Types.ObjectId | string;
 }
 
 export interface Image {
@@ -13,7 +13,7 @@ export interface Image {
 }
 
 export interface IFileImageDocument extends mongoose.Document {
-  userId: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId | string;
   bgImageVersion: string;
   bgImageId: string;
   profilePicture: string;

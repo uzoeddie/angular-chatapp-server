@@ -47,7 +47,9 @@ describe('UserInfoCache', () => {
       };
       await saveUserToRedisCache('60263f14648fed5246e322d9', '123', existingUser as any);
       existingUser.placesLived = [...existingUser.placesLived, placesLived];
-      await expect(updateUserPropListInfoInRedisCache('60263f14648fed5246e322d9', 'placesLived', placesLived, 'add')).resolves.toEqual(existingUser);
+      await expect(updateUserPropListInfoInRedisCache('60263f14648fed5246e322d9', 'placesLived', placesLived, 'add')).resolves.toEqual(
+        existingUser
+      );
     });
   });
 });

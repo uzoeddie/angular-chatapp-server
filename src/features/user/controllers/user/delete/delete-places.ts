@@ -14,7 +14,13 @@ export class DeletePlacesLived {
       year: '',
       month: ''
     };
-    const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(`${req.currentUser?.userId}`, 'placesLived', placesLived, 'remove', req.params.placeId);
+    const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(
+      `${req.currentUser?.userId}`,
+      'placesLived',
+      placesLived,
+      'remove',
+      req.params.placeId
+    );
     socketIOUserObject.emit('update user', cachedUser);
     userInfoQueue.addUserInfoJob('updateUserPlaceInCache', {
       key: `${req.currentUser?.username}`,

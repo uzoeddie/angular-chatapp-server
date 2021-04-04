@@ -3,7 +3,7 @@ import { AuthPayload } from '@user/interface/user.interface';
 import { Response } from 'express';
 import mongoose from 'mongoose';
 
-export const postMockRequest = (body: IBody, currentUser?: AuthPayload | null, params?: any) => ({
+export const postMockRequest = (body: IBody, currentUser?: AuthPayload | null, params?: IParams) => ({
   body,
   params,
   currentUser
@@ -15,6 +15,11 @@ export const postMockResponse = (): Response => {
   res.json = jest.fn().mockReturnValue(res);
   return res;
 };
+
+interface IParams {
+  postId?: string;
+  page?: string;
+}
 
 interface IBody {
   bgColor: string;
@@ -46,7 +51,7 @@ export const newPost: IBody = {
   feelings: { name: 'happy', file: '/assets/feelings/happy.jpg' }
 };
 
-export const postMockData: IPostDocument | any = {
+export const postMockData: IPostDocument = {
   avatarColor: '#4caf50',
   bgColor: '#f44336',
   comments: 3,
@@ -63,7 +68,7 @@ export const postMockData: IPostDocument | any = {
   userId: '602740b43eaf201998cd9297',
   username: 'Danny',
   _id: mongoose.Types.ObjectId('6027f77087c9d9ccb1555268')
-};
+} as IPostDocument;
 
 export const updatedPost: IPostDocument = {
   profilePicture: 'https://res.cloudinary.com/ratingapp/image/upload/602740b43eaf201998cd9297',

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Response } from 'express';
 import { AuthPayload } from '@user/interface/user.interface';
 import { IJwt } from './auth.mock';
@@ -35,7 +34,7 @@ export interface IParams {
   previousReaction?: string;
 }
 
-export const commentsData: ICommentDocument | any = {
+export const commentsData: ICommentDocument = {
   _id: '6064861bc25eaa5a5d2f9bf4',
   username: 'Danny',
   avatarColor: '#9c27b0',
@@ -44,14 +43,14 @@ export const commentsData: ICommentDocument | any = {
   comment: 'This is a comment',
   createdAt: new Date(),
   userTo: '60263f14648fed5246e322d9'
-};
+} as ICommentDocument;
 
 export const redisCommentList: IRedisCommentList = {
   count: 1,
   names: ['Danny']
 };
 
-export const reactionData: IReactionDocument | any = {
+export const reactionData: IReactionDocument = {
   _id: '6064861bc25eaa5a5d2f9bf4',
   username: 'Danny',
   postId: '6027f77087c9d9ccb1555268',
@@ -60,4 +59,4 @@ export const reactionData: IReactionDocument | any = {
   createdAt: new Date(),
   userTo: '60263f14648fed5246e322d9',
   type: 'love'
-};
+} as IReactionDocument;

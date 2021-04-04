@@ -15,13 +15,25 @@ class Post {
   public async addPostToDB(userId: string, createdPost: IPostDocument): Promise<void> {
     let images: UpdateQuery<IFileImageDocument> | undefined;
     const post: Promise<IPostDocument> = PostModel.create(createdPost);
-    const user: UpdateQuery<IUserDocument> = UserModel.findOneAndUpdate({ _id: userId }, { $inc: { postCount: 1 } }, { upsert: true, new: true });
+    const user: UpdateQuery<IUserDocument> = UserModel.findOneAndUpdate(
+      { _id: userId },
+      { $inc: { postCount: 1 } },
+      { upsert: true, new: true }
+    );
     if (createdPost.imgId && createdPost.imgVersion) {
-      images = ImageModel.updateOne({ userId }, { $push: { images: { imgId: createdPost.imgId, imgVersion: createdPost.imgVersion } } }, { upsert: true });
+      images = ImageModel.updateOne(
+        { userId },
+        { $push: { images: { imgId: createdPost.imgId, imgVersion: createdPost.imgVersion } } },
+        { upsert: true }
+      );
     } else {
       images = undefined;
     }
-    const response: [IPostDocument, UpdateQuery<IUserDocument>, UpdateQuery<IFileImageDocument> | undefined] = await Promise.all([post, user, images]);
+    const response: [IPostDocument, UpdateQuery<IUserDocument>, UpdateQuery<IFileImageDocument> | undefined] = await Promise.all([
+      post,
+      user,
+      images
+    ]);
     await updateSingleUserItemInRedisCache(`${userId}`, 'postCount', response[1].postCount!);
   }
 

@@ -21,7 +21,10 @@ export class AddBasicInfo {
 
   @joiValidation(birthdaySchema)
   public async birthday(req: Request, res: Response): Promise<void> {
-    const cachedUser: IUserDocument = await updateSingleUserItemInRedisCache(`${req.currentUser?.userId}`, 'birthDay', { month: req.body.month, day: req.body.day });
+    const cachedUser: IUserDocument = await updateSingleUserItemInRedisCache(`${req.currentUser?.userId}`, 'birthDay', {
+      month: req.body.month,
+      day: req.body.day
+    });
     socketIOUserObject.emit('update user', cachedUser);
     userInfoQueue.addUserInfoJob('updateBirthdayInCache', {
       key: `${req.currentUser?.username}`,
@@ -32,7 +35,11 @@ export class AddBasicInfo {
 
   @joiValidation(relationshipSchema)
   public async relationship(req: Request, res: Response): Promise<void> {
-    const cachedUser: IUserDocument = await updateSingleUserItemInRedisCache(`${req.currentUser?.userId}`, 'relationship', req.body.relationship);
+    const cachedUser: IUserDocument = await updateSingleUserItemInRedisCache(
+      `${req.currentUser?.userId}`,
+      'relationship',
+      req.body.relationship
+    );
     socketIOUserObject.emit('update user', cachedUser);
     userInfoQueue.addUserInfoJob('updateRelationshipInCache', {
       key: `${req.currentUser?.username}`,

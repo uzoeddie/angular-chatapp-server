@@ -75,7 +75,10 @@ describe('AddBasicInfo', () => {
 
       await AddBasicInfo.prototype.birthday(req, res);
       expect(socketIOUserObject.emit).toHaveBeenCalled();
-      expect(userInfoQueue.addUserInfoJob).toHaveBeenCalledWith('updateBirthdayInCache', { key: 'Manny', value: { month: 'March', day: '10' } });
+      expect(userInfoQueue.addUserInfoJob).toHaveBeenCalledWith('updateBirthdayInCache', {
+        key: 'Manny',
+        value: { month: 'March', day: '10' }
+      });
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
         message: 'Birthday updated successfully'

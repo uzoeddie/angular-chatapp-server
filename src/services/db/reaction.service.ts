@@ -55,7 +55,11 @@ class Reaction {
         header: 'Post Reaction Notification'
       };
       const template: string = notificationTemplate.notificationMessageTemplate(templateParams);
-      emailQueue.addEmailJob('reactionsMail', { receiverEmail: updatedReaction[0].email, template, type: `${username} reacted to your post.` });
+      emailQueue.addEmailJob('reactionsMail', {
+        receiverEmail: updatedReaction[0].email,
+        template,
+        type: `${username} reacted to your post.`
+      });
     }
   }
 
