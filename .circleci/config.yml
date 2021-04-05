@@ -1,3 +1,5 @@
+orbs:
+  aws-cli: circleci/aws-cli@2.0.0
 version: 2.1
 executors:
   app-executor:
@@ -46,7 +48,6 @@ jobs:
       - *restore-cache
       - *install-dependencies
       - *save-cache
-      - *install-aws-cli
       - run:
           name: Copy Infrastructure Folder
           command: |
@@ -122,13 +123,13 @@ jobs:
   #           - artifacts
 
   upload-env-to-s3:
-    executor: app-executor
+    executor: aws-cli/default
     steps:
       - checkout
       - attach_workspace:
           at: ./
-      - *show-current-branch-name
-      - *restore-cache
+      - aws-cli/setup:
+          profile-name: default
       - run:
           name: Upload ENV to S3
           command: |
