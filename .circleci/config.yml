@@ -143,7 +143,7 @@ jobs:
   #             aws --region eu-central-1 s3 cp env-file.zip s3://chatapp-env-files/${CIRCLE_BRANCH}/
   #           fi
 
-  upload-project-to-s3:
+  upload-zipped-project-to-s3:
     executor: aws-cli/default
     steps:
       - checkout
@@ -176,7 +176,7 @@ workflows:
   build_and_deploy:
     jobs:
       - build
-      - upload-project-to-s3:
+      - upload-zipped-project-to-s3:
           requires:
             - build
           filters:
