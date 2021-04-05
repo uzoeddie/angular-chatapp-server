@@ -138,7 +138,7 @@ jobs:
               unzip env-file.zip
               ELASTICACHE_ENDPOINT=$(cat configuration_endpoint_address.txt | sed 's/\"//g')
               echo $ELASTICACHE_ENDPOINT
-              sed -i -e '/REDIS_HOST/s/=.*/=${ELASTICACHE_ENDPOINT}/g' .env
+              sed -i -e "s|\(^REDIS_HOST=\).*|REDIS_HOST=\"$ELASTICACHE_ENDPOINT\"|g" .env
               rm env-file.zip
               zip env-file.zip .env
               aws --region eu-central-1 s3 cp env-file.zip s3://chatapp-env-files/${CIRCLE_BRANCH}/
