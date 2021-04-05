@@ -23,7 +23,6 @@ aliases:
       name: Install dependencies
       command: |
         mkdir -p artifacts
-        npm install
   - &save-cache
     save_cache:
       paths:
@@ -45,7 +44,9 @@ jobs:
       - checkout
       - *show-current-branch-name
       - *restore-cache
+      - *install-dependencies
       - *save-cache
+      - *install-aws-cli
       - run:
           name: Copy Infrastructure Folder
           command: |
