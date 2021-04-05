@@ -6,5 +6,6 @@ sudo npm install
 sudo rm -rf ./node_modules/@types/mongoose
 sudo rm -rf env-file.zip
 sudo rm -rf .env
-aws s3 sync s3://env-zip-file .
+aws s3 sync s3://chatapp-env-files/develop .
 unzip env-file.zip
+cp .env.production .env

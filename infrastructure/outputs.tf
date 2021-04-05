@@ -1,5 +1,5 @@
 output "configuration_endpoint_address" {
-  value = aws_elasticache_replication_group.chat_app_redis_cluster.configuration_endpoint_address
+  value = aws_elasticache_replication_group.chat_app_redis_cluster.primary_endpoint_address
 }
 
 output "backend_server_s3_bucket" {

@@ -13,7 +13,7 @@ class HealthRoute {
 
   public routes(): Router {
     this.router.get('/health', (req: Request, res: Response) => {
-      res.status(200).send(`Server instance is healthy with process id ${process.pid}`);
+      res.status(200).send(`Heath: Server instance is healthy with process id ${process.pid} on ${moment().format('LL')}`);
     });
 
     return this.router;
@@ -65,7 +65,7 @@ class HealthRoute {
         method: 'get',
         url: 'http://169.254.169.254/latest/meta-data/instance-id'
       });
-      res.status(200).send(`Server is running on EC2 instance with id ${response.data} and process id ${process.pid}.`);
+      res.status(200).send(`Server is running on EC2 instance with id ${response.data} and process id ${process.pid} on ${moment().format('LL')}.`);
     });
 
     return this.router;
