@@ -22,12 +22,21 @@ aliases:
     run:
       name: Install dependencies
       command: |
+        mkdir -p artifacts
         npm install
   - &save-cache
     save_cache:
       paths:
         - node_modules
       key: app-{{ checksum "package.json" }}
+  - &install-aws-cli
+    run:
+      name: Installing AWS CLI
+      working_directory: /
+      command: |
+        sudo apt-get -y -qq update
+        sudo apt-get install -y awscli
+        sudo apt-get install -y python-pip python-dev build-essential
 
 jobs:
   build:
@@ -36,68 +45,121 @@ jobs:
       - checkout
       - *show-current-branch-name
       - *restore-cache
-      - *install-dependencies
       - *save-cache
+      - run:
+          name: Copy Infrastructure Folder
+          command: |
+            cp -r infrastructure artifacts/infrastructure
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - artifacts
 
-  linting:
+  # linting:
+  #   executor: app-executor
+  #   steps:
+  #     - checkout
+  #     - *show-current-branch-name
+  #     - *restore-cache
+  #     - *save-cache
+  #     - run:
+  #         name: Run linting
+  #         command: npm run lint
+
+  # prettier:
+  #   executor: app-executor
+  #   steps:
+  #     - checkout
+  #     - *show-current-branch-name
+  #     - *restore-cache
+  #     - run:
+  #         name: Run prettier check
+  #         command: npm run prettier:check
+
+  # terraform-validate:
+  #   executor: terraform-executor
+  #   steps:
+  #     - checkout
+  #     - *show-current-branch-name
+  #     - run:
+  #         name: Terraform Validate & Format
+  #         command: |
+  #           cd infrastructure/
+  #           terraform init -backend=false
+  #           terraform validate
+  #           terraform fmt -check
+
+  # terraform-plan-and-apply:
+  #   executor: terraform-executor
+  #   steps:
+  #     - checkout
+  #     - attach_workspace:
+  #         at: ./
+  #     - *show-current-branch-name
+  #     - run:
+  #         name: Terraform Plan
+  #         command: |
+  #           cd artifacts/infrastructure/
+  #           terraform init
+  #           terraform workspace select ${CIRCLE_BRANCH} || terraform workspace new ${CIRCLE_BRANCH}
+  #           terraform plan
+  #     - run:
+  #         name: Terraform Apply
+  #         command: |
+  #           cd artifacts/infrastructure/
+  #           terraform workspace select ${CIRCLE_BRANCH}
+  #           terraform apply --auto-approve
+  #           terraform output configuration_endpoint_address > ../configuration_endpoint_address.txt
+  #           terraform output backend_server_s3_bucket > ../backend_server_s3_bucket.txt
+  #           terraform output server_code_deploy > ../server_code_deploy.txt
+  #           terraform output codedeploy_deployment_group > ../codedeploy_deployment_group.txt
+  #     - persist_to_workspace:
+  #         root: ./
+  #         paths:
+  #           - artifacts
+
+  upload-env-to-s3:
     executor: app-executor
     steps:
       - checkout
-      - *show-current-branch-name
-      - *restore-cache
-      - *save-cache
-      - run:
-          name: Run linting
-          command: npm run lint
-
-  prettier:
-    executor: app-executor
-    steps:
-      - checkout
+      - attach_workspace:
+          at: ./
       - *show-current-branch-name
       - *restore-cache
       - run:
-          name: Run prettier check
-          command: npm run prettier:check
+          name: Upload ENV to S3
+          command: |
+            if [ "${UPDATE_ENV_FILE}" == "true" ]
+            then
+              aws s3 sync s3://chatapp-env-files/${CIRCLE_BRANCH} .
+              unzip env-file.zip
+              ELASTICACHE_ENDPOINT=$(cat artifacts/configuration_endpoint_address.txt | sed 's/\"//g')
+              echo $ELASTICACHE_ENDPOINT
+              sed -i -e '/REDIS_HOST/s/=.*/=${ELASTICACHE_ENDPOINT}/g' .env
+              rm env-file.zip
+              zip env-file.zip .env
+              aws --region eu-central-1 s3 cp env-file.zip s3://chatapp-env-files/${CIRCLE_BRANCH}/
+            fi
 
-  terraform-validate:
-    executor: terraform-executor
-    steps:
-      - checkout
-      - *show-current-branch-name
-      - run:
-          name: Terraform Validate & Format
-          command: |
-            cd infrastructure/
-            terraform init -backend=false
-            terraform validate
-            terraform fmt -check
-
-  terraform-plan-and-apply:
-    executor: terraform-executor
-    steps:
-      - checkout
-      - *show-current-branch-name
-      - run:
-          name: Terraform Plan
-          command: |
-            cd infrastructure/
-            terraform init
-            terraform workspace select ${CIRCLE_BRANCH} || terraform workspace new ${CIRCLE_BRANCH}
-            terraform plan
-      - run:
-          name: Terraform Apply
-          command: |
-            cd infrastructure/
-            terraform workspace select ${CIRCLE_BRANCH}
-            terraform apply --auto-approve
+  # terraform-destroy:
+  #   executor: terraform-executor
+  #   steps:
+  #     - checkout
+  #     - *show-current-branch-name
+  #     - run:
+  #         name: Terraform Destroy
+  #         command: |
+  #           cd infrastructure/
+  #           terraform init
+  #           terraform workspace select ${CIRCLE_BRANCH} || terraform workspace new ${CIRCLE_BRANCH}
+  #           terraform destroy --auto-approve
 
 
 workflows:
   build_and_deploy:
     jobs:
       - build
-      - linting:
+      - upload-env-to-s3:
           requires:
             - build
           filters:
@@ -106,43 +168,43 @@ workflows:
                 - develop
                 - staging
                 - master
-      - prettier:
-          requires:
-            - build
-          filters:
-            branches:
-              only:
-                - develop
-                - staging
-                - master
-      - terraform-validate:
-          requires:
-            - prettier
-          filters:
-            branches:
-              only:
-                - develop
-                - staging
-                - master
-      - terraform-plan-and-apply:
-          requires:
-            - terraform-validate
-          filters:
-            branches:
-              only:
-                - develop
-                - staging
-                - master
-      - hold:
-          type: approval
-          requires:
-            - terraform-plan-and-apply
-      - terraform-destroy:
-          requires:
-            - hold
-          filters:
-            branches:
-              only:
-                - develop
-                - staging
-                - master
+      # - prettier:
+      #     requires:
+      #       - build
+      #     filters:
+      #       branches:
+      #         only:
+      #           - develop
+      #           - staging
+      #           - master
+      # - terraform-validate:
+      #     requires:
+      #       - prettier
+      #     filters:
+      #       branches:
+      #         only:
+      #           - develop
+      #           - staging
+      #           - master
+      # - terraform-plan-and-apply:
+      #     requires:
+      #       - terraform-validate
+      #     filters:
+      #       branches:
+      #         only:
+      #           - develop
+      #           - staging
+      #           - master
+      # - hold:
+      #     type: approval
+      #     requires:
+      #       - terraform-plan-and-apply
+      # - terraform-destroy:
+      #     requires:
+      #       - hold
+      #     filters:
+      #       branches:
+      #         only:
+      #           - develop
+      #           - staging
+      #           - master

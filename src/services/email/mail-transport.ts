@@ -24,7 +24,7 @@ class MailTransport {
    * @returns {*} void
    */
   public async sendEmail(receiverEmail: string, subject: string, body: string): Promise<void> {
-    if (config.NODE_ENV === 'local' || config.NODE_ENV === 'test' || config.NODE_ENV === 'development') {
+    if (config.NODE_ENV === 'test' || config.NODE_ENV === 'development') {
       this.developmentEmailSender(receiverEmail, subject, body);
     } else {
       this.productionEmailSender(receiverEmail, subject, body);

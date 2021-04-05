@@ -82,24 +82,24 @@ resource "aws_security_group" "alb_security_group" {
   )
 }
 
-# resource "aws_security_group" "sg_elasticache_cluster" {
-#   name        = "${local.prefix}-sg-elasticache"
-#   description = "Allow access to elasticache service"
-#   vpc_id      = aws_vpc.main.id
+resource "aws_security_group" "sg_elasticache_cluster" {
+  name        = "${local.prefix}-sg-elasticache"
+  description = "Allow access to elasticache service"
+  vpc_id      = aws_vpc.main.id
 
-#   ingress {
-#     from_port       = 6379
-#     to_port         = 6379
-#     protocol        = "TCP"
-#     security_groups = [aws_security_group.ec2_public_security_group.id]
-#   }
+  ingress {
+    from_port       = 6379
+    to_port         = 6379
+    protocol        = "TCP"
+    security_groups = [aws_security_group.ec2_public_security_group.id]
+  }
 
-#   egress {
-#     from_port   = 0
-#     to_port     = 0
-#     protocol    = "-1"
-#     cidr_blocks = ["0.0.0.0/0"]
-#   }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
-#   tags = local.common_tags
-# }
+  tags = local.common_tags
+}

@@ -76,7 +76,7 @@ const userSchema: mongoose.Schema = new mongoose.Schema(
 userSchema.plugin(autopopulate);
 
 userSchema.pre('save', async function (this: IUserDocument, next) {
-  const hashedPassword: string = await hash(this.password, 10);
+  const hashedPassword: string = await hash(this.password!, 10);
   this.password = hashedPassword;
   next();
 });
@@ -87,7 +87,7 @@ userSchema.methods.hashPassword = async function (password: string): Promise<str
 };
 
 userSchema.methods.comparePassword = function (password: string): Promise<boolean> {
-  const hashedPassword: string = ((this as unknown) as IUserDocument).password;
+  const hashedPassword: string = ((this as unknown) as IUserDocument).password!;
   return compare(password, hashedPassword);
 };
 
