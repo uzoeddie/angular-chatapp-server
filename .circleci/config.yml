@@ -52,8 +52,6 @@ jobs:
           name: Copy Infrastructure Folder
           command: |
             cp -r infrastructure artifacts/infrastructure
-            cd infrastructure/
-            echo "testing" > ../configuration_endpoint_address.txt
       - persist_to_workspace:
           root: ./
           paths:
@@ -133,11 +131,12 @@ jobs:
       - run:
           name: Upload ENV to S3
           command: |
+            echo "testingendpoint" > configuration_endpoint_address.txt
             if [ "${UPDATE_ENV_FILE}" == "true" ]
             then
               aws s3 sync s3://chatapp-env-files/${CIRCLE_BRANCH} .
               unzip env-file.zip
-              ELASTICACHE_ENDPOINT=$(cat artifacts/configuration_endpoint_address.txt | sed 's/\"//g')
+              ELASTICACHE_ENDPOINT=$(cat configuration_endpoint_address.txt | sed 's/\"//g')
               echo $ELASTICACHE_ENDPOINT
               sed -i -e '/REDIS_HOST/s/=.*/=${ELASTICACHE_ENDPOINT}/g' .env
               rm env-file.zip
