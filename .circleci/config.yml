@@ -97,15 +97,15 @@ jobs:
           name: Terraform Plan
           command: |
             cd infrastructure/
-            terraform init
+            terraform init -var-file="infrastructure.tfvars"
             terraform workspace select ${CIRCLE_BRANCH} || terraform workspace new ${CIRCLE_BRANCH}
-            terraform plan
+            terraform plan -var-file="infrastructure.tfvars"
       - run:
           name: Terraform Apply
           command: |
             cd infrastructure/
             terraform workspace select ${CIRCLE_BRANCH}
-            terraform apply --auto-approve
+            terraform apply -var-file="infrastructure.tfvars" --auto-approve
             terraform output configuration_endpoint_address > ../configuration_endpoint_address.txt
       - persist_to_workspace:
           root: .
