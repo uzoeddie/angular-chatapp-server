@@ -131,7 +131,8 @@ jobs:
               echo $ELASTICACHE_ENDPOINT
               sed -i -e "s|\(^REDIS_HOST=\).*|REDIS_HOST=\"$ELASTICACHE_ENDPOINT\"|g" .env
               rm env-file.zip
-              zip env-file.zip .env
+              cp .env .env.production
+              zip env-file.zip .env.production
               aws --region eu-central-1 s3 cp env-file.zip s3://chatapp-env-files/${CIRCLE_BRANCH}/
             fi
 
