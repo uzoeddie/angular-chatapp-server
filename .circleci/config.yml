@@ -34,6 +34,7 @@ aliases:
     run:
       name: Zip Project
       command: |
+        rm -rf node_modules
         zip chatapp.zip -r .
         echo "Zip successful"
 
@@ -46,10 +47,6 @@ jobs:
       - *restore-cache
       - *install-dependencies
       - *save-cache
-      - run:
-          name: Copy Infrastructure Folder
-          command: |
-            echo "This is a test by Uzochukwu" > ./configuration_endpoint_address.txt
       - persist_to_workspace:
           root: .
           paths:
@@ -89,94 +86,120 @@ jobs:
             terraform validate
             terraform fmt -check
 
-  # terraform-plan-and-apply:
-  #   executor: terraform-executor
-  #   steps:
-  #     - checkout
-  #     - attach_workspace:
-  #         at: .
-  #     - *show-current-branch-name
-  #     - run:
-  #         name: Terraform Plan
-  #         command: |
-  #           cd infrastructure/
-  #           terraform init
-  #           terraform workspace select ${CIRCLE_BRANCH} || terraform workspace new ${CIRCLE_BRANCH}
-  #           terraform plan
-  #     - run:
-  #         name: Terraform Apply
-  #         command: |
-  #           cd infrastructure/
-  #           terraform workspace select ${CIRCLE_BRANCH}
-  #           terraform apply --auto-approve
-  #           terraform output configuration_endpoint_address > ../configuration_endpoint_address.txt
-  #           terraform output backend_server_s3_bucket > ../backend_server_s3_bucket.txt
-  #           terraform output server_code_deploy > ../server_code_deploy.txt
-  #           terraform output codedeploy_deployment_group > ../codedeploy_deployment_group.txt
-  #     - persist_to_workspace:
-  #         root: .
-  #         paths:
-  #           - .
+  terraform-plan-and-apply:
+    executor: terraform-executor
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - *show-current-branch-name
+      - run:
+          name: Terraform Plan
+          command: |
+            cd infrastructure/
+            terraform init
+            terraform workspace select ${CIRCLE_BRANCH} || terraform workspace new ${CIRCLE_BRANCH}
+            terraform plan
+      - run:
+          name: Terraform Apply
+          command: |
+            cd infrastructure/
+            terraform workspace select ${CIRCLE_BRANCH}
+            terraform apply --auto-approve
+            terraform output configuration_endpoint_address > ../configuration_endpoint_address.txt
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
 
-  # upload-env-to-s3:
-  #   executor: aws-cli/default
-  #   steps:
-  #     - checkout
-  #     - attach_workspace:
-  #         at: .
-  #     - aws-cli/setup:
-  #         profile-name: default
-  #     - run:
-  #         name: Upload ENV to S3
-  #         command: |
-  #           if [ "${UPDATE_ENV_FILE}" == "true" ]
-  #           then
-  #             aws s3 sync s3://chatapp-env-files/${CIRCLE_BRANCH} .
-  #             unzip env-file.zip
-  #             cp .env.production .env
-  #             ELASTICACHE_ENDPOINT=$(cat configuration_endpoint_address.txt | sed 's/\"//g')
-  #             echo $ELASTICACHE_ENDPOINT
-  #             sed -i -e "s|\(^REDIS_HOST=\).*|REDIS_HOST=\"$ELASTICACHE_ENDPOINT\"|g" .env
-  #             rm env-file.zip
-  #             zip env-file.zip .env
-  #             aws --region eu-central-1 s3 cp env-file.zip s3://chatapp-env-files/${CIRCLE_BRANCH}/
-  #           fi
+  upload-env-to-s3:
+    executor: aws-cli/default
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - aws-cli/setup:
+          profile-name: default
+      - run:
+          name: Upload ENV to S3
+          command: |
+            if [ "${UPDATE_ENV_FILE}" == "true" ]
+            then
+              aws s3 sync s3://chatapp-env-files/${CIRCLE_BRANCH} .
+              unzip env-file.zip
+              cp .env.production .env
+              ELASTICACHE_ENDPOINT=$(cat configuration_endpoint_address.txt | sed 's/\"//g')
+              echo $ELASTICACHE_ENDPOINT
+              sed -i -e "s|\(^REDIS_HOST=\).*|REDIS_HOST=\"$ELASTICACHE_ENDPOINT\"|g" .env
+              rm env-file.zip
+              zip env-file.zip .env
+              aws --region eu-central-1 s3 cp env-file.zip s3://chatapp-env-files/${CIRCLE_BRANCH}/
+            fi
 
+  # Don't attach workspace here otherwise
+  # you won't be able to delete the node_modules
   upload-zipped-project-to-s3:
     executor: aws-cli/default
     steps:
       - checkout
-      # - attach_workspace:
-      #     at: .
       - aws-cli/setup:
           profile-name: default
       - *zip-project
       - run:
           name: Upload Project to S3
           command: |
-            rm -rf node_modules
-            echo chat-server-${CIRCLE_BRANCH}-app
             aws --region eu-central-1 s3 cp chatapp.zip s3://chat-server-${CIRCLE_BRANCH}-app
 
-  # terraform-destroy:
-  #   executor: terraform-executor
-  #   steps:
-  #     - checkout
-  #     - *show-current-branch-name
-  #     - run:
-  #         name: Terraform Destroy
-  #         command: |
-  #           cd infrastructure/
-  #           terraform init
-  #           terraform workspace select ${CIRCLE_BRANCH} || terraform workspace new ${CIRCLE_BRANCH}
-  #           terraform destroy --auto-approve
+  push-to-aws-code-deploy:
+    executor: aws-cli/default
+    steps:
+      - checkout
+      - aws-cli/setup:
+          profile-name: default
+      - *zip-project
+      - run:
+          name: Deploy Changes With AWS CodeDeploy
+          command: |
+            if [ "${CODE_DEPLOY_UPDATE}" == "true" ]
+            then
+              aws deploy create-deployment \
+                --region eu-central-1 \
+                --application-name chat-server-${CIRCLE_BRANCH}-app \
+                --deployment-config-name CodeDeployDefault.AllAtOnce \
+                --deployment-group-name chat-server-${CIRCLE_BRANCH}-group \
+                --s3-location bucket=chat-server-${CIRCLE_BRANCH}-app,bundleType=zip,key=chatapp.zip
+            fi
+
+  # In a real production environment, you would not want to have this
+  # job
+  terraform-destroy:
+    executor: terraform-executor
+    steps:
+      - checkout
+      - *show-current-branch-name
+      - run:
+          name: Terraform Destroy
+          command: |
+            cd infrastructure/
+            terraform init
+            terraform workspace select ${CIRCLE_BRANCH} || terraform workspace new ${CIRCLE_BRANCH}
+            terraform destroy --auto-approve
 
 
 workflows:
   build_and_deploy:
     jobs:
       - build
-      - upload-zipped-project-to-s3:
+      - terraform-validate:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - develop
+                - staging
+                - master # Be sure to check if the branch is master or main
+      - terraform-plan-and-apply:
           requires:
             - build
           filters:
@@ -185,43 +208,34 @@ workflows:
                 - develop
                 - staging
                 - master
-      # - prettier:
-      #     requires:
-      #       - build
-      #     filters:
-      #       branches:
-      #         only:
-      #           - develop
-      #           - staging
-      #           - master
-      # - terraform-validate:
-      #     requires:
-      #       - prettier
-      #     filters:
-      #       branches:
-      #         only:
-      #           - develop
-      #           - staging
-      #           - master
-      # - terraform-plan-and-apply:
-      #     requires:
-      #       - terraform-validate
-      #     filters:
-      #       branches:
-      #         only:
-      #           - develop
-      #           - staging
-      #           - master
-      # - hold:
-      #     type: approval
-      #     requires:
-      #       - terraform-plan-and-apply
-      # - terraform-destroy:
-      #     requires:
-      #       - hold
-      #     filters:
-      #       branches:
-      #         only:
-      #           - develop
-      #           - staging
-      #           - master
+      - upload-env-to-s3:
+          requires:
+            - prettier
+          filters:
+            branches:
+              only:
+                - develop
+                - staging
+                - master
+      - upload-zipped-project-to-s3:
+          requires:
+            - terraform-validate
+          filters:
+            branches:
+              only:
+                - develop
+                - staging
+                - master
+      - hold:
+          type: approval
+          requires:
+            - upload-zipped-project-to-s3
+      - terraform-destroy:
+          requires:
+            - hold
+          filters:
+            branches:
+              only:
+                - develop
+                - staging
+                - master
