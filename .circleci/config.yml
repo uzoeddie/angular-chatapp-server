@@ -201,7 +201,7 @@ workflows:
                 - master # Be sure to check if the branch is master or main
       - terraform-plan-and-apply:
           requires:
-            - build
+            - terraform-validate
           filters:
             branches:
               only:
@@ -210,7 +210,7 @@ workflows:
                 - master
       - upload-env-to-s3:
           requires:
-            - prettier
+            - terraform-plan-and-apply
           filters:
             branches:
               only:
@@ -219,7 +219,16 @@ workflows:
                 - master
       - upload-zipped-project-to-s3:
           requires:
-            - terraform-validate
+            - upload-env-to-s3
+          filters:
+            branches:
+              only:
+                - develop
+                - staging
+                - master
+      - push-to-aws-code-deploy:
+          requires:
+            - upload-zipped-project-to-s3
           filters:
             branches:
               only:
@@ -229,7 +238,7 @@ workflows:
       - hold:
           type: approval
           requires:
-            - upload-zipped-project-to-s3
+            - push-to-aws-code-deploy
       - terraform-destroy:
           requires:
             - hold
