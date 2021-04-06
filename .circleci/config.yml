@@ -46,10 +46,10 @@ jobs:
       - *restore-cache
       - *install-dependencies
       - *save-cache
-      # - run:
-      #     name: Copy Infrastructure Folder
-      #     command: |
-      #       cp -r infrastructure artifacts/infrastructure
+      - run:
+          name: Copy Infrastructure Folder
+          command: |
+            echo "This is a test by Uzochukwu" > ../configuration_endpoint_address.txt
       - persist_to_workspace:
           root: .
           paths:
@@ -154,6 +154,7 @@ jobs:
       - run:
           name: Upload Project to S3
           command: |
+            rm -rf node_modules
             echo chat-server-${CIRCLE_BRANCH}-app
             aws --region eu-central-1 s3 cp chatapp.zip s3://chat-server-${CIRCLE_BRANCH}-app
 
