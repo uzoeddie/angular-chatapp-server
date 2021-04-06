@@ -52,7 +52,7 @@ class HealthRoute {
         .send(
           `Fibonacci series of ${req.params.num} is ${result} and it took ${end - start} ms with EC2 instance id ${
             response.data
-          } and process id ${process.pid}.`
+          } and process id ${process.pid} on ${moment().format('LL')}.`
         );
     });
 
