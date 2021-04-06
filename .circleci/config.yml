@@ -24,7 +24,6 @@ aliases:
     run:
       name: Install dependencies
       command: |
-        mkdir -p artifacts
         npm install
   - &save-cache
     save_cache:
@@ -47,14 +46,14 @@ jobs:
       - *restore-cache
       - *install-dependencies
       - *save-cache
-      - run:
-          name: Copy Infrastructure Folder
-          command: |
-            cp -r infrastructure artifacts/infrastructure
+      # - run:
+      #     name: Copy Infrastructure Folder
+      #     command: |
+      #       cp -r infrastructure artifacts/infrastructure
       - persist_to_workspace:
-          root: ./
+          root: .
           paths:
-            - artifacts
+            - .
 
   # linting:
   #   executor: app-executor
@@ -85,7 +84,7 @@ jobs:
   #     - run:
   #         name: Terraform Validate & Format
   #         command: |
-  #           cd artifacts/infrastructure/
+  #           cd infrastructure/
   #           terraform init -backend=false
   #           terraform validate
   #           terraform fmt -check
@@ -95,19 +94,19 @@ jobs:
   #   steps:
   #     - checkout
   #     - attach_workspace:
-  #         at: ./
+  #         at: .
   #     - *show-current-branch-name
   #     - run:
   #         name: Terraform Plan
   #         command: |
-  #           cd artifacts/infrastructure/
+  #           cd infrastructure/
   #           terraform init
   #           terraform workspace select ${CIRCLE_BRANCH} || terraform workspace new ${CIRCLE_BRANCH}
   #           terraform plan
   #     - run:
   #         name: Terraform Apply
   #         command: |
-  #           cd artifacts/infrastructure/
+  #           cd infrastructure/
   #           terraform workspace select ${CIRCLE_BRANCH}
   #           terraform apply --auto-approve
   #           terraform output configuration_endpoint_address > ../configuration_endpoint_address.txt
@@ -115,16 +114,16 @@ jobs:
   #           terraform output server_code_deploy > ../server_code_deploy.txt
   #           terraform output codedeploy_deployment_group > ../codedeploy_deployment_group.txt
   #     - persist_to_workspace:
-  #         root: ./
+  #         root: .
   #         paths:
-  #           - artifacts
+  #           - .
 
   # upload-env-to-s3:
   #   executor: aws-cli/default
   #   steps:
   #     - checkout
   #     - attach_workspace:
-  #         at: ./
+  #         at: .
   #     - aws-cli/setup:
   #         profile-name: default
   #     - run:
@@ -148,7 +147,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: ./
+          at: .
       - aws-cli/setup:
           profile-name: default
       - *zip-project
