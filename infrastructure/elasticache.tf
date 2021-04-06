@@ -26,10 +26,10 @@ resource "aws_elasticache_replication_group" "chat_app_redis_cluster" {
   node_type                     = "cache.t2.micro"
   number_cache_clusters         = 2
   # engine_version                = "6.x"
-  parameter_group_name          = "default.redis6.x"
-  port                          = 6379
-  subnet_group_name             = aws_elasticache_subnet_group.elasticache_subnet_group.name
-  security_group_ids            = [aws_security_group.sg_elasticache_cluster.id]
+  parameter_group_name = "default.redis6.x"
+  port                 = 6379
+  subnet_group_name    = aws_elasticache_subnet_group.elasticache_subnet_group.name
+  security_group_ids   = [aws_security_group.sg_elasticache_cluster.id]
 
   depends_on = [
     aws_security_group.sg_elasticache_cluster,
