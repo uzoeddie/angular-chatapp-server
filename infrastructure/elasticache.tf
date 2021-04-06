@@ -25,7 +25,7 @@ resource "aws_elasticache_replication_group" "chat_app_redis_cluster" {
   replication_group_description = "redis elasticache replication group"
   node_type                     = "cache.t2.micro"
   number_cache_clusters         = 2
-  engine_version                = "6.x"
+  # engine_version                = "6.x"
   parameter_group_name          = "default.redis6.x"
   port                          = 6379
   subnet_group_name             = aws_elasticache_subnet_group.elasticache_subnet_group.name
