@@ -1,6 +1,6 @@
 orbs:
   aws-cli: circleci/aws-cli@2.0.0
-  coveralls: coveralls/coveralls@1.0.6
+  coveralls: coveralls/coveralls@1.0.6 # Don't forget to go into organization's security and select yes
 version: 2.1
 executors:
   app-executor:
