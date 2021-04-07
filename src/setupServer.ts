@@ -64,6 +64,7 @@ export class ChatServer {
     );
     app.use(hpp());
     app.use(helmet());
+    app.use(helmet.hidePoweredBy());
     app.use(
       cors({
         origin: config.CLIENT_URL,

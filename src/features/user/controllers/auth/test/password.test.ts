@@ -6,6 +6,11 @@ import { Password } from '@user/controllers/auth/password';
 import { CustomError } from '@global/error-handler';
 import { existingUser } from '@mock/user.mock';
 
+const WRONG_EMAIL = 'test@email.com';
+const CORRECT_EMAIL = 'manny@me.com';
+const INVALID_EMAIL = 'test';
+const CORRECT_PASSWORD = 'manny';
+
 describe('Password', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
@@ -17,7 +22,7 @@ describe('Password', () => {
 
   describe('create', () => {
     it('should throw an error if email is invalid', () => {
-      const req: Request = authMockRequest({}, { email: 'test' }) as Request;
+      const req: Request = authMockRequest({}, { email: INVALID_EMAIL }) as Request;
       const res: Response = authMockResponse();
       Password.prototype.create(req, res).catch((error: CustomError) => {
         expect(error.statusCode).toEqual(400);
@@ -26,7 +31,7 @@ describe('Password', () => {
     });
 
     it('should throw "Invalid credential" if email does not exist', () => {
-      const req: Request = authMockRequest({}, { email: 'test@email.com' }) as Request;
+      const req: Request = authMockRequest({}, { email: WRONG_EMAIL }) as Request;
       const res: Response = authMockResponse();
       jest.spyOn(mongoose.Query.prototype, 'exec').mockResolvedValueOnce(null);
       Password.prototype.create(req, res).catch((error: CustomError) => {
@@ -36,7 +41,7 @@ describe('Password', () => {
     });
 
     it('should call sendMail method', async () => {
-      const req: Request = authMockRequest({}, { email: 'manny@me.com' }) as Request;
+      const req: Request = authMockRequest({}, { email: CORRECT_EMAIL }) as Request;
       const res: Response = authMockResponse();
       const mockUser = {
         ...existingUser,
@@ -67,7 +72,7 @@ describe('Password', () => {
     });
 
     it('should throw an error if password and cpassword are different', () => {
-      const req: Request = authMockRequest({}, { password: 'manny1', cpassword: 'manny2' }) as Request;
+      const req: Request = authMockRequest({}, { password: CORRECT_PASSWORD, cpassword: `${CORRECT_PASSWORD}2` }) as Request;
       const res: Response = authMockResponse();
       Password.prototype.update(req, res).catch((error: CustomError) => {
         expect(error.statusCode).toEqual(400);
@@ -76,7 +81,7 @@ describe('Password', () => {
     });
 
     it('should throw error if reset token has expired', () => {
-      const req: Request = authMockRequest({}, { password: 'manny1', cpassword: 'manny1' }, null, { token: '' }) as Request;
+      const req: Request = authMockRequest({}, { password: CORRECT_PASSWORD, cpassword: CORRECT_PASSWORD }, null, { token: '' }) as Request;
       const res: Response = authMockResponse();
       jest.spyOn(mongoose.Query.prototype, 'exec').mockResolvedValueOnce(null);
       Password.prototype.update(req, res).catch((error: CustomError) => {
@@ -86,7 +91,7 @@ describe('Password', () => {
     });
 
     it('should call sendMail method and send correct json response', async () => {
-      const req: Request = authMockRequest({}, { password: 'manny1', cpassword: 'manny1' }, null, { token: '12sde3' }) as Request;
+      const req: Request = authMockRequest({}, { password: CORRECT_PASSWORD, cpassword: CORRECT_PASSWORD }, null, { token: '12sde3' }) as Request;
       const res: Response = authMockResponse();
       const mockUser = {
         ...existingUser,

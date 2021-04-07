@@ -18,6 +18,14 @@ jest.useFakeTimers();
 // jest.mock('@redis/user-cache');
 // jest.mock('jimp');
 
+const USERNAME = 'Manny';
+const PASSWORD = 'manny1';
+const WRONG_USERNAME = 'ma';
+const SHORT_PASSWORD = 'ma';
+const LONG_PASSWORD = 'mathematics1';
+const LONG_USERNAME = 'mathematics';
+const EMAIL = 'manny@test.com';
+
 describe('SignUp', () => {
   let client: RedisClient;
   beforeEach(() => {
@@ -34,7 +42,7 @@ describe('SignUp', () => {
   });
 
   it('should throw an error if username is not available', () => {
-    const req: Request = authMockRequest({}, { username: '', email: 'manny@test.com', password: 'manny1' }) as Request;
+    const req: Request = authMockRequest({}, { username: '', email: EMAIL, password: PASSWORD }) as Request;
     const res: Response = authMockResponse();
     SignUp.prototype.create(req, res).catch((error: CustomError) => {
       expect(error.statusCode).toEqual(400);
@@ -43,7 +51,7 @@ describe('SignUp', () => {
   });
 
   it('should throw an error if username length is less than minimum length', () => {
-    const req: Request = authMockRequest({}, { username: 'ma', email: 'manny@test.com', password: 'manny1' }) as Request;
+    const req: Request = authMockRequest({}, { username: WRONG_USERNAME, email: EMAIL, password: PASSWORD }) as Request;
     const res: Response = authMockResponse();
     SignUp.prototype.create(req, res).catch((error: CustomError) => {
       expect(error.statusCode).toEqual(400);
@@ -52,7 +60,7 @@ describe('SignUp', () => {
   });
 
   it('should throw an error if username length is greater than maximum length', () => {
-    const req: Request = authMockRequest({}, { username: 'mathematics', email: 'manny@test.com', password: 'manny1' }) as Request;
+    const req: Request = authMockRequest({}, { username: LONG_USERNAME, email: EMAIL, password: PASSWORD }) as Request;
     const res: Response = authMockResponse();
     SignUp.prototype.create(req, res).catch((error: CustomError) => {
       expect(error.statusCode).toEqual(400);
@@ -61,7 +69,7 @@ describe('SignUp', () => {
   });
 
   it('should throw an error if email is not valid', () => {
-    const req: Request = authMockRequest({}, { username: 'manny', email: 'manny', password: 'manny1' }) as Request;
+    const req: Request = authMockRequest({}, { username: USERNAME, email: USERNAME, password: PASSWORD }) as Request;
     const res: Response = authMockResponse();
     SignUp.prototype.create(req, res).catch((error: CustomError) => {
       expect(error.statusCode).toEqual(400);
@@ -70,7 +78,7 @@ describe('SignUp', () => {
   });
 
   it('should throw an error if email is not available', () => {
-    const req: Request = authMockRequest({}, { username: 'manny', email: '', password: 'manny1' }) as Request;
+    const req: Request = authMockRequest({}, { username: USERNAME, email: '', password: PASSWORD }) as Request;
     const res: Response = authMockResponse();
     SignUp.prototype.create(req, res).catch((error: CustomError) => {
       expect(error.statusCode).toEqual(400);
@@ -79,7 +87,7 @@ describe('SignUp', () => {
   });
 
   it('should throw an error if password is not available', () => {
-    const req: Request = authMockRequest({}, { username: 'manny', email: 'manny@test.com', password: '' }) as Request;
+    const req: Request = authMockRequest({}, { username: USERNAME, email: EMAIL, password: '' }) as Request;
     const res: Response = authMockResponse();
     SignUp.prototype.create(req, res).catch((error: CustomError) => {
       expect(error.statusCode).toEqual(400);
@@ -88,7 +96,7 @@ describe('SignUp', () => {
   });
 
   it('should throw an error if password length is less than minimum length', () => {
-    const req: Request = authMockRequest({}, { username: 'manny', email: 'manny@test.com', password: 'man' }) as Request;
+    const req: Request = authMockRequest({}, { username: USERNAME, email: EMAIL, password: SHORT_PASSWORD }) as Request;
     const res: Response = authMockResponse();
     SignUp.prototype.create(req, res).catch((error: CustomError) => {
       expect(error.statusCode).toEqual(400);
@@ -97,7 +105,7 @@ describe('SignUp', () => {
   });
 
   it('should throw an error if password length is greater than maximum length', () => {
-    const req: Request = authMockRequest({}, { username: 'manny', email: 'manny@test.com', password: 'mathematics1' }) as Request;
+    const req: Request = authMockRequest({}, { username: USERNAME, email: EMAIL, password: LONG_PASSWORD }) as Request;
     const res: Response = authMockResponse();
     SignUp.prototype.create(req, res).catch((error: CustomError) => {
       expect(error.statusCode).toEqual(400);
@@ -106,7 +114,7 @@ describe('SignUp', () => {
   });
 
   it('should throw unauthorize error if user already exist', () => {
-    const req: Request = authMockRequest({}, { username: 'manny', email: 'manny@test.com', password: 'manny1' }) as Request;
+    const req: Request = authMockRequest({}, { username: USERNAME, email: EMAIL, password: PASSWORD }) as Request;
     const res: Response = authMockResponse();
     const mockUser = {
       ...existingUser,

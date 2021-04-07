@@ -145,6 +145,9 @@ infrastructure/override.tf.json
 infrastructure/*_override.tf
 infrastructure/*_override.tf.json
 
+.scannerwork/
+sonar-project.properties
+
 terraform-steps.txt
 setup.sh
 test-deploy/

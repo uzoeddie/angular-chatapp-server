@@ -1,5 +1,6 @@
 orbs:
   aws-cli: circleci/aws-cli@2.0.0
+  coveralls: coveralls/coveralls@1.0.6
 version: 2.1
 executors:
   app-executor:
@@ -52,26 +53,19 @@ jobs:
           paths:
             - .
 
-  # linting:
-  #   executor: app-executor
-  #   steps:
-  #     - checkout
-  #     - *show-current-branch-name
-  #     - *restore-cache
-  #     - *save-cache
-  #     - run:
-  #         name: Run linting
-  #         command: npm run lint
-
-  # prettier:
-  #   executor: app-executor
-  #   steps:
-  #     - checkout
-  #     - *show-current-branch-name
-  #     - *restore-cache
-  #     - run:
-  #         name: Run prettier check
-  #         command: npm run prettier:check
+  unit-test:
+    executor: app-executor
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - *show-current-branch-name
+      - *restore-cache
+      - *save-cache
+      - run:
+          name: Run Unit Test
+          command: npm run test
+      - coveralls/upload
 
   terraform-validate:
     executor: terraform-executor
@@ -183,14 +177,14 @@ jobs:
             cd infrastructure/
             terraform init
             terraform workspace select ${CIRCLE_BRANCH} || terraform workspace new ${CIRCLE_BRANCH}
-            terraform destroy --auto-approve
+            terraform destroy -var-file="infrastructure.tfvars" --auto-approve
 
 
 workflows:
   build_and_deploy:
     jobs:
       - build
-      - terraform-validate:
+      - unit-test:
           requires:
             - build
           filters:
@@ -199,52 +193,52 @@ workflows:
                 - develop
                 - staging
                 - master # Be sure to check if the branch is master or main
-      - terraform-plan-and-apply:
-          requires:
-            - terraform-validate
-          filters:
-            branches:
-              only:
-                - develop
-                - staging
-                - master
-      - upload-env-to-s3:
-          requires:
-            - terraform-plan-and-apply
-          filters:
-            branches:
-              only:
-                - develop
-                - staging
-                - master
-      - upload-zipped-project-to-s3:
-          requires:
-            - upload-env-to-s3
-          filters:
-            branches:
-              only:
-                - develop
-                - staging
-                - master
-      - push-to-aws-code-deploy:
-          requires:
-            - upload-zipped-project-to-s3
-          filters:
-            branches:
-              only:
-                - develop
-                - staging
-                - master
-      - hold:
-          type: approval
-          requires:
-            - push-to-aws-code-deploy
-      - terraform-destroy:
-          requires:
-            - hold
-          filters:
-            branches:
-              only:
-                - develop
-                - staging
-                - master
+      # - terraform-plan-and-apply:
+      #     requires:
+      #       - terraform-validate
+      #     filters:
+      #       branches:
+      #         only:
+      #           - develop
+      #           - staging
+      #           - master
+      # - upload-env-to-s3:
+      #     requires:
+      #       - terraform-plan-and-apply
+      #     filters:
+      #       branches:
+      #         only:
+      #           - develop
+      #           - staging
+      #           - master
+      # - upload-zipped-project-to-s3:
+      #     requires:
+      #       - upload-env-to-s3
+      #     filters:
+      #       branches:
+      #         only:
+      #           - develop
+      #           - staging
+      #           - master
+      # - push-to-aws-code-deploy:
+      #     requires:
+      #       - upload-zipped-project-to-s3
+      #     filters:
+      #       branches:
+      #         only:
+      #           - develop
+      #           - staging
+      #           - master
+      # - hold:
+      #     type: approval
+      #     requires:
+      #       - push-to-aws-code-deploy
+      # - terraform-destroy:
+      #     requires:
+      #       - hold
+      #     filters:
+      #       branches:
+      #         only:
+      #           - develop
+      #           - staging
+      #           - master

@@ -13,8 +13,7 @@ import { signupSchema } from '@user/schemes/auth/signup';
 import { userQueue } from '@queues/user.queue';
 import Jimp from 'jimp';
 import { uploads } from '@global/cloudinary-upload';
-
-const MAX = 10000;
+import crypto from 'crypto';
 export class SignUp {
   @joiValidation(signupSchema)
   public async create(req: Request, res: Response): Promise<void> {
@@ -26,7 +25,8 @@ export class SignUp {
     if (checkIfUserExist) {
       throw new NotAuthorizedError('User with details already exists.');
     }
-    const uId = `${Math.floor(Math.random() * Math.floor(MAX))}${Date.now()}`;
+    const random: Buffer = await Promise.resolve(crypto.randomBytes(5));
+    const uId = `${random.toString('hex')}${Date.now()}`;
     const createdObjectId: ObjectID = new ObjectID();
     const data: IUserDocument = signUpData({
       createdObjectId,

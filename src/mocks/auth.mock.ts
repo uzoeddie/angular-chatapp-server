@@ -2,6 +2,8 @@
 import { AuthPayload } from '@user/interface/user.interface';
 import { Response } from 'express';
 
+const PASSWORD = 'manny1';
+
 export const authMockRequest = (sessionData: IJwt, body: IAuthMock, currentUser?: AuthPayload | null, params?: any) => ({
   session: sessionData,
   body,
@@ -65,7 +67,7 @@ export const signUpMockData = {
   username: 'Manny',
   email: 'manny@test.com',
   avatarColor: '#ff9800',
-  password: 'manny1',
+  password: PASSWORD,
   birthDay: { month: '', day: '' },
   postCount: 0,
   gender: '',

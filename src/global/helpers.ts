@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Aggregate, Query } from 'mongoose';
+import _ from 'lodash';
 import { ICommentDocument, IFormattedReactions, IReactionDocument, IReactions } from '@comments/interface/comment.interface';
 import { CommentsModel } from '@comments/models/comment.schema';
 import { ReactionsModel } from '@comments/models/reactions.schema';
@@ -33,7 +34,7 @@ export class Helpers {
       '#03a9f4',
       '#cddc39'
     ];
-    return colors[Math.floor(Math.random() * colors.length)];
+    return colors[_.floor(_.random(0.9) * colors.length)];
   }
 
   static formattedReactions(reactions: IReactions): IFormattedReactions[] {
