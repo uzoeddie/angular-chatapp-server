@@ -19,6 +19,7 @@ describe('CurrentUser', () => {
   });
 
   afterAll((done) => {
+    mongoose.connection.close();
     done();
   });
 

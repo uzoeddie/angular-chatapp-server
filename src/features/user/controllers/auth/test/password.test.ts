@@ -23,6 +23,7 @@ describe('Password', () => {
   });
 
   afterAll((done) => {
+    mongoose.connection.close();
     done();
   });
 

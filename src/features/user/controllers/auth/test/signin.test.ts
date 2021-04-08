@@ -24,6 +24,7 @@ describe('SignIn', () => {
   });
 
   afterAll((done) => {
+    mongoose.connection.close();
     done();
   });
 

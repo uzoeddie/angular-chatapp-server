@@ -22,6 +22,7 @@ describe('GetUser', () => {
   });
 
   afterAll((done) => {
+    mongoose.connection.close();
     done();
   });
 

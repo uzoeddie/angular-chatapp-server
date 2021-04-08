@@ -20,6 +20,7 @@ describe('Helpers', () => {
   });
 
   afterAll((done) => {
+    mongoose.connection.close();
     done();
   });
 

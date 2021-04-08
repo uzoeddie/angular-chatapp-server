@@ -36,6 +36,7 @@ describe('GetChat', () => {
   });
 
   afterAll((done) => {
+    mongoose.connection.close();
     done();
   });
 

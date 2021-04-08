@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import mongoose from 'mongoose';
+// import mongoose from 'mongoose';
 import { Request, Response } from 'express';
 import { SignUp } from '@user/controllers/auth/signup';
 import { CustomError } from '@global/error-handler';
 import { authMockRequest, authMockResponse } from '@mock/auth.mock';
-import { existingUser } from '@mock/user.mock';
+// import { existingUser } from '@mock/user.mock';
 // import { userQueue } from '@queues/user.queue';
 import redis, { RedisClient } from 'redis-mock';
 // import * as SignUpClass from '@user/controllers/auth/signup';
@@ -18,12 +18,12 @@ jest.useFakeTimers();
 // jest.mock('@redis/user-cache');
 // jest.mock('jimp');
 
-const USERNAME = 'Manny';
+// const USERNAME = 'Manny';
 const PASSWORD = 'manny1';
-const WRONG_USERNAME = 'ma';
-const SHORT_PASSWORD = 'ma';
-const LONG_PASSWORD = 'mathematics1';
-const LONG_USERNAME = 'mathematics';
+// const WRONG_USERNAME = 'ma';
+// const SHORT_PASSWORD = 'ma';
+// const LONG_PASSWORD = 'mathematics1';
+// const LONG_USERNAME = 'mathematics';
 const EMAIL = 'manny@test.com';
 
 describe('SignUp', () => {
