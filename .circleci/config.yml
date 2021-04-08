@@ -61,7 +61,7 @@ jobs:
       - *install-dependencies
       - run:
           name: Run Unit Test
-          command: npm run test
+          command: npm run test -w 1
       - coveralls/upload
 
   terraform-validate:
