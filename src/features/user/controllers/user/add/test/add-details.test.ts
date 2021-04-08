@@ -22,6 +22,10 @@ describe('AddDetails', () => {
     jest.clearAllTimers();
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   describe('about', () => {
     it('should throw an error if about is invalid', () => {
       const req: Request = authMockRequest({}, { about: '' }) as Request;

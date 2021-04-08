@@ -12,6 +12,7 @@ import { chatQueue } from '@queues/chat.queue';
 jest.useFakeTimers();
 jest.mock('@sockets/users');
 jest.mock('@redis/user-info-cache');
+jest.mock('@queues/email.queue');
 
 (socketIOChatObject as Server) = new Server();
 
@@ -27,6 +28,10 @@ describe('AddChat', () => {
     jest.clearAllTimers();
     client.flushall(done);
     client.quit(done);
+  });
+
+  afterAll((done) => {
+    done();
   });
 
   it('should throw an error if receiverName is not available', () => {

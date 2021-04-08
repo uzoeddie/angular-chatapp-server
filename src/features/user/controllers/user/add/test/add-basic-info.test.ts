@@ -22,6 +22,10 @@ describe('AddBasicInfo', () => {
     jest.clearAllTimers();
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   describe('gender', () => {
     it('should throw an error if gender is invalid', () => {
       const req: Request = authMockRequest({}, { gender: '' }) as Request;

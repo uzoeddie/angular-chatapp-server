@@ -29,6 +29,10 @@ describe('UserCache', () => {
     MockDate.reset();
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   describe('saveUserToRedisCache', () => {
     it('should add user', async () => {
       await expect(saveUserToRedisCache('60263f14648fed5246e322d9', '123', existingUser as any)).resolves.toBeUndefined();

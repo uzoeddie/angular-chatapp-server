@@ -24,6 +24,10 @@ describe('Add', () => {
     client.quit(done);
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   it('should send correct json response', async () => {
     const req: Request = commentMockRequest(
       {},

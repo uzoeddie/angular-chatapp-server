@@ -25,6 +25,10 @@ describe('Get', () => {
     client.quit(done);
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   describe('following', () => {
     it('should send correct json response if follower exist in cache', async () => {
       const req: Request = followersMockRequest({}, authUserPayload) as Request;

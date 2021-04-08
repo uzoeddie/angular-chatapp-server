@@ -16,6 +16,10 @@ describe('Settings', () => {
     jest.clearAllTimers();
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   describe('update', () => {
     it('should call "addUserJob" methods', async () => {
       const settings = {

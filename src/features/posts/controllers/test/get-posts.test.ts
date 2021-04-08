@@ -25,6 +25,10 @@ describe('Get', () => {
     client.quit(done);
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   describe('posts', () => {
     it('should send correct json response if posts exist in cache', async () => {
       const req: Request = postMockRequest(newPost, authUserPayload, { page: '1' }) as Request;

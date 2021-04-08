@@ -8,6 +8,7 @@ import { existingUser } from '@mock/user.mock';
 import { emailQueue } from '@queues/email.queue';
 
 jest.useFakeTimers();
+jest.mock('@queues/email.queue');
 
 describe('ChangePassword', () => {
   beforeEach(() => {
@@ -17,6 +18,10 @@ describe('ChangePassword', () => {
   afterEach(() => {
     jest.clearAllMocks();
     jest.clearAllTimers();
+  });
+
+  afterAll((done) => {
+    done();
   });
 
   describe('update', () => {

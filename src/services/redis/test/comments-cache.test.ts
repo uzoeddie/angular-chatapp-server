@@ -25,6 +25,10 @@ describe('CommentsCache', () => {
     client.quit(done);
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   describe('savePostCommentToRedisCache', () => {
     it('should add comment', async () => {
       await expect(savePostCommentToRedisCache('6027f77087c9d9ccb1555268', JSON.stringify(commentsData))).resolves.toBeUndefined();

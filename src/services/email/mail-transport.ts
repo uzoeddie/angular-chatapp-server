@@ -32,9 +32,6 @@ class MailTransport {
   }
 
   private async developmentEmailSender(receiverEmail: string, subject: string, body: string): Promise<void> {
-    console.log(receiverEmail);
-    console.log(body);
-    console.log(body);
     const transporter: Mail = nodemailer.createTransport({
       host: 'smtp.ethereal.email',
       port: 587,

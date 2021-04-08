@@ -21,6 +21,10 @@ describe('DeletePlacesLived', () => {
     jest.clearAllTimers();
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   describe('places', () => {
     it('should call "emit" and "addUserInfoJob" methods', async () => {
       const req: Request = authMockRequest({}, {}, authUserPayload, { placeId: '12345' }) as Request;

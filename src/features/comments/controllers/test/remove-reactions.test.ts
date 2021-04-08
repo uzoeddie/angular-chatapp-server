@@ -29,6 +29,10 @@ describe('Remove', () => {
     client.quit(done);
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   it('should send correct json response', async () => {
     const req: Request = commentMockRequest({}, {}, authUserPayload, {
       postId: '6027f77087c9d9ccb1555268',

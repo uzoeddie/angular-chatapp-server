@@ -28,6 +28,10 @@ describe('Delete', () => {
     client.quit(done);
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   it('should send correct json response', async () => {
     const req: Request = postMockRequest(newPost, authUserPayload, { postId: '12345' }) as Request;
     const res: Response = postMockResponse();

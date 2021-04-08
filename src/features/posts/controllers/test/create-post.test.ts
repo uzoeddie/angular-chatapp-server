@@ -31,6 +31,10 @@ describe('Create', () => {
     client.quit(done);
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   describe('post', () => {
     it('should send correct json response', async () => {
       const req: Request = postMockRequest(newPost, authUserPayload) as Request;

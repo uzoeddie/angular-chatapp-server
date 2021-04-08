@@ -18,6 +18,10 @@ describe('FollowerCache', () => {
     client.quit(done);
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   describe('saveFollowerToRedisCache', () => {
     it('should add follower', async () => {
       await expect(saveFollowerToRedisCache('followers:605727cd646cb50e668a4e13', followerData)).resolves.toBeUndefined();

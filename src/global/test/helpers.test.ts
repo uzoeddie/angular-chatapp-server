@@ -19,6 +19,10 @@ describe('Helpers', () => {
     jest.clearAllMocks();
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   it('should convert first letter of string to uppercase (firstLetterUppercase)', () => {
     const convertedString: string = Helpers.firstLetterUppercase('testing');
     expect(convertedString).toEqual('Testing');

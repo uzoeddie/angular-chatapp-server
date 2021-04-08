@@ -35,6 +35,10 @@ describe('GetChat', () => {
     client.quit(done);
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   describe('list', () => {
     it('should send correct json response if chat list exist in redis', async () => {
       const req: Request = chatMockRequest({}, chatMessage, authUserPayload) as Request;

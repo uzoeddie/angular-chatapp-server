@@ -22,6 +22,10 @@ describe('Search', () => {
     client.quit(done);
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   describe('users', () => {
     it('should send correct json response if searched user exist', async () => {
       const req: Request = chatMockRequest({}, {}, authUserPayload, { query: 'Danny' }) as Request;

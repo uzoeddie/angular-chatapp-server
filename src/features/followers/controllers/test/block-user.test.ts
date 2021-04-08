@@ -23,6 +23,10 @@ describe('Block', () => {
     client.quit(done);
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   describe('block', () => {
     it('should send correct json response', async () => {
       const req: Request = followersMockRequest({}, authUserPayload, { followerId: '6064861bc25eaa5a5d2f9bf4' }) as Request;

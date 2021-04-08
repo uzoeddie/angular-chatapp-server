@@ -32,6 +32,10 @@ describe('MarkChat', () => {
     client.quit(done);
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   describe('message', () => {
     it('should send correct json response if conversationId is empty', async () => {
       const req: Request = chatMockRequest(

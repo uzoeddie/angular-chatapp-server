@@ -32,6 +32,10 @@ describe('Update', () => {
     client.quit(done);
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   describe('posts', () => {
     it('should send correct json response', async () => {
       const req: Request = postMockRequest(newPost, authUserPayload, { postId: '12345' }) as Request;

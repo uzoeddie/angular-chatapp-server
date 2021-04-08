@@ -34,6 +34,10 @@ describe('Add', () => {
     client.quit(done);
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   describe('image', () => {
     it('should throw an error if image is not available', () => {
       const req: Request = imagesMockRequest({}, { image: '' }) as Request;

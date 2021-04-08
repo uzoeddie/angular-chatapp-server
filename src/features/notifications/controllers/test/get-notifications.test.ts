@@ -22,6 +22,10 @@ describe('Get', () => {
     client.quit(done);
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   it('should send correct json response', async () => {
     const req: Request = notificationMockRequest({}, authUserPayload, { notificationId: '12345' }) as Request;
     const res: Response = notificationMockResponse();

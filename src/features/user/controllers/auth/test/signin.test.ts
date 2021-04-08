@@ -23,6 +23,10 @@ describe('SignIn', () => {
     jest.clearAllMocks();
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   it('should throw an error if username is not available', () => {
     const req: Request = authMockRequest({}, { username: '', password: PASSWORD }) as Request;
     const res: Response = authMockResponse();

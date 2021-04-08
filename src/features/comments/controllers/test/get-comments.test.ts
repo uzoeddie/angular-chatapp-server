@@ -26,6 +26,10 @@ describe('GetPost', () => {
     client.quit(done);
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   describe('comments', () => {
     it('should send correct json response if comments exist in cache', async () => {
       const req: Request = commentMockRequest({}, {}, authUserPayload, {

@@ -10,6 +10,10 @@ describe('uploads', () => {
     jest.clearAllMocks();
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   it('should throw an error if upload fails', async () => {
     jest.spyOn(cloudinaryUploads, 'uploads').mockResolvedValue(
       Promise.reject({

@@ -21,6 +21,10 @@ describe('AddWorkAndEducation', () => {
     jest.clearAllTimers();
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   describe('work', () => {
     it('should call "emit" and "addUserInfoJob" methods', async () => {
       const work = {

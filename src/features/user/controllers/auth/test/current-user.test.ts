@@ -18,6 +18,10 @@ describe('CurrentUser', () => {
     jest.clearAllMocks();
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   it('should set session token', async () => {
     const req: Request = authMockRequest({ jwt: '12djdj34' }, { username: USERNAME, password: PASSWORD }) as Request;
     const res: Response = authMockResponse();

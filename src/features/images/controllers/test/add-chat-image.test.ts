@@ -30,6 +30,10 @@ describe('AddMessage', () => {
     client.quit(done);
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   it('should call the upload and message methods', async () => {
     const req: Request = imagesMockRequest(
       {},

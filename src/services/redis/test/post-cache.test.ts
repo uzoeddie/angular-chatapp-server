@@ -29,6 +29,10 @@ describe('PostCache', () => {
     MockDate.reset();
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   describe('savePostsToRedisCache', () => {
     it('should add post', async () => {
       await expect(savePostsToRedisCache('6027f77087c9d9ccb1555268', 123, postMockData)).resolves.toBeUndefined();

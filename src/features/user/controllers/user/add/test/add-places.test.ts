@@ -21,6 +21,10 @@ describe('AddPlacesLived', () => {
     jest.clearAllTimers();
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   describe('places', () => {
     it('should call "emit" and "addUserInfoJob" methods', async () => {
       const placesLived: IAuthMock = {

@@ -16,6 +16,10 @@ describe('AuthMiddleware', () => {
     jest.clearAllMocks();
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   describe('verifyUser', () => {
     it('should throw error if no token is present', () => {
       const req: Request = globalMockRequest({}) as Request;

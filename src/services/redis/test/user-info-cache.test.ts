@@ -28,6 +28,10 @@ describe('UserInfoCache', () => {
     MockDate.reset();
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   describe('updateSingleUserItemInRedisCache', () => {
     it('should update user item', async () => {
       await saveUserToRedisCache('60263f14648fed5246e322d9', '123', existingUser as any);

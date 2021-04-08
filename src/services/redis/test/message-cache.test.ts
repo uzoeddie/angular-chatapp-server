@@ -24,6 +24,10 @@ describe('MessageCache', () => {
     client.quit(done);
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   describe('addChatListToRedisCache', () => {
     it('should add users to chat list', async () => {
       await expect(

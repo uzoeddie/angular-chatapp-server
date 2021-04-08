@@ -11,6 +11,8 @@ const CORRECT_EMAIL = 'manny@me.com';
 const INVALID_EMAIL = 'test';
 const CORRECT_PASSWORD = 'manny';
 
+jest.mock('@queues/email.queue');
+
 describe('Password', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
@@ -18,6 +20,10 @@ describe('Password', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+  });
+
+  afterAll((done) => {
+    done();
   });
 
   describe('create', () => {

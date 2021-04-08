@@ -21,6 +21,10 @@ describe('GetUser', () => {
     jest.clearAllTimers();
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   describe('all', () => {
     it('should send the success json response', async () => {
       const req: Request = authMockRequest({}, {}, null, { page: '1' }) as Request;

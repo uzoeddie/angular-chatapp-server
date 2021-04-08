@@ -21,6 +21,10 @@ describe('DeleteWorkAndEducation', () => {
     jest.clearAllTimers();
   });
 
+  afterAll((done) => {
+    done();
+  });
+
   describe('work', () => {
     it('should call "emit" and "addUserInfoJob" methods', async () => {
       const req: Request = authMockRequest({}, {}, authUserPayload, { workId: '12345' }) as Request;
