@@ -59,7 +59,6 @@ jobs:
       - checkout
       - *show-current-branch-name
       - *restore-cache
-      - *save-cache
       - run:
           name: Run Unit Test
           command: npm run test
