@@ -123,7 +123,7 @@ export class ChatServer {
       this.startHttpServer(httpServer);
       this.socketIOConnections(socketIO);
     } catch (error) {
-      return error;
+      log.error(error);
     }
   }
 

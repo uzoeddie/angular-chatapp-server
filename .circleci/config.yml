@@ -65,7 +65,9 @@ jobs:
           background: true
       - run:
           name: Run Unit Test
-          command: npm run test
+          command: |
+            sleep 3
+            npm run test
       - coveralls/upload
 
   terraform-validate:
