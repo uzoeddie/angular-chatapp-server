@@ -24,7 +24,7 @@ describe('Add', () => {
   let client: RedisClient;
   beforeEach(() => {
     jest.restoreAllMocks();
-    client = redis.createClient();
+    client = redis.createClient({ host: '127.0.0.1', port: 6379 });
   });
 
   afterEach((done) => {

@@ -13,7 +13,7 @@ describe('UserInfoCache', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
     MockDate.set('2021-04-04');
-    client = redis.createClient();
+    client = redis.createClient({ host: '127.0.0.1', port: 6379 });
     delete existingUser.password;
     delete existingUser.passwordResetExpires;
     delete existingUser.passwordResetToken;
