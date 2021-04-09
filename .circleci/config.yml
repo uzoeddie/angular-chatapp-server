@@ -6,6 +6,7 @@ executors:
   app-executor:
     docker:
       - image: circleci/node:15.6.0
+      - image: circleci/redis:latest
     working_directory: ~/repo
   terraform-executor:
     docker:
@@ -60,8 +61,14 @@ jobs:
       - *show-current-branch-name
       - *restore-cache
       - run:
+          name: Start Redis Server
+          command: docker run --name chatapp-redis -p 6379:6379 --restart always --detach redis
+          background: true
+      - run:
           name: Start Server
-          command: npm run dev
+          command: |
+            sleep 3
+            npm run dev
           background: true
       - run:
           name: Run Unit Test
