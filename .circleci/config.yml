@@ -58,6 +58,7 @@ jobs:
     executor: app-executor
     steps:
       - checkout
+      - setup_remote_docker # required to run docker commands
       - *show-current-branch-name
       - *restore-cache
       - run:
