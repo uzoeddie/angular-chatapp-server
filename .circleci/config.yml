@@ -61,6 +61,10 @@ jobs:
       - *show-current-branch-name
       - *restore-cache
       - run:
+          name: Start Server
+          command: npm run start
+          background: true
+      - run:
           name: Run Unit Test
           command: npm run test
       - coveralls/upload
