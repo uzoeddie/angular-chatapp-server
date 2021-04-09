@@ -58,7 +58,7 @@ jobs:
     steps:
       - checkout
       - *show-current-branch-name
-      - *install-dependencies
+      - *restore-cache
       - run:
           name: Run Unit Test
           command: npm run test
