@@ -38,7 +38,6 @@ describe('SignUp', () => {
     jest.clearAllTimers();
     client.flushall(done);
     client.quit(done);
-    client.removeAllListeners();
   });
 
   afterAll((done) => {
