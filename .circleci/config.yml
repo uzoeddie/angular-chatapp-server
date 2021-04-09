@@ -6,6 +6,7 @@ executors:
   app-executor:
     docker:
       - image: circleci/node:15.6.0
+      - image: circleci/redis:latest
     working_directory: ~/repo
   terraform-executor:
     docker:
