@@ -1,1 +1,1 @@
-[![Coverage Status](https://coveralls.io/repos/github/uzoeddie/angular-chatapp-server/badge.svg?branch=develop)](https://coveralls.io/github/uzoeddie/angular-chatapp-server?branch=develop)
+[![Coverage Status](https://coveralls.io/repos/github/uzoeddie/angular-chatapp-server/badge.png?branch=develop)](https://coveralls.io/github/uzoeddie/angular-chatapp-server?branch=develop)
