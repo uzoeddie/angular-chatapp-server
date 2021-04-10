@@ -76,7 +76,8 @@ jobs:
           command: |
             sleep 3
             npm run test
-      - coveralls/upload
+      - coveralls/upload:
+          path_to_lcov: ./coverage/lcov.info
 
   terraform-validate:
     executor: terraform-executor
