@@ -20,22 +20,25 @@ class Config {
   public SECRET_KEY_TWO: string | undefined;
   public SENDGRID_API_KEY: string | undefined;
 
+  private readonly DEFAULT_CLIENT_URL = 'http://localhost:4200';
+  private readonly DEFAULT_DATABASE_URL = 'mongodb://localhost:27017/chatapp-test-backend';
+
   constructor() {
     this.LOG_LEVEL = (process.env.LOG_LEVEL || 'info') as bunyan.LogLevel;
-    this.DATABASE_URL = process.env.DATABASE_URL || undefined;
-    this.JWT_TOKEN = process.env.JWT_TOKEN || undefined;
-    this.CLOUD_NAME = process.env.CLOUD_NAME || undefined;
-    this.CLOUD_API_KEY = process.env.CLOUD_API_KEY || undefined;
-    this.CLOUD_API_SECRET = process.env.CLOUD_API_SECRET || undefined;
-    this.NEW_RELIC_KEY = process.env.NEW_RELIC_KEY || undefined;
-    this.SENDER_EMAIL = process.env.SENDER_EMAIL || undefined;
-    this.SENDER_EMAIL_PASSWORD = process.env.SENDER_EMAIL_PASSWORD || undefined;
-    this.CLIENT_URL = process.env.CLIENT_URL || undefined;
-    this.REDIS_HOST = process.env.REDIS_HOST || undefined;
-    this.NODE_ENV = process.env.NODE_ENV || undefined;
-    this.SECRET_KEY_ONE = process.env.SECRET_KEY_ONE || undefined;
-    this.SECRET_KEY_TWO = process.env.SECRET_KEY_TWO || undefined;
-    this.SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || undefined;
+    this.DATABASE_URL = process.env.DATABASE_URL || this.DEFAULT_DATABASE_URL;
+    this.JWT_TOKEN = process.env.JWT_TOKEN || '1234';
+    this.CLOUD_NAME = process.env.CLOUD_NAME || '';
+    this.CLOUD_API_KEY = process.env.CLOUD_API_KEY || '';
+    this.CLOUD_API_SECRET = process.env.CLOUD_API_SECRET || '';
+    this.NEW_RELIC_KEY = process.env.NEW_RELIC_KEY || '';
+    this.SENDER_EMAIL = process.env.SENDER_EMAIL || '';
+    this.SENDER_EMAIL_PASSWORD = process.env.SENDER_EMAIL_PASSWORD || '';
+    this.CLIENT_URL = process.env.CLIENT_URL || this.DEFAULT_CLIENT_URL;
+    this.REDIS_HOST = process.env.REDIS_HOST || 'localhost';
+    this.NODE_ENV = process.env.NODE_ENV || '';
+    this.SECRET_KEY_ONE = process.env.SECRET_KEY_ONE || '';
+    this.SECRET_KEY_TWO = process.env.SECRET_KEY_TWO || '';
+    this.SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || 'SG.1234';
   }
 
   public createLogger(name: string): bunyan {

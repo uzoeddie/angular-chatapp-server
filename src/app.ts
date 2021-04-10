@@ -13,15 +13,11 @@ class Application {
     const app: express.Application = express();
     const server: ChatServer = new ChatServer(app);
     server.start();
-    if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'development') {
-      Application.handleExit();
-    }
+    Application.handleExit();
   }
 
   private loadConfig(): void {
-    if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'development') {
-      config.validateConfig();
-    }
+    config.validateConfig();
     config.cloudinaryConfig();
   }
 

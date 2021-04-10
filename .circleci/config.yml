@@ -65,12 +65,12 @@ jobs:
           name: Start Redis Server
           command: docker run --name chatapp-redis -p 6379:6379 --restart always --detach redis
           background: true
-      # - run:
-      #     name: Start Server
-      #     command: |
-      #       sleep 3
-      #       npm run dev
-      #     background: true
+      - run:
+          name: Start Server
+          command: |
+            sleep 3
+            npm run dev
+          background: true
       - run:
           name: Run Unit Test
           command: |
