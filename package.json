@@ -6,7 +6,7 @@
   "scripts": {
     "start": "NODE_ENV=production pm2 start ./build/app.js -i 5 --watch | ./node_modules/.bin/bunyan",
     "dev": "nodemon -r tsconfig-paths/register src/app.ts | ./node_modules/.bin/bunyan",
-    "test": "NODE_ENV=test jest --coverage -w=1 --forceExit --detectOpenHandles",
+    "test": "jest --coverage -w=1 --forceExit --detectOpenHandles",
     "lint": "eslint 'src/**/*.ts*'",
     "lint:fix": "eslint 'src/**/*.ts*' --fix",
     "prettier:check": "prettier --check 'src/**/*.{ts,json}'",
