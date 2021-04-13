@@ -1,8 +1,10 @@
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 import JWT from 'jsonwebtoken';
+import crypto from 'crypto';
+import Jimp from 'jimp';
 import { ObjectID } from 'mongodb';
-import { NotAuthorizedError } from '@global/error-handler';
+import { BadRequestError } from '@global/error-handler';
 import { Helpers } from '@global/helpers';
 import { UserModel } from '@user/models/user.schema';
 import { ISignUpData, IUserDocument } from '@user/interface/user.interface';
@@ -11,9 +13,10 @@ import { config } from '@root/config';
 import { joiValidation } from '@global/decorators/joi-validation.decorator';
 import { signupSchema } from '@user/schemes/auth/signup';
 import { userQueue } from '@queues/user.queue';
-import Jimp from 'jimp';
 import { uploads } from '@global/cloudinary-upload';
-import crypto from 'crypto';
+
+const MIN_NUMBER = 1000;
+const MAX_NUMBER = 10000;
 export class SignUp {
   @joiValidation(signupSchema)
   public async create(req: Request, res: Response): Promise<void> {
@@ -23,10 +26,10 @@ export class SignUp {
       email: Helpers.lowerCase(email)
     }).exec()) as IUserDocument;
     if (checkIfUserExist) {
-      throw new NotAuthorizedError('User with details already exists.');
+      throw new BadRequestError('User with details already exists.');
     }
-    const random: Buffer = await Promise.resolve(crypto.randomBytes(5));
-    const uId = `${random.toString('hex')}${Date.now()}`;
+    const random: number = await Promise.resolve(crypto.randomInt(MIN_NUMBER, MAX_NUMBER));
+    const uId = `${random}${Date.now()}`;
     const createdObjectId: ObjectID = new ObjectID();
     const data: IUserDocument = signUpData({
       createdObjectId,

@@ -2,5 +2,6 @@
 . "$(dirname "$0")/_/husky.sh"
 
 npm run lint
+npm run prettier:check
 
 # run this is there is an error: chmod +x .husky/pre-commit

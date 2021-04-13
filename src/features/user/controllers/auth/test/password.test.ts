@@ -98,7 +98,9 @@ describe('Password', () => {
     });
 
     it('should call sendMail method and send correct json response', async () => {
-      const req: Request = authMockRequest({}, { password: CORRECT_PASSWORD, cpassword: CORRECT_PASSWORD }, null, { token: '12sde3' }) as Request;
+      const req: Request = authMockRequest({}, { password: CORRECT_PASSWORD, cpassword: CORRECT_PASSWORD }, null, {
+        token: '12sde3'
+      }) as Request;
       const res: Response = authMockResponse();
       const mockUser = {
         ...existingUser,

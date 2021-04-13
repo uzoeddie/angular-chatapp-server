@@ -8,6 +8,14 @@ import 'express-async-errors';
 import cookieSession from 'cookie-session';
 import HTTP_STATUS from 'http-status-codes';
 import Logger from 'bunyan';
+import { createAdapter } from 'socket.io-redis';
+import { RedisClient } from 'redis';
+import { Server } from 'socket.io';
+import responseTime from 'response-time';
+import { router } from 'bull-board';
+import swaggerUI from 'swagger-ui-express';
+import yaml from 'js-yaml';
+import fs from 'fs';
 import { authRoutes, currentUserRoute } from '@user/routes/authRoutes';
 import { authMiddleware } from '@global/auth-middlewares';
 import { chatRoutes } from '@chat/routes/chatRoutes';
@@ -25,12 +33,9 @@ import { SocketIOPostHandler } from '@sockets/posts';
 import { SocketIOUserHandler } from '@sockets/users';
 import { userRoutes } from '@user/routes/userRoutes';
 import { config } from '@root/config';
-import { createAdapter } from 'socket.io-redis';
-import { RedisClient } from 'redis';
-import { Server } from 'socket.io';
-import responseTime from 'response-time';
-import { router } from 'bull-board';
 import { healthRoute } from '@user/routes/healthRoutes';
+// import swaggerDocument from '@root/swagger.yaml';
+import swaggerStats from 'swagger-stats';
 
 const log: Logger = config.createLogger('main');
 const REDIS_PORT = 6379;
@@ -47,6 +52,7 @@ export class ChatServer {
     this.securityMiddleWares(this.app);
     this.standardMiddlewares(this.app);
     this.routeMiddleWares(this.app);
+    this.apiDocumentSetup(this.app);
     this.globalErrorHandler(this.app);
     this.startServer(this.app);
   }
@@ -78,7 +84,21 @@ export class ChatServer {
     app.use(json({ limit: '50mb' }));
     app.use(urlencoded({ extended: true, limit: '50mb' }));
     app.use(responseTime());
-    app.use('/api/v1/admin/queues', router);
+    app.use('/queues', router);
+  }
+
+  private apiDocumentSetup(app: Application): void {
+    try {
+      const swaggerDocument: string = JSON.stringify(yaml.load(fs.readFileSync('../swagger.yaml', 'utf8')));
+      app.use('/docs', swaggerUI.serve, swaggerUI.setup(JSON.parse(swaggerDocument), { explorer: true }));
+      app.use(
+        swaggerStats.getMiddleware({
+          uriPath: '/swagger-stats'
+        })
+      );
+    } catch (error) {
+      log.error(error);
+    }
   }
 
   private routeMiddleWares(app: Application): void {

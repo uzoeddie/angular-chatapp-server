@@ -1,0 +1,172 @@
+swagger: '2.0'
+info:
+  title: CHAT APP API
+  description: ChatApp API
+  version: "1.0.0"
+host: sbx-oduz01-20200305.sbx.sms-digital.cloud
+schemes:
+  - http
+  - https
+basePath: /
+# securityDefinitions:
+#   api_key:
+#     type: apiKey
+#     name: Authorization
+#     description: Authorization key which has to be passed in the authorization header. The key should be prefixed with "JWT "
+#     in: header
+tags:
+  - name: auth
+    description: Authentication endpoints
+  - name: user
+    description: User endpoints
+  - name: health
+    description: Health endpoints
+  - name: posts
+    description: Post endpoints
+  - name: comments
+    description: Post comments endpoints
+  - name: reactions
+    description: Post reactions endpoints
+  - name: followers/following/block/unblock
+    description: User followers/following/block/unblock endpoints
+  - name: images
+    description: Images endpoints
+  - name: notification
+    description: Notification endpoints
+  - name: notifications
+    description: Notification endpoints
+  - name: queues
+    description: Message queue endpoint
+  - name: docs
+    description: API definition endpoint
+  - name: swagger-stats
+    description: API Stats endpoint
+security:
+  - api_key: []
+produces:
+  - application/json
+paths:
+  "/docs":
+    get:
+      description: 'Public endpoint for the Swagger specification of the Smart Alarm API.'
+      tags:
+        - docs
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: 'Returns the API specification.'
+  "/instance":
+    get:
+      description: 'Health endpoint returning the server instance, process id and date.'
+      tags:
+        - health
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: 'Returns the current server time.'
+  "/health":
+    get:
+      description: 'Health endpoint returning that checks if server is running.'
+      tags:
+        - health
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: 'Returns 200 success response.'
+  "/fibo/{num}":
+    get:
+      description: 'Endpoint that calculates the fibonacci series of a number.'
+      tags:
+        - health
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: 'Returns 200 for small numbers.'
+        '504':
+          description: 'Timeout for large numbers.'
+  "/signup":
+    post:
+      summary: Creates new user
+      operationId: createNewUser
+      description: "Creates a new user and adds to redis cache and database."
+      tags:
+        - auth
+      consumes:
+        - application/json
+      parameters:
+        - name: username
+          in: formData
+          description: Username of user account
+          required: true
+          type: string
+        - name: password
+          in: formData
+          description: Password of user account
+          required: true
+          type: string
+        - name: email
+          in: formData
+          description: Email of user account
+          required: true
+          type: string
+      responses:
+        '200':
+          description: 'If signup is succesful, return the user information and the token the user can authenticate with.'
+          schema:
+            $ref: '#/definitions/User'
+          examples:
+            # update this later
+            application/json: {"data":{"id":"4","type":"users","attributes":{"salutation":"Mr.","academic_title":null,"first_name":"John","last_name":"Doe","email":"test@example.com","position_name":"Manager","registration_purpose":"Evaluation of the solution","company_name":"Initech GmbH","created_at":"2016-05-24T20:35:27.046+02:00","modified_at":"2016-05-24T20:35:27.046+02:00","status":"enabled"},"links":{"self":"http://localhost:9393//users/4"}},"meta":{"token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJjcmVhdGVkX2F0IjoiMjAxNi0wNS0yNFQyMjozNToyNyswMjowMCIsImVtYWlsIjoidGVzdEBleGFtcGxlLmNvbSJ9.bLVpDme8Y773TdnyhhpgiQce8fqvYhY4S7Ivq59h5DP_kitN8p6rb9xdjBq37t6ZEBv7VVl4SKjsotI25mCTBQ","message":"Session got established."}}
+        '401':
+          description: If user already exist
+
+definitions:
+  Config:
+    type: object
+    properties:
+      public_key:
+        type: string
+
+  User:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/UserData'
+
+  UserData:
+    type: object
+    properties:
+      id:
+        type: string
+        description: The unique identifier of the company
+      type:
+        type: string
+        enum:
+          - users
+      attributes:
+        type: object
+        properties:
+          first_name:
+            type: string
+            description: The first name of the user.
+          last_name:
+            type: string
+            description: The last name of the user.
+          machine_terminal:
+            type: string
+            description: The name of the machine terminal.
+          phone:
+            type: string
+            description: Phone number of the user.
+          last_accessed_branch_id:
+            type: number
+            format: int32
+            description: The id of the last access branch.
+          release_notes_version:
+            type: number
+            format: int32
+            description: The latest release notes version the user has seen.

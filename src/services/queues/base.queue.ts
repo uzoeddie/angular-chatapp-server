@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import Queue, { Job } from 'bull';
 import { BullAdapter, setQueues } from 'bull-board';
 import { config } from '@root/config';
@@ -37,7 +36,7 @@ export abstract class BaseQueue {
     this.queue.add(name, data, { attempts: 3, backoff: { type: 'fixed', delay: 5000 } });
   }
 
-  protected processJob(name: string, concurrency: number, callback: Queue.ProcessCallbackFunction<any>): void {
+  protected processJob(name: string, concurrency: number, callback: Queue.ProcessCallbackFunction<void>): void {
     this.queue.process(name, concurrency, callback);
   }
 }

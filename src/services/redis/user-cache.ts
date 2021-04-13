@@ -116,7 +116,6 @@ export function getUserFromCache(key: string): Promise<IUserDocument> {
         return;
       }
       response.createdAt = new Date(Helpers.parseJson(response.createdAt));
-      response.uId = Helpers.parseJson(response.uId);
       response.postCount = Helpers.parseJson(response.postCount);
       response.birthDay = Helpers.parseJson(response.birthDay);
       response.blocked = Helpers.parseJson(response.blocked);
@@ -150,7 +149,6 @@ export function getUsersFromCache(start: number, end: number, excludedKey: strin
         }
         for (const reply of replies) {
           reply.createdAt = new Date(Helpers.parseJson(reply.createdAt));
-          reply.uId = Helpers.parseJson(reply.uId);
           reply.birthDay = Helpers.parseJson(reply.birthDay);
           reply.postCount = Helpers.parseJson(reply.postCount);
           reply.blocked = Helpers.parseJson(reply.blocked);

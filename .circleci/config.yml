@@ -77,15 +77,6 @@ jobs:
             sleep 3
             npm run test
       - coveralls/upload
-          # parallel: true
-          # flag_name: Test 1
-          # verbose: true
-
-  # finish-coveralls-upload:
-  #   executor: terraform-executor
-  #   steps:
-  #     - coveralls/upload:
-  #         parallel_finished: true
 
   terraform-validate:
     executor: terraform-executor
@@ -213,15 +204,6 @@ workflows:
                 - develop
                 - staging
                 - master # Be sure to check if the branch is master or main
-      # - finish-coveralls-upload:
-      #     requires:
-      #       - unit-test
-      #     filters:
-      #       branches:
-      #         only:
-      #           - develop
-      #           - staging
-      #           - master
       # - terraform-plan-and-apply:
       #     requires:
       #       - terraform-validate
