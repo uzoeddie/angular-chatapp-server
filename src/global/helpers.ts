@@ -20,7 +20,7 @@ export class Helpers {
   }
 
   static avatarColor(): string {
-    const colors = [
+    const colors: string[] = [
       '#f44336',
       '#e91e63',
       '#2196f3',
@@ -32,7 +32,19 @@ export class Helpers {
       '#8bc34a',
       '#009688',
       '#03a9f4',
-      '#cddc39'
+      '#cddc39',
+      '#2962ff',
+      '#448aff',
+      '#84ffff',
+      '#00e676',
+      '#43a047',
+      '#d32f2f',
+      '#ff1744',
+      '#ad1457',
+      '#6a1b9a',
+      '#1a237e',
+      '#1de9b6',
+      '#d84315'
     ];
     return colors[_.floor(_.random(0.9) * colors.length)];
   }

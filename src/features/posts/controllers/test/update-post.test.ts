@@ -4,7 +4,7 @@ import redis, { RedisClient } from 'redis-mock';
 import { Server } from 'socket.io';
 import { authUserPayload } from '@root/mocks/auth.mock';
 import { newPost, postMockData, postMockRequest, postMockResponse } from '@mock/post.mock';
-import * as cache from '@redis/post-cache';
+import { postCache } from '@redis/post-cache';
 import { Update } from '@posts/controllers/update-post';
 import { postQueue } from '@queues/post.queue';
 import { socketIOPostObject } from '@sockets/posts';
@@ -40,7 +40,7 @@ describe('Update', () => {
     it('should send correct json response', async () => {
       const req: Request = postMockRequest(newPost, authUserPayload, { postId: '12345' }) as Request;
       const res: Response = postMockResponse();
-      jest.spyOn(cache, 'updatePostInRedisCache').mockImplementation((): any => postMockData);
+      jest.spyOn(postCache, 'updatePostInRedisCache').mockImplementation((): any => postMockData);
       jest.spyOn(socketIOPostObject, 'emit');
       jest.spyOn(postQueue, 'addPostJob');
 
@@ -59,7 +59,7 @@ describe('Update', () => {
       newPost.imgVersion = '1234';
       const req: Request = postMockRequest(newPost, authUserPayload, { postId: '12345' }) as Request;
       const res: Response = postMockResponse();
-      jest.spyOn(cache, 'updatePostInRedisCache').mockImplementation((): any => postMockData);
+      jest.spyOn(postCache, 'updatePostInRedisCache').mockImplementation((): any => postMockData);
       jest.spyOn(socketIOPostObject, 'emit');
       jest.spyOn(postQueue, 'addPostJob');
 
@@ -76,7 +76,7 @@ describe('Update', () => {
       newPost.imgVersion = undefined;
       const req: Request = postMockRequest(newPost, authUserPayload, { postId: '12345' }) as Request;
       const res: Response = postMockResponse();
-      jest.spyOn(cache, 'updatePostInRedisCache').mockImplementation((): any => postMockData);
+      jest.spyOn(postCache, 'updatePostInRedisCache').mockImplementation((): any => postMockData);
       jest.spyOn(cloudinaryUploads, 'uploads').mockImplementation((): any => Promise.resolve({ version: '1234', public_id: '123456' }));
       jest.spyOn(socketIOPostObject, 'emit');
       jest.spyOn(postQueue, 'addPostJob');

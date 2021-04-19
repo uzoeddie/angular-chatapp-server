@@ -4,7 +4,7 @@ import { joiValidation } from '@global/decorators/joi-validation.decorator';
 import { userInfoQueue } from '@queues/user-info.queue';
 import { workSchema, educationSchema } from '@user/schemes/user/info';
 import { IUserDocument, IUserSchool, IUserWork } from '@user/interface/user.interface';
-import { updateUserPropListInfoInRedisCache } from '@redis/user-info-cache';
+import { userInfoCache } from '@redis/user-info-cache';
 import { socketIOUserObject } from '@sockets/users';
 
 export class EditWorkAndEducation {
@@ -19,7 +19,12 @@ export class EditWorkAndEducation {
       from: req.body.from,
       to: req.body.to
     };
-    const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(`${req.currentUser?.userId}`, 'work', updatedWork, 'edit');
+    const cachedUser: IUserDocument = await userInfoCache.updateUserPropListInfoInRedisCache(
+      `${req.currentUser?.userId}`,
+      'work',
+      updatedWork,
+      'edit'
+    );
     socketIOUserObject.emit('update user', cachedUser);
     userInfoQueue.addUserInfoJob('updateUserWorkInCache', {
       key: `${req.currentUser?.username}`,
@@ -40,7 +45,7 @@ export class EditWorkAndEducation {
       from: req.body.from,
       to: req.body.to
     };
-    const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(
+    const cachedUser: IUserDocument = await userInfoCache.updateUserPropListInfoInRedisCache(
       `${req.currentUser?.userId}`,
       'school',
       updatedSchool,

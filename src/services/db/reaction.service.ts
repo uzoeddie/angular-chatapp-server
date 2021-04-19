@@ -3,8 +3,8 @@ import { IReactionDocument } from '@comments/interface/comment.interface';
 import { ReactionsModel } from '@comments/models/reactions.schema';
 import { IPostDocument } from '@posts/interface/post.interface';
 import { PostModel } from '@posts/models/post.schema';
-import { updateSinglePostPropInRedisCache } from '@redis/post-cache';
-import { getUserFromCache } from '@redis/user-cache';
+import { postCache } from '@redis/post-cache';
+import { userCache } from '@redis/user-cache';
 import { IUserDocument } from '@user/interface/user.interface';
 import { UpdateQuery } from 'mongoose';
 import { socketIONotificationObject } from '@sockets/notifications';
@@ -20,7 +20,7 @@ class Reaction {
       delete reactionObject._id;
     }
     const updatedReaction: [IUserDocument, UpdateQuery<IReactionDocument>, UpdateQuery<IPostDocument>] = (await Promise.all([
-      getUserFromCache(userTo),
+      userCache.getUserFromCache(userTo),
       ReactionsModel.replaceOne({ postId, type: previousReaction, username: username }, reactionObject, { upsert: true }),
       PostModel.findOneAndUpdate(
         { _id: postId },
@@ -34,7 +34,7 @@ class Reaction {
       )
     ])) as [IUserDocument, UpdateQuery<IReactionDocument>, UpdateQuery<IPostDocument>];
     const data: string = (updatedReaction[2].reactions as unknown) as string;
-    await updateSinglePostPropInRedisCache(postId, 'reactions', data);
+    await postCache.updateSinglePostPropInRedisCache(postId, 'reactions', data);
     if (userFrom !== userTo) {
       const notificationModel: INotificationDocument = new NotificationModel();
       const notifications: void = await notificationModel.insertNotification({
@@ -82,7 +82,7 @@ class Reaction {
       )
     ])) as [any, UpdateQuery<IPostDocument>];
     const data: string = (updatedReaction[1].reactions as unknown) as string;
-    await updateSinglePostPropInRedisCache(postId, 'reactions', data);
+    await postCache.updateSinglePostPropInRedisCache(postId, 'reactions', data);
   }
 }
 

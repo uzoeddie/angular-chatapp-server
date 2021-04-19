@@ -3,7 +3,7 @@ import HTTP_STATUS from 'http-status-codes';
 import mongoose, { Aggregate } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { unflatten } from 'flat';
-import { getChatFromRedisCache } from '@redis/message-cache';
+import { messageCache } from '@redis/message-cache';
 import { IConversationDocument } from '@chat/interface/converation.interface';
 import { ConversationModel } from '@chat/models/conversation.schema';
 import { Helpers } from '@global/helpers';
@@ -12,9 +12,9 @@ import { IChatMessage } from '@chat/interface/chat.interface';
 export class GetChat {
   public async list(req: Request, res: Response): Promise<void> {
     let list: IChatMessage[];
-    const cachedList: string[] = await getChatFromRedisCache(`chatList:${req.currentUser?.userId}`);
+    const cachedList: string[] = await messageCache.getChatFromRedisCache(`chatList:${req.currentUser?.userId}`);
     if (cachedList.length) {
-      list = this.unflattenList(cachedList);
+      list = GetChat.prototype.unflattenList(cachedList);
     } else {
       const senderId: ObjectId = mongoose.Types.ObjectId(req.currentUser?.userId);
       list = await Helpers.getMessages({ $or: [{ senderId }, { receiverId: senderId }] }, { createdAt: 1 });
@@ -26,12 +26,12 @@ export class GetChat {
     const { conversationId, receiverId } = req.params;
     let messages: IChatMessage[] = [];
     if (conversationId !== 'undefined') {
-      const cachedMessages: string[] = await getChatFromRedisCache(`messages:${conversationId}`);
+      const cachedMessages: string[] = await messageCache.getChatFromRedisCache(`messages:${conversationId}`);
       messages = cachedMessages.length
-        ? this.unflattenList(cachedMessages)
+        ? GetChat.prototype.unflattenList(cachedMessages)
         : await Helpers.getMessages({ conversationId: mongoose.Types.ObjectId(conversationId) }, { createdAt: 1 });
     } else {
-      const conversation: IConversationDocument[] = await this.conversationAggregate(req.currentUser!.userId, receiverId);
+      const conversation: IConversationDocument[] = await GetChat.prototype.conversationAggregate(req.currentUser!.userId, receiverId);
       if (conversation.length) {
         messages = await Helpers.getMessages({ conversationId: conversation[0]._id }, { createdAt: 1 });
       }

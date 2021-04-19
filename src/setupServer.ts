@@ -63,9 +63,9 @@ export class ChatServer {
       cookieSession({
         name: 'session',
         keys: [process.env.SECRET_KEY_ONE!, process.env.SECRET_KEY_TWO!],
-        maxAge: 1 * 60 * 60 * 1000,
-        secure: process.env.NODE_ENV !== 'development',
-        sameSite: 'none'
+        maxAge: 1 * 60 * 60 * 1000
+        // secure: process.env.NODE_ENV !== 'development',
+        // sameSite: 'none'
       })
     );
     app.use(hpp());

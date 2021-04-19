@@ -8,7 +8,7 @@ import { BadRequestError } from '@global/error-handler';
 import { Helpers } from '@global/helpers';
 import { UserModel } from '@user/models/user.schema';
 import { ISignUpData, IUserDocument } from '@user/interface/user.interface';
-import { saveUserToRedisCache } from '@redis/user-cache';
+import { userCache } from '@redis/user-cache';
 import { config } from '@root/config';
 import { joiValidation } from '@global/decorators/joi-validation.decorator';
 import { signupSchema } from '@user/schemes/auth/signup';
@@ -31,7 +31,7 @@ export class SignUp {
     const random: number = await Promise.resolve(crypto.randomInt(MIN_NUMBER, MAX_NUMBER));
     const uId = `${random}${Date.now()}`;
     const createdObjectId: ObjectID = new ObjectID();
-    const data: IUserDocument = this.signUpData({
+    const data: IUserDocument = SignUp.prototype.signUpData({
       createdObjectId,
       username,
       email,
@@ -39,9 +39,12 @@ export class SignUp {
       uId
     });
 
-    const image: Jimp = await this.loadJimpImage(data.username, data.avatarColor);
+    const image: Jimp = await SignUp.prototype.loadJimpImage(data.username, data.avatarColor);
     const dataFile: string = await image.getBase64Async('image/png');
-    await Promise.all([uploads(dataFile, `${createdObjectId}`, true, true), saveUserToRedisCache(`${createdObjectId}`, uId, data)]);
+    await Promise.all([
+      uploads(dataFile, `${createdObjectId}`, true, true),
+      userCache.saveUserToRedisCache(`${createdObjectId}`, uId, data)
+    ]);
     userQueue.addUserJob('addUserToDB', { value: data });
     const userJwt: string = JWT.sign(
       {

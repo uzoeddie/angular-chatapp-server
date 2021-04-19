@@ -6,7 +6,7 @@ import { IPostDocument } from '@posts/interface/post.interface';
 import { addPostSchema, postWithImageSchema } from '@posts/schemes/post';
 import { postQueue } from '@queues/post.queue';
 import { UploadApiResponse } from 'cloudinary';
-import { savePostsToRedisCache } from '@redis/post-cache';
+import { postCache } from '@redis/post-cache';
 import { ObjectID } from 'mongodb';
 import { socketIOPostObject } from '@sockets/posts';
 
@@ -37,7 +37,12 @@ export class Create {
       reactions: [],
       createdAt: new Date()
     } as unknown) as IPostDocument;
-    await savePostsToRedisCache(`${createPost._id}`, `${req.currentUser?.userId}`, parseInt(req.currentUser!.uId, 10), createPost);
+    await postCache.savePostsToRedisCache(
+      `${createPost._id}`,
+      `${req.currentUser?.userId}`,
+      parseInt(req.currentUser!.uId, 10),
+      createPost
+    );
     socketIOPostObject.emit('post message', createPost, 'posts');
     delete createPost.reactions;
     postQueue.addPostJob('savePostsToDB', { key: req.currentUser?.userId, value: createPost });
@@ -71,7 +76,12 @@ export class Create {
       reactions: [],
       createdAt: new Date()
     } as unknown) as IPostDocument;
-    await savePostsToRedisCache(`${postWithImage._id}`, `${req.currentUser?.userId}`, parseInt(req.currentUser!.uId, 10), postWithImage);
+    await postCache.savePostsToRedisCache(
+      `${postWithImage._id}`,
+      `${req.currentUser?.userId}`,
+      parseInt(req.currentUser!.uId, 10),
+      postWithImage
+    );
     socketIOPostObject.emit('post message', postWithImage, 'posts');
     delete postWithImage.reactions;
     postQueue.addPostJob('savePostsToDB', { key: req.currentUser?.userId, value: postWithImage });

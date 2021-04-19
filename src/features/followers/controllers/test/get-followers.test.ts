@@ -4,7 +4,7 @@ import redis, { RedisClient } from 'redis-mock';
 import mongoose from 'mongoose';
 import { authUserPayload } from '@root/mocks/auth.mock';
 import { followerData, followersMockRequest, followersMockResponse } from '@mock/followers.mock';
-import * as cache from '@redis/follower-cache';
+import { followerCache } from '@redis/follower-cache';
 import { Get } from '@followers/controllers/get-followers';
 import { FollowerModel } from '@followers/models/follower.schema';
 
@@ -34,7 +34,7 @@ describe('Get', () => {
     it('should send correct json response if follower exist in cache', async () => {
       const req: Request = followersMockRequest({}, authUserPayload) as Request;
       const res: Response = followersMockResponse();
-      jest.spyOn(cache, 'getFollowersFromRedisCache').mockImplementation((): any => [followerData]);
+      jest.spyOn(followerCache, 'getFollowersFromRedisCache').mockImplementation((): any => [followerData]);
 
       await Get.prototype.following(req, res);
       expect(res.status).toHaveBeenCalledWith(200);
@@ -47,7 +47,7 @@ describe('Get', () => {
     it('should send correct json response if follower exist in database', async () => {
       const req: Request = followersMockRequest({}, authUserPayload) as Request;
       const res: Response = followersMockResponse();
-      jest.spyOn(cache, 'getFollowersFromRedisCache').mockImplementation((): any => []);
+      jest.spyOn(followerCache, 'getFollowersFromRedisCache').mockImplementation((): any => []);
       jest.spyOn(FollowerModel, 'find');
       jest.spyOn(mongoose.Query.prototype, 'exec').mockResolvedValueOnce([followerData]);
 
@@ -65,7 +65,7 @@ describe('Get', () => {
     it('should send correct json response if follower exist in cache', async () => {
       const req: Request = followersMockRequest({}, authUserPayload) as Request;
       const res: Response = followersMockResponse();
-      jest.spyOn(cache, 'getFollowersFromRedisCache').mockImplementation((): any => [followerData]);
+      jest.spyOn(followerCache, 'getFollowersFromRedisCache').mockImplementation((): any => [followerData]);
 
       await Get.prototype.following(req, res);
       expect(res.status).toHaveBeenCalledWith(200);
@@ -78,7 +78,7 @@ describe('Get', () => {
     it('should send correct json response if follower exist in database', async () => {
       const req: Request = followersMockRequest({}, authUserPayload, { userId: '6064861bc25eaa5a5d2f9bf4' }) as Request;
       const res: Response = followersMockResponse();
-      jest.spyOn(cache, 'getFollowersFromRedisCache').mockImplementation((): any => []);
+      jest.spyOn(followerCache, 'getFollowersFromRedisCache').mockImplementation((): any => []);
       jest.spyOn(FollowerModel, 'find');
       jest.spyOn(mongoose.Query.prototype, 'exec').mockResolvedValueOnce([followerData]);
 

@@ -1,6 +1,5 @@
 import { DoneCallback, Job } from 'bull';
 import { mailTransport } from '@email/mail-transport';
-
 class EmailWorker {
   async addPasswordMail(jobQueue: Job, done: DoneCallback): Promise<void> {
     try {

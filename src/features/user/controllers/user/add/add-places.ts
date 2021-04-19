@@ -5,7 +5,7 @@ import { IUserDocument, IUserPlacesLived } from '@user/interface/user.interface'
 import { userInfoQueue } from '@queues/user-info.queue';
 import { joiValidation } from '@global/decorators/joi-validation.decorator';
 import { placesSchema } from '@user/schemes/user/info';
-import { updateUserPropListInfoInRedisCache } from '@redis/user-info-cache';
+import { userInfoCache } from '@redis/user-info-cache';
 import { ObjectID } from 'mongodb';
 import { socketIOUserObject } from '@sockets/users';
 
@@ -20,7 +20,7 @@ export class AddPlacesLived {
       year: req.body.year,
       month: req.body.month
     };
-    const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(
+    const cachedUser: IUserDocument = await userInfoCache.updateUserPropListInfoInRedisCache(
       `${req.currentUser?.userId}`,
       'placesLived',
       placesLived,

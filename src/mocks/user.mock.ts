@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { IUserDocument } from '@user/interface/user.interface';
 
 export const existingUser: IUserDocument = {
@@ -26,7 +27,7 @@ export const existingUser: IUserDocument = {
   bgImageId: '',
   profilePicture: 'https://res.cloudinary.com/ratingapp/image/upload/60263f14648fed5246e322d9',
   _id: '60263f14648fed5246e322d9',
-  uId: 1621613119252066,
+  uId: '1621613119252066',
   username: 'Manny',
   email: 'manny@me.com',
   avatarColor: '#9c27b0',

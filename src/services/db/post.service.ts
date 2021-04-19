@@ -6,7 +6,7 @@ import { IFileImageDocument } from '@images/interface/images.interface';
 import { ImageModel } from '@images/models/images.schema';
 import { IPostDocument } from '@posts/interface/post.interface';
 import { PostModel } from '@posts/models/post.schema';
-import { updateSingleUserItemInRedisCache } from '@redis/user-info-cache';
+import { userInfoCache } from '@redis/user-info-cache';
 import { IUserDocument } from '@user/interface/user.interface';
 import { UserModel } from '@user/models/user.schema';
 import { Query, UpdateQuery } from 'mongoose';
@@ -34,7 +34,7 @@ class Post {
       user,
       images
     ]);
-    await updateSingleUserItemInRedisCache(`${userId}`, 'postCount', response[1].postCount!);
+    await userInfoCache.updateSingleUserItemInRedisCache(`${userId}`, 'postCount', response[1].postCount!);
   }
 
   public async editPost(postId: string, updatedPost: IPostDocument): Promise<void> {

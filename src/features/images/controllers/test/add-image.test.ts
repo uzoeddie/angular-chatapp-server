@@ -8,7 +8,7 @@ import { imagesMockRequest, imagesMockResponse } from '@mock/image.mock';
 import { Add } from '@images/controllers/add-image';
 import { socketIOImageObject } from '@sockets/images';
 import { imageQueue } from '@queues/image.queue';
-import * as cache from '@redis/user-info-cache';
+import { userInfoCache } from '@redis/user-info-cache';
 import { existingUser } from '@mock/user.mock';
 import * as cloudinaryUploads from '@global/cloudinary-upload';
 
@@ -51,7 +51,7 @@ describe('Add', () => {
     it('should send correct json response', async () => {
       const req: Request = imagesMockRequest({}, { image: 'testing' }, authUserPayload) as Request;
       const res: Response = imagesMockResponse();
-      jest.spyOn(cache, 'updateSingleUserItemInRedisCache').mockImplementation((): any => Promise.resolve(existingUser));
+      jest.spyOn(userInfoCache, 'updateSingleUserItemInRedisCache').mockImplementation((): any => Promise.resolve(existingUser));
       jest.spyOn(socketIOImageObject, 'emit');
       jest.spyOn(imageQueue, 'addImageJob');
       jest.spyOn(cloudinaryUploads, 'uploads').mockImplementation((): any => Promise.resolve({ version: '1234', public_id: '123456' }));

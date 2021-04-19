@@ -1,14 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import redis, { RedisClient } from 'redis-mock';
 import MockDate from 'mockdate';
-import {
-  saveUserToRedisCache,
-  getUserFromCache,
-  getUsersFromCache,
-  updateUserFollowersInRedisCache,
-  updateBlockedUserPropInRedisCache,
-  updateNotificationSettingInCache
-} from '@redis/user-cache';
+import { userCache } from '@redis/user-cache';
 import { existingUser } from '@mock/user.mock';
 
 jest.useFakeTimers();
@@ -35,7 +28,7 @@ describe('UserCache', () => {
 
   describe('saveUserToRedisCache', () => {
     it('should add user', async () => {
-      await expect(saveUserToRedisCache('60263f14648fed5246e322d9', '123', existingUser as any)).resolves.toBeUndefined();
+      await expect(userCache.saveUserToRedisCache('60263f14648fed5246e322d9', '123', existingUser as any)).resolves.toBeUndefined();
     });
   });
 
@@ -45,8 +38,8 @@ describe('UserCache', () => {
       delete existingUser.passwordResetExpires;
       delete existingUser.passwordResetToken;
       existingUser.createdAt = new Date();
-      await saveUserToRedisCache('60263f14648fed5246e322d9', '123', existingUser as any);
-      await expect(getUserFromCache('60263f14648fed5246e322d9')).resolves.toStrictEqual(existingUser);
+      await userCache.saveUserToRedisCache('60263f14648fed5246e322d9', '123', existingUser as any);
+      await expect(userCache.getUserFromCache('60263f14648fed5246e322d9')).resolves.toStrictEqual(existingUser);
     });
   });
 
@@ -56,33 +49,33 @@ describe('UserCache', () => {
       delete existingUser.passwordResetExpires;
       delete existingUser.passwordResetToken;
       existingUser.createdAt = new Date();
-      await saveUserToRedisCache('60263f14648fed5246e322d9', '123', existingUser as any);
-      await saveUserToRedisCache('60263f14648fed5246e322d0', '123', existingUser as any);
-      await expect(getUsersFromCache(0, 1, '60263f14648fed5246e322d9')).resolves.toStrictEqual([existingUser]);
+      await userCache.saveUserToRedisCache('60263f14648fed5246e322d9', '123', existingUser as any);
+      await userCache.saveUserToRedisCache('60263f14648fed5246e322d0', '123', existingUser as any);
+      await expect(userCache.getUsersFromCache(0, 1, '60263f14648fed5246e322d9')).resolves.toStrictEqual([existingUser]);
     });
   });
 
   describe('updateUserFollowersInRedisCache', () => {
     it('should update follower', async () => {
-      await saveUserToRedisCache('60263f14648fed5246e322d9', '123', existingUser as any);
-      await expect(updateUserFollowersInRedisCache('60263f14648fed5246e322d9', 'followersCount', 1)).resolves.toBeUndefined();
+      await userCache.saveUserToRedisCache('60263f14648fed5246e322d9', '123', existingUser as any);
+      await expect(userCache.updateUserFollowersInRedisCache('60263f14648fed5246e322d9', 'followersCount', 1)).resolves.toBeUndefined();
     });
   });
 
   describe('updateBlockedUserPropInRedisCache', () => {
     it('should update user blockedBy list', async () => {
-      await saveUserToRedisCache('60263f14648fed5246e322d9', '123', existingUser as any);
-      await saveUserToRedisCache('60263f14648fed5246e322d0', '123', existingUser as any);
+      await userCache.saveUserToRedisCache('60263f14648fed5246e322d9', '123', existingUser as any);
+      await userCache.saveUserToRedisCache('60263f14648fed5246e322d0', '123', existingUser as any);
       await expect(
-        updateBlockedUserPropInRedisCache('60263f14648fed5246e322d9', 'blockedBy', '60263f14648fed5246e322d0', 'block')
+        userCache.updateBlockedUserPropInRedisCache('60263f14648fed5246e322d9', 'blockedBy', '60263f14648fed5246e322d0', 'block')
       ).resolves.toBeUndefined();
     });
 
     it('should update user blocked list', async () => {
-      await saveUserToRedisCache('60263f14648fed5246e322d9', '123', existingUser as any);
-      await saveUserToRedisCache('60263f14648fed5246e322d0', '123', existingUser as any);
+      await userCache.saveUserToRedisCache('60263f14648fed5246e322d9', '123', existingUser as any);
+      await userCache.saveUserToRedisCache('60263f14648fed5246e322d0', '123', existingUser as any);
       await expect(
-        updateBlockedUserPropInRedisCache('60263f14648fed5246e322d0', 'blocked', '60263f14648fed5246e322d9', 'block')
+        userCache.updateBlockedUserPropInRedisCache('60263f14648fed5246e322d0', 'blocked', '60263f14648fed5246e322d9', 'block')
       ).resolves.toBeUndefined();
     });
   });
@@ -95,8 +88,10 @@ describe('UserCache', () => {
         comments: true,
         follows: false
       };
-      await saveUserToRedisCache('60263f14648fed5246e322d9', '123', existingUser as any);
-      await expect(updateNotificationSettingInCache('60263f14648fed5246e322d9', 'notifications', settings)).resolves.toBeUndefined();
+      await userCache.saveUserToRedisCache('60263f14648fed5246e322d9', '123', existingUser as any);
+      await expect(
+        userCache.updateNotificationSettingInCache('60263f14648fed5246e322d9', 'notifications', settings)
+      ).resolves.toBeUndefined();
     });
   });
 });

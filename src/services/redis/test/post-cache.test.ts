@@ -1,14 +1,6 @@
 import redis, { RedisClient } from 'redis-mock';
 import MockDate from 'mockdate';
-import {
-  deletePostFromCache,
-  getPostsFromCache,
-  getSinglePostFromCache,
-  getUserPostsFromCache,
-  savePostsToRedisCache,
-  updatePostInRedisCache,
-  updateSinglePostPropInRedisCache
-} from '@redis/post-cache';
+import { postCache } from '@redis/post-cache';
 import { postMockData, updatedPost } from '@mock/post.mock';
 import { existingUser } from '@mock/user.mock';
 
@@ -36,7 +28,9 @@ describe('PostCache', () => {
 
   describe('savePostsToRedisCache', () => {
     it('should add post', async () => {
-      await expect(savePostsToRedisCache('6027f77087c9d9ccb1555268', `${existingUser._id}`, 123, postMockData)).resolves.toBeUndefined();
+      await expect(
+        postCache.savePostsToRedisCache('6027f77087c9d9ccb1555268', `${existingUser._id}`, 123, postMockData)
+      ).resolves.toBeUndefined();
     });
   });
 
@@ -47,16 +41,16 @@ describe('PostCache', () => {
       postMockData.createdAt = new Date();
       postMockData.post = updatedPost.post;
       postMockData.reactions = [];
-      await savePostsToRedisCache('6027f77087c9d9ccb1555268', `${existingUser._id}`, 123, postMockData);
-      await expect(updatePostInRedisCache('6027f77087c9d9ccb1555268', updatedPost)).resolves.toStrictEqual(postMockData);
+      await postCache.savePostsToRedisCache('6027f77087c9d9ccb1555268', `${existingUser._id}`, 123, postMockData);
+      await expect(postCache.updatePostInRedisCache('6027f77087c9d9ccb1555268', updatedPost)).resolves.toStrictEqual(postMockData);
     });
   });
 
   describe('updateSinglePostPropInRedisCache', () => {
     it('should update post reactions', async () => {
-      await savePostsToRedisCache('6027f77087c9d9ccb1555268', `${existingUser._id}`, 123, postMockData);
+      await postCache.savePostsToRedisCache('6027f77087c9d9ccb1555268', `${existingUser._id}`, 123, postMockData);
       await expect(
-        updateSinglePostPropInRedisCache('6027f77087c9d9ccb1555268', 'reactions', JSON.stringify([{ type: 'love', value: 2 }]))
+        postCache.updateSinglePostPropInRedisCache('6027f77087c9d9ccb1555268', 'reactions', JSON.stringify([{ type: 'love', value: 2 }]))
       ).resolves.toBeUndefined();
     });
   });
@@ -66,8 +60,8 @@ describe('PostCache', () => {
       postMockData.createdAt = new Date();
       ((postMockData._id as unknown) as string) = '6027f77087c9d9ccb1555268';
       postMockData.reactions = [];
-      await savePostsToRedisCache('6027f77087c9d9ccb1555268', `${existingUser._id}`, 123, postMockData);
-      await expect(getPostsFromCache('post', 0, 1)).resolves.toStrictEqual([postMockData]);
+      await postCache.savePostsToRedisCache('6027f77087c9d9ccb1555268', `${existingUser._id}`, 123, postMockData);
+      await expect(postCache.getPostsFromCache('post', 0, 1)).resolves.toStrictEqual([postMockData]);
     });
   });
 
@@ -76,8 +70,8 @@ describe('PostCache', () => {
       postMockData.createdAt = new Date();
       ((postMockData._id as unknown) as string) = '6027f77087c9d9ccb1555268';
       postMockData.reactions = [];
-      await savePostsToRedisCache('6027f77087c9d9ccb1555268', `${existingUser._id}`, 123, postMockData);
-      await expect(getSinglePostFromCache('6027f77087c9d9ccb1555268')).resolves.toStrictEqual([postMockData]);
+      await postCache.savePostsToRedisCache('6027f77087c9d9ccb1555268', `${existingUser._id}`, 123, postMockData);
+      await expect(postCache.getSinglePostFromCache('6027f77087c9d9ccb1555268')).resolves.toStrictEqual([postMockData]);
     });
   });
 
@@ -86,15 +80,15 @@ describe('PostCache', () => {
       postMockData.createdAt = new Date();
       ((postMockData._id as unknown) as string) = '6027f77087c9d9ccb1555268';
       postMockData.reactions = [];
-      await savePostsToRedisCache('6027f77087c9d9ccb1555268', `${existingUser._id}`, 123, postMockData);
-      await expect(getUserPostsFromCache('post', 123)).resolves.toStrictEqual([postMockData]);
+      await postCache.savePostsToRedisCache('6027f77087c9d9ccb1555268', `${existingUser._id}`, 123, postMockData);
+      await expect(postCache.getUserPostsFromCache('post', 123)).resolves.toStrictEqual([postMockData]);
     });
   });
 
   describe('deletePostFromCache', () => {
     it('should delete post', async () => {
-      await savePostsToRedisCache('6027f77087c9d9ccb1555268', `${existingUser._id}`, 123, postMockData);
-      await expect(deletePostFromCache('6027f77087c9d9ccb1555268', `${existingUser._id}`)).resolves.toBeUndefined();
+      await postCache.savePostsToRedisCache('6027f77087c9d9ccb1555268', `${existingUser._id}`, 123, postMockData);
+      await expect(postCache.deletePostFromCache('6027f77087c9d9ccb1555268', `${existingUser._id}`)).resolves.toBeUndefined();
     });
   });
 });

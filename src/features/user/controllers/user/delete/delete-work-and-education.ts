@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 import { userInfoQueue } from '@queues/user-info.queue';
 import { IUserDocument, IUserSchool, IUserWork } from '@user/interface/user.interface';
-import { updateUserPropListInfoInRedisCache } from '@redis/user-info-cache';
+import { userInfoCache } from '@redis/user-info-cache';
 import { socketIOUserObject } from '@sockets/users';
 
 export class DeleteWorkAndEducation {
@@ -16,7 +16,7 @@ export class DeleteWorkAndEducation {
       from: '',
       to: ''
     };
-    const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(
+    const cachedUser: IUserDocument = await userInfoCache.updateUserPropListInfoInRedisCache(
       `${req.currentUser?.userId}`,
       'work',
       work,
@@ -42,7 +42,7 @@ export class DeleteWorkAndEducation {
       from: '',
       to: ''
     };
-    const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(
+    const cachedUser: IUserDocument = await userInfoCache.updateUserPropListInfoInRedisCache(
       `${req.currentUser?.userId}`,
       'school',
       school,

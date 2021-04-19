@@ -2,7 +2,6 @@ import { IFollowers } from '@followers/interface/followers.interface';
 import { Server, Socket } from 'socket.io';
 
 let socketIOFollowerObject: Server;
-
 export class SocketIOFollowerHandler {
   public listen(io: Server): void {
     socketIOFollowerObject = io;

@@ -3,14 +3,18 @@ import HTTP_STATUS from 'http-status-codes';
 import { userInfoQueue } from '@queues/user-info.queue';
 import { joiValidation } from '@global/decorators/joi-validation.decorator';
 import { genderSchema, birthdaySchema, relationshipSchema } from '@user/schemes/user/info';
-import { updateSingleUserItemInRedisCache } from '@redis/user-info-cache';
+import { userInfoCache } from '@redis/user-info-cache';
 import { IUserDocument } from '@user/interface/user.interface';
 import { socketIOUserObject } from '@sockets/users';
 
 export class AddBasicInfo {
   @joiValidation(genderSchema)
   public async gender(req: Request, res: Response): Promise<void> {
-    const cachedUser: IUserDocument = await updateSingleUserItemInRedisCache(`${req.currentUser?.userId}`, 'gender', req.body.gender);
+    const cachedUser: IUserDocument = await userInfoCache.updateSingleUserItemInRedisCache(
+      `${req.currentUser?.userId}`,
+      'gender',
+      req.body.gender
+    );
     socketIOUserObject.emit('update user', cachedUser);
     userInfoQueue.addUserInfoJob('updateGenderInCache', {
       key: `${req.currentUser?.username}`,
@@ -21,7 +25,7 @@ export class AddBasicInfo {
 
   @joiValidation(birthdaySchema)
   public async birthday(req: Request, res: Response): Promise<void> {
-    const cachedUser: IUserDocument = await updateSingleUserItemInRedisCache(`${req.currentUser?.userId}`, 'birthDay', {
+    const cachedUser: IUserDocument = await userInfoCache.updateSingleUserItemInRedisCache(`${req.currentUser?.userId}`, 'birthDay', {
       month: req.body.month,
       day: req.body.day
     });
@@ -35,7 +39,7 @@ export class AddBasicInfo {
 
   @joiValidation(relationshipSchema)
   public async relationship(req: Request, res: Response): Promise<void> {
-    const cachedUser: IUserDocument = await updateSingleUserItemInRedisCache(
+    const cachedUser: IUserDocument = await userInfoCache.updateSingleUserItemInRedisCache(
       `${req.currentUser?.userId}`,
       'relationship',
       req.body.relationship

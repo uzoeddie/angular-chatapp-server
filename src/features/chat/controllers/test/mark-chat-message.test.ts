@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import redis, { RedisClient } from 'redis-mock';
 import { chatMockRequest, chatMockResponse, conversationParticipants } from '@mock/chat.mock';
 import { authUserPayload } from '@root/mocks/auth.mock';
-import * as cache from '@redis/message-cache';
+import { messageCache } from '@redis/message-cache';
 import { ConversationModel } from '@chat/models/conversation.schema';
 import { MarkChat } from '@chat/controllers/mark-chat-message';
 import { socketIOChatObject } from '@sockets/chat';
@@ -48,7 +48,7 @@ describe('MarkChat', () => {
         authUserPayload
       ) as Request;
       const res: Response = chatMockResponse();
-      jest.spyOn(cache, 'updateIsReadPropInRedisCache').mockImplementation((): any => JSON.stringify('testing'));
+      jest.spyOn(messageCache, 'updateIsReadPropInRedisCache').mockImplementation((): any => JSON.stringify('testing'));
       jest.spyOn(ConversationModel, 'aggregate').mockResolvedValueOnce(conversationParticipants);
       jest.spyOn(socketIOChatObject, 'emit');
       jest.spyOn(chatQueue, 'addChatJob');
@@ -74,7 +74,7 @@ describe('MarkChat', () => {
         authUserPayload
       ) as Request;
       const res: Response = chatMockResponse();
-      jest.spyOn(cache, 'updateIsReadPropInRedisCache').mockImplementation((): any => JSON.stringify('testing'));
+      jest.spyOn(messageCache, 'updateIsReadPropInRedisCache').mockImplementation((): any => JSON.stringify('testing'));
       jest.spyOn(socketIOChatObject, 'emit');
       jest.spyOn(chatQueue, 'addChatJob');
 

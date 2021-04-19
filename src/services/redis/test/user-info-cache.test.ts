@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import redis, { RedisClient } from 'redis-mock';
 import MockDate from 'mockdate';
-import { saveUserToRedisCache } from '@redis/user-cache';
+import { userCache } from '@redis/user-cache';
 import { existingUser } from '@mock/user.mock';
-import { updateSingleUserItemInRedisCache, updateUserPropListInfoInRedisCache } from '@redis/user-info-cache';
+import { userInfoCache } from '@redis/user-info-cache';
 import { IUserPlacesLived } from '@user/interface/user.interface';
 
 jest.useFakeTimers();
@@ -34,9 +34,11 @@ describe('UserInfoCache', () => {
 
   describe('updateSingleUserItemInRedisCache', () => {
     it('should update user item', async () => {
-      await saveUserToRedisCache('60263f14648fed5246e322d9', '123', existingUser as any);
+      await userCache.saveUserToRedisCache('60263f14648fed5246e322d9', '123', existingUser as any);
       existingUser.gender = 'Female';
-      await expect(updateSingleUserItemInRedisCache('60263f14648fed5246e322d9', 'gender', 'Female')).resolves.toStrictEqual(existingUser);
+      await expect(userInfoCache.updateSingleUserItemInRedisCache('60263f14648fed5246e322d9', 'gender', 'Female')).resolves.toStrictEqual(
+        existingUser
+      );
     });
   });
 
@@ -49,11 +51,11 @@ describe('UserInfoCache', () => {
         year: '2020',
         month: 'March'
       };
-      await saveUserToRedisCache('60263f14648fed5246e322d9', '123', existingUser as any);
+      await userCache.saveUserToRedisCache('60263f14648fed5246e322d9', '123', existingUser as any);
       existingUser.placesLived = [...existingUser.placesLived, placesLived];
-      await expect(updateUserPropListInfoInRedisCache('60263f14648fed5246e322d9', 'placesLived', placesLived, 'add')).resolves.toEqual(
-        existingUser
-      );
+      await expect(
+        userInfoCache.updateUserPropListInfoInRedisCache('60263f14648fed5246e322d9', 'placesLived', placesLived, 'add')
+      ).resolves.toEqual(existingUser);
     });
   });
 });

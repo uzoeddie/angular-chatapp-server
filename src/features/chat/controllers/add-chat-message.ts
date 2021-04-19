@@ -7,12 +7,12 @@ import { IChatMessage, IChatConversationId, IChatRedisData, IMessageDocument } f
 import { addChatSchema } from '@chat/schemes/chat';
 import { joiValidation } from '@global/decorators/joi-validation.decorator';
 import { chatQueue } from '@queues/chat.queue';
-import { addChatListToRedisCache, addChatmessageToRedisCache } from '@redis/message-cache';
+import { messageCache } from '@redis/message-cache';
 import { socketIOChatObject } from '@sockets/chat';
 import { connectedUsersMap } from '@sockets/users';
 import { notificationTemplate } from '@email/templates/notification/notification-template';
 import { emailQueue } from '@queues/email.queue';
-import { getUserFromCache } from '@redis/user-cache';
+import { userCache } from '@redis/user-cache';
 import { IUserDocument, AuthPayload } from '@user/interface/user.interface';
 
 export class AddChat {
@@ -28,18 +28,18 @@ export class AddChat {
     } else {
       conversationObjectId = mongoose.Types.ObjectId(conversationId);
     }
-    const data: IChatRedisData = this.flattenedRedisData(req, {
+    const data: IChatRedisData = AddChat.prototype.flattenedRedisData(req, {
       _id: `${messageObjectId}`,
       conversationId: `${conversationObjectId}`,
       createdAt
     });
     // if chat has image, don't send
     if (!selectedImages.length) {
-      this.chatMessage(data);
+      AddChat.prototype.chatMessage(data);
     }
 
-    const addChatList: Promise<void> = addChatListToRedisCache([`${req.currentUser?.userId}`, `${receiverId._id}`], data);
-    const addChatMessage: Promise<void> = addChatmessageToRedisCache(`${conversationObjectId}`, data);
+    const addChatList: Promise<void> = messageCache.addChatListToRedisCache([`${req.currentUser?.userId}`, `${receiverId._id}`], data);
+    const addChatMessage: Promise<void> = messageCache.addChatmessageToRedisCache(`${conversationObjectId}`, data);
     await Promise.all([addChatList, addChatMessage]);
 
     const message: IMessageDocument = ({
@@ -56,7 +56,7 @@ export class AddChat {
       createdAt
     } as unknown) as IMessageDocument;
     chatQueue.addChatJob('addChatMessagesToDB', { value: message });
-    this.messageNotification(req.currentUser!, body, receiverName, receiverId._id!);
+    AddChat.prototype.messageNotification(req.currentUser!, body, receiverName, receiverId._id!);
     res.status(HTTP_STATUS.OK).json({ message: 'Message added', conversation: conversationObjectId });
   }
 
@@ -96,7 +96,7 @@ export class AddChat {
   }
 
   private async messageNotification(currentUser: AuthPayload, message: string, receiverName: string, receiverId: string): Promise<void> {
-    const cachedUser: IUserDocument = await getUserFromCache(`${receiverId}`);
+    const cachedUser: IUserDocument = await userCache.getUserFromCache(`${receiverId}`);
     if (cachedUser.notifications.messages) {
       const templateParams = {
         username: receiverName,

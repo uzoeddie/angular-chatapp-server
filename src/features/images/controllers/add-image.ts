@@ -5,7 +5,7 @@ import { joiValidation } from '@global/decorators/joi-validation.decorator';
 import { addImageSchema, addBGImageSchema } from '@images/schemes/images';
 import { UploadApiResponse } from 'cloudinary';
 import { IUserDocument } from '@user/interface/user.interface';
-import { updateSingleUserItemInRedisCache } from '@redis/user-info-cache';
+import { userInfoCache } from '@redis/user-info-cache';
 import { imageQueue } from '@queues/image.queue';
 import { socketIOImageObject } from '@sockets/images';
 
@@ -14,7 +14,11 @@ export class Add {
   public async image(req: Request, res: Response): Promise<void> {
     const result: UploadApiResponse = (await uploads(req.body.image, req.currentUser?.userId, true, true)) as UploadApiResponse;
     const url = `https://res.cloudinary.com/ratingapp/image/upload/${result.public_id}`;
-    const cachedUser: IUserDocument = await updateSingleUserItemInRedisCache(`${req.currentUser?.userId}`, 'profilePicture', url);
+    const cachedUser: IUserDocument = await userInfoCache.updateSingleUserItemInRedisCache(
+      `${req.currentUser?.userId}`,
+      'profilePicture',
+      url
+    );
     socketIOImageObject.emit('update user', cachedUser);
     imageQueue.addImageJob('updateImageInDB', {
       key: `${req.currentUser?.userId}`,
@@ -26,8 +30,12 @@ export class Add {
   @joiValidation(addBGImageSchema)
   public async backgroundImage(req: Request, res: Response): Promise<void> {
     const result: UploadApiResponse = (await uploads(req.body.image)) as UploadApiResponse;
-    const bgImageId: Promise<IUserDocument> = updateSingleUserItemInRedisCache(`${req.currentUser?.userId}`, 'bgImageId', result.public_id);
-    const bgImageVersion: Promise<IUserDocument> = updateSingleUserItemInRedisCache(
+    const bgImageId: Promise<IUserDocument> = userInfoCache.updateSingleUserItemInRedisCache(
+      `${req.currentUser?.userId}`,
+      'bgImageId',
+      result.public_id
+    );
+    const bgImageVersion: Promise<IUserDocument> = userInfoCache.updateSingleUserItemInRedisCache(
       `${req.currentUser?.userId}`,
       'bgImageVersion',
       result.version

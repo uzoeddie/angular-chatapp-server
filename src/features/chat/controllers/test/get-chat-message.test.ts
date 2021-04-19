@@ -14,7 +14,7 @@ import {
 } from '@mock/chat.mock';
 import { authUserPayload } from '@root/mocks/auth.mock';
 import { GetChat } from '@chat/controllers/get-chat-message';
-import * as cache from '@redis/message-cache';
+import { messageCache } from '@redis/message-cache';
 import { Helpers } from '@global/helpers';
 import { ConversationModel } from '@chat/models/conversation.schema';
 
@@ -44,7 +44,7 @@ describe('GetChat', () => {
     it('should send correct json response if chat list exist in redis', async () => {
       const req: Request = chatMockRequest({}, chatMessage, authUserPayload) as Request;
       const res: Response = chatMockResponse();
-      jest.spyOn(cache, 'getChatFromRedisCache').mockImplementation((): any => cachedList);
+      jest.spyOn(messageCache, 'getChatFromRedisCache').mockImplementation((): any => cachedList);
 
       await GetChat.prototype.list(req, res);
       expect(res.status).toHaveBeenCalledWith(200);
@@ -57,7 +57,7 @@ describe('GetChat', () => {
     it('should send correct json response if no chat list response from redis', async () => {
       const req: Request = chatMockRequest({}, chatMessage, authUserPayload) as Request;
       const res: Response = chatMockResponse();
-      jest.spyOn(cache, 'getChatFromRedisCache').mockImplementation((): any => []);
+      jest.spyOn(messageCache, 'getChatFromRedisCache').mockImplementation((): any => []);
       jest.spyOn(Helpers, 'getMessages').mockImplementation(() => Promise.resolve(flattenedChatList));
 
       await GetChat.prototype.list(req, res);
@@ -72,7 +72,7 @@ describe('GetChat', () => {
     it('should send correct json response with empty chat list if it does not exist (redis & database)', async () => {
       const req: Request = chatMockRequest({}, chatMessage, authUserPayload) as Request;
       const res: Response = chatMockResponse();
-      jest.spyOn(cache, 'getChatFromRedisCache').mockImplementation((): any => []);
+      jest.spyOn(messageCache, 'getChatFromRedisCache').mockImplementation((): any => []);
       jest.spyOn(Helpers, 'getMessages').mockImplementation(() => Promise.resolve([]));
 
       await GetChat.prototype.list(req, res);
@@ -92,7 +92,7 @@ describe('GetChat', () => {
         receiverId: '6064793b091bf02b6a71067a'
       }) as Request;
       const res: Response = chatMockResponse();
-      jest.spyOn(cache, 'getChatFromRedisCache').mockImplementation((): any => cachedMessage);
+      jest.spyOn(messageCache, 'getChatFromRedisCache').mockImplementation((): any => cachedMessage);
 
       await GetChat.prototype.messages(req, res);
       expect(res.status).toHaveBeenCalledWith(200);
@@ -108,7 +108,7 @@ describe('GetChat', () => {
         receiverId: '6064793b091bf02b6a71067a'
       }) as Request;
       const res: Response = chatMockResponse();
-      jest.spyOn(cache, 'getChatFromRedisCache').mockImplementation((): any => []);
+      jest.spyOn(messageCache, 'getChatFromRedisCache').mockImplementation((): any => []);
       jest.spyOn(Helpers, 'getMessages').mockImplementation(() => Promise.resolve(parsedChatMessage));
 
       await GetChat.prototype.messages(req, res);

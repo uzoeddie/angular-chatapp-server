@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 import { userInfoQueue } from '@queues/user-info.queue';
 import { IUserDocument, IUserPlacesLived } from '@user/interface/user.interface';
-import { updateUserPropListInfoInRedisCache } from '@redis/user-info-cache';
+import { userInfoCache } from '@redis/user-info-cache';
 import { socketIOUserObject } from '@sockets/users';
 
 export class DeletePlacesLived {
@@ -14,7 +14,7 @@ export class DeletePlacesLived {
       year: '',
       month: ''
     };
-    const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(
+    const cachedUser: IUserDocument = await userInfoCache.updateUserPropListInfoInRedisCache(
       `${req.currentUser?.userId}`,
       'placesLived',
       placesLived,

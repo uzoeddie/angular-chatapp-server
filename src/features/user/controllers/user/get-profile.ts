@@ -3,14 +3,14 @@ import HTTP_STATUS from 'http-status-codes';
 
 import { UserModel } from '@user/models/user.schema';
 import { Helpers } from '@global/helpers';
-import { getUserFromCache, getUsersFromCache } from '@redis/user-cache';
+import { userCache } from '@redis/user-cache';
 import { FollowerModel } from '@followers/models/follower.schema';
-import { getUserPostsFromCache } from '@redis/post-cache';
+import { postCache } from '@redis/post-cache';
 import { IUserDocument } from '@user/interface/user.interface';
 import { IFollower, IFollowerDocument } from '@followers/interface/followers.interface';
 import { IPostDocument } from '@posts/interface/post.interface';
 import { LeanDocument } from 'mongoose';
-import { getFollowersFromRedisCache } from '@redis/follower-cache';
+import { followerCache } from '@redis/follower-cache';
 
 const PAGE_SIZE = 100;
 
@@ -27,19 +27,19 @@ export class GetUser {
     const skip: number = (parseInt(page) - 1) * PAGE_SIZE;
     const limit: number = PAGE_SIZE * parseInt(page);
     const newSkip: number = skip === 0 ? skip : skip + 1;
-    const allUsers: IUserDocument[] | LeanDocument<IUserDocument>[] = await this.allUsers({
+    const allUsers: IUserDocument[] | LeanDocument<IUserDocument>[] = await GetUser.prototype.allUsers({
       newSkip,
       limit,
       skip,
       userId: `${req.currentUser?.userId}`
     });
-    const followers: Promise<IFollowerDocument[] | IFollower[]> = this.followers(`${req.currentUser?.userId}`, limit, skip);
+    const followers: Promise<IFollowerDocument[] | IFollower[]> = GetUser.prototype.followers(`${req.currentUser?.userId}`, limit, skip);
     const response: (IFollowerDocument[] | IFollower[])[] = await Promise.all([followers]);
     res.status(HTTP_STATUS.OK).json({ message: 'Get users', users: allUsers, followers: response[0] });
   }
 
   public async profile(req: Request, res: Response): Promise<void> {
-    const cachedUser: IUserDocument = await getUserFromCache(`${req.currentUser?.userId}`);
+    const cachedUser: IUserDocument = await userCache.getUserFromCache(`${req.currentUser?.userId}`);
     const existingUser: IUserDocument = (cachedUser
       ? cachedUser
       : await UserModel.findOne({ _id: req.currentUser?.userId }).lean()) as IUserDocument;
@@ -48,8 +48,8 @@ export class GetUser {
 
   public async username(req: Request, res: Response): Promise<void> {
     const username: string = Helpers.firstLetterUppercase(req.params.username);
-    const cachedUser: Promise<IUserDocument> = getUserFromCache(req.params.userId);
-    const cachecUserPosts: Promise<IPostDocument[]> = getUserPostsFromCache('post', parseInt(req.params.uId, 10));
+    const cachedUser: Promise<IUserDocument> = userCache.getUserFromCache(req.params.userId);
+    const cachecUserPosts: Promise<IPostDocument[]> = postCache.getUserPostsFromCache('post', parseInt(req.params.uId, 10));
     const cacheResponse: [IUserDocument, IPostDocument[]] = await Promise.all([cachedUser, cachecUserPosts]);
     const existingUser: IUserDocument = (cacheResponse[0] ? cacheResponse[0] : UserModel.findOne({ username }).lean()) as IUserDocument;
     const userPosts: IPostDocument[] | Promise<IPostDocument[]> = cacheResponse[1]
@@ -61,7 +61,7 @@ export class GetUser {
 
   private async allUsers({ newSkip, limit, skip, userId }: IAllUser): Promise<IUserDocument[] | LeanDocument<IUserDocument>[]> {
     let users;
-    const cachedUser: IUserDocument[] = await getUsersFromCache(newSkip, limit, userId);
+    const cachedUser: IUserDocument[] = await userCache.getUsersFromCache(newSkip, limit, userId);
     if (cachedUser.length) {
       users = cachedUser;
     } else {
@@ -75,7 +75,7 @@ export class GetUser {
   }
 
   private async followers(userId: string, limit: number, skip: number): Promise<IFollowerDocument[] | IFollower[]> {
-    const cachedFollowers: IFollower[] = await getFollowersFromRedisCache(`followers:${userId}`);
+    const cachedFollowers: IFollower[] = await followerCache.getFollowersFromRedisCache(`followers:${userId}`);
     const userFollowers = cachedFollowers.length
       ? cachedFollowers
       : ((FollowerModel.find({ followerId: userId })

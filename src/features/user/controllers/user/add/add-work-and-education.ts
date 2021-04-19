@@ -4,7 +4,7 @@ import { IUserDocument, IUserSchool, IUserWork } from '@user/interface/user.inte
 import { userInfoQueue } from '@queues/user-info.queue';
 import { joiValidation } from '@global/decorators/joi-validation.decorator';
 import { educationSchema, workSchema } from '@user/schemes/user/info';
-import { updateUserPropListInfoInRedisCache } from '@redis/user-info-cache';
+import { userInfoCache } from '@redis/user-info-cache';
 import { ObjectID } from 'mongodb';
 import { socketIOUserObject } from '@sockets/users';
 
@@ -21,7 +21,12 @@ export class AddWorkAndEducation {
       from: req.body.from,
       to: req.body.to
     };
-    const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(`${req.currentUser?.userId}`, 'work', work, 'add');
+    const cachedUser: IUserDocument = await userInfoCache.updateUserPropListInfoInRedisCache(
+      `${req.currentUser?.userId}`,
+      'work',
+      work,
+      'add'
+    );
     socketIOUserObject.emit('update user', cachedUser);
     userInfoQueue.addUserInfoJob('updateUserWorkInCache', {
       key: `${req.currentUser?.username}`,
@@ -42,7 +47,12 @@ export class AddWorkAndEducation {
       from: req.body.from,
       to: req.body.to
     };
-    const cachedUser: IUserDocument = await updateUserPropListInfoInRedisCache(`${req.currentUser?.userId}`, 'school', school, 'add');
+    const cachedUser: IUserDocument = await userInfoCache.updateUserPropListInfoInRedisCache(
+      `${req.currentUser?.userId}`,
+      'school',
+      school,
+      'add'
+    );
     socketIOUserObject.emit('update user', cachedUser);
     userInfoQueue.addUserInfoJob('updateUserSchoolInCache', {
       key: `${req.currentUser?.username}`,

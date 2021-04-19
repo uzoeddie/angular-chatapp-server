@@ -1,5 +1,5 @@
 import { followerData } from '@mock/followers.mock';
-import { saveFollowerToRedisCache, removeFollowerFromRedisCache, getFollowersFromRedisCache } from '@redis/follower-cache';
+import { followerCache } from '@redis/follower-cache';
 import redis, { RedisClient } from 'redis-mock';
 
 jest.useFakeTimers();
@@ -24,21 +24,23 @@ describe('FollowerCache', () => {
 
   describe('saveFollowerToRedisCache', () => {
     it('should add follower', async () => {
-      await expect(saveFollowerToRedisCache('followers:605727cd646cb50e668a4e13', followerData)).resolves.toBeUndefined();
+      await expect(followerCache.saveFollowerToRedisCache('followers:605727cd646cb50e668a4e13', followerData)).resolves.toBeUndefined();
     });
   });
 
   describe('removeFollowerFromRedisCache', () => {
     it('should remove follower', async () => {
-      await saveFollowerToRedisCache('followers:605727cd646cb50e668a4e13', followerData);
-      await expect(removeFollowerFromRedisCache('followers:605727cd646cb50e668a4e13', '605727cd646cb50e668a4e13')).resolves.toBeUndefined();
+      await followerCache.saveFollowerToRedisCache('followers:605727cd646cb50e668a4e13', followerData);
+      await expect(
+        followerCache.removeFollowerFromRedisCache('followers:605727cd646cb50e668a4e13', '605727cd646cb50e668a4e13')
+      ).resolves.toBeUndefined();
     });
   });
 
   describe('getFollowersFromRedisCache', () => {
     it('should get followers', async () => {
-      await saveFollowerToRedisCache('followers:605727cd646cb50e668a4e13', followerData);
-      await expect(getFollowersFromRedisCache('followers:605727cd646cb50e668a4e13')).resolves.toStrictEqual([followerData]);
+      await followerCache.saveFollowerToRedisCache('followers:605727cd646cb50e668a4e13', followerData);
+      await expect(followerCache.getFollowersFromRedisCache('followers:605727cd646cb50e668a4e13')).resolves.toStrictEqual([followerData]);
     });
   });
 });
