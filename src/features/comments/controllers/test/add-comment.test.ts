@@ -3,7 +3,7 @@ import redis, { RedisClient } from 'redis-mock';
 import { authUserPayload } from '@root/mocks/auth.mock';
 import { Add } from '@comments/controllers/add-comment';
 import { commentMockRequest, commentMockResponse } from '@mock/comment.mock';
-import * as cache from '@redis/comments-cache';
+import { commentCache } from '@redis/comments-cache';
 import { commentQueue } from '@queues/comment.queue';
 
 jest.useFakeTimers();
@@ -40,11 +40,11 @@ describe('Add', () => {
       authUserPayload
     ) as Request;
     const res: Response = commentMockResponse();
-    jest.spyOn(cache, 'savePostCommentToRedisCache');
+    jest.spyOn(commentCache, 'savePostCommentToRedisCache');
     jest.spyOn(commentQueue, 'addCommentJob');
 
     await Add.prototype.comment(req, res);
-    expect(cache.savePostCommentToRedisCache).toHaveBeenCalled();
+    expect(commentCache.savePostCommentToRedisCache).toHaveBeenCalled();
     expect(commentQueue.addCommentJob).toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({

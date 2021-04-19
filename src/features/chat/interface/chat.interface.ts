@@ -84,6 +84,12 @@ export interface IChatRedisData {
   images: string[];
 }
 
+export interface IChatConversationId {
+  _id: string;
+  conversationId: string;
+  createdAt: Date;
+}
+
 export interface ISearchUser {
   _id: string;
   profilePicture: string;

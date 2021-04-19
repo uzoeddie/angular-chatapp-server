@@ -32,8 +32,37 @@ export class Update {
 
   @joiValidation(editPostWithImageSchema)
   public async postWithImage(req: Request, res: Response): Promise<void> {
-    const { image, post, bgColor, feelings, privacy, gifUrl, imgId, imgVersion, profilePicture } = req.body;
+    const { imgId, imgVersion } = req.body;
     if (imgId && imgVersion) {
+      this.updatedPostWithImage(req);
+    } else {
+      this.updatedPostWithoutImage(req);
+    }
+    res.status(HTTP_STATUS.OK).json({ message: 'Post updated successfully', notification: true });
+  }
+
+  private async updatedPostWithImage(req: Request): Promise<void> {
+    const { post, bgColor, feelings, privacy, gifUrl, imgId, imgVersion, profilePicture } = req.body;
+    const postUpdated: IPostDocument = {
+      profilePicture,
+      post,
+      bgColor,
+      feelings,
+      privacy,
+      gifUrl,
+      imgId,
+      imgVersion,
+      createdAt: new Date()
+    } as IPostDocument;
+    const updatedPost: IPostDocument = await updatePostInRedisCache(req.params.postId, postUpdated);
+    socketIOPostObject.emit('update post', updatedPost, 'posts');
+    postQueue.addPostJob('updatePostInRedisCache', { key: req.params.postId, value: postUpdated });
+  }
+
+  private async updatedPostWithoutImage(req: Request): Promise<void> {
+    const { image, post, bgColor, feelings, privacy, gifUrl, profilePicture } = req.body;
+    const result: UploadApiResponse = (await uploads(image)) as UploadApiResponse;
+    if (result) {
       const postUpdated: IPostDocument = {
         profilePicture,
         post,
@@ -41,34 +70,13 @@ export class Update {
         feelings,
         privacy,
         gifUrl,
-        imgId,
-        imgVersion,
+        imgId: result.public_id,
+        imgVersion: result.version.toString(),
         createdAt: new Date()
       } as IPostDocument;
       const updatedPost: IPostDocument = await updatePostInRedisCache(req.params.postId, postUpdated);
       socketIOPostObject.emit('update post', updatedPost, 'posts');
       postQueue.addPostJob('updatePostInRedisCache', { key: req.params.postId, value: postUpdated });
-      res.status(HTTP_STATUS.OK).json({ message: 'Post updated successfully', notification: true });
-      return;
-    } else {
-      const result: UploadApiResponse = (await uploads(image)) as UploadApiResponse;
-      if (result) {
-        const postUpdated: IPostDocument = {
-          profilePicture,
-          post,
-          bgColor,
-          feelings,
-          privacy,
-          gifUrl,
-          imgId: result.public_id,
-          imgVersion: result.version.toString(),
-          createdAt: new Date()
-        } as IPostDocument;
-        const updatedPost: IPostDocument = await updatePostInRedisCache(req.params.postId, postUpdated);
-        socketIOPostObject.emit('update post', updatedPost, 'posts');
-        postQueue.addPostJob('updatePostInRedisCache', { key: req.params.postId, value: postUpdated });
-        res.status(HTTP_STATUS.OK).json({ message: 'Post updated successfully', notification: true });
-      }
     }
   }
 }

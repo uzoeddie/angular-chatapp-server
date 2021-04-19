@@ -2,7 +2,6 @@ import Queue from 'bull';
 import { BaseQueue } from '@queues/base.queue';
 import { imageWorker } from '@workers/image.worker';
 import { IFileImageJobData } from '@images/interface/images.interface';
-
 class ImageQueue extends BaseQueue {
   constructor() {
     super('images');

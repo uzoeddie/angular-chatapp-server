@@ -37,7 +37,7 @@ export class Create {
       reactions: [],
       createdAt: new Date()
     } as unknown) as IPostDocument;
-    await savePostsToRedisCache(`${createPost._id}`, parseInt(req.currentUser!.uId, 10), createPost);
+    await savePostsToRedisCache(`${createPost._id}`, `${req.currentUser?.userId}`, parseInt(req.currentUser!.uId, 10), createPost);
     socketIOPostObject.emit('post message', createPost, 'posts');
     delete createPost.reactions;
     postQueue.addPostJob('savePostsToDB', { key: req.currentUser?.userId, value: createPost });
@@ -71,7 +71,7 @@ export class Create {
       reactions: [],
       createdAt: new Date()
     } as unknown) as IPostDocument;
-    await savePostsToRedisCache(`${postWithImage._id}`, parseInt(req.currentUser!.uId, 10), postWithImage);
+    await savePostsToRedisCache(`${postWithImage._id}`, `${req.currentUser?.userId}`, parseInt(req.currentUser!.uId, 10), postWithImage);
     socketIOPostObject.emit('post message', postWithImage, 'posts');
     delete postWithImage.reactions;
     postQueue.addPostJob('savePostsToDB', { key: req.currentUser?.userId, value: postWithImage });

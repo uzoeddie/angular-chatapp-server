@@ -13,7 +13,7 @@ client.on('error', function (error) {
   log.error(error);
 });
 
-export function savePostsToRedisCache(key: string, uId: number, createdPost: IPostDocument): Promise<void> {
+export function savePostsToRedisCache(key: string, currentUserId: string, uId: number, createdPost: IPostDocument): Promise<void> {
   const {
     _id,
     userId,
@@ -70,12 +70,21 @@ export function savePostsToRedisCache(key: string, uId: number, createdPost: IPo
   ];
   const dataToSave: string[] = [...firstList, ...secondList];
   return new Promise((resolve, reject) => {
-    client.hmset(`posts:${key}`, dataToSave, (error) => {
+    client.hmget(`users:${currentUserId}`, 'postCount', (error: Error | null, response: string[]) => {
       if (error) {
         reject(error);
       }
-      client.zadd('post', uId, `${key}`);
-      resolve();
+      const multi: Multi = client.multi();
+      multi.hmset(`posts:${key}`, dataToSave);
+      multi.zadd('post', uId, `${key}`);
+      const postCount = Helpers.parseJson(response[0]) + 1;
+      multi.hmset(`users:${currentUserId}`, ['postCount', `${postCount}`]);
+      multi.exec((error: Error | null) => {
+        if (error) {
+          reject(error);
+        }
+        resolve();
+      });
     });
   });
 }
@@ -221,15 +230,18 @@ export function getUserPostsFromCache(key: string, uId: number): Promise<IPostDo
   });
 }
 
-export function deletePostFromCache(key: string): Promise<void> {
+export function deletePostFromCache(key: string, currentUserId: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    client.zrem('post', `${key}`, (err: Error | null) => {
-      if (err) {
-        reject(err);
+    client.hmget(`users:${currentUserId}`, 'postCount', (error: Error | null, response: string[]) => {
+      if (error) {
+        reject(error);
       }
       const multi: Multi = client.multi();
+      multi.zrem('post', `${key}`);
       multi.del(`posts:${key}`);
       multi.del(`comments:${key}`);
+      const postCount = Helpers.parseJson(response[0]) - 1;
+      multi.hmset(`users:${currentUserId}`, ['postCount', `${postCount}`]);
       multi.exec((error: Error | null) => {
         if (error) {
           reject(error);

@@ -31,7 +31,7 @@ export class SignUp {
     const random: number = await Promise.resolve(crypto.randomInt(MIN_NUMBER, MAX_NUMBER));
     const uId = `${random}${Date.now()}`;
     const createdObjectId: ObjectID = new ObjectID();
-    const data: IUserDocument = signUpData({
+    const data: IUserDocument = this.signUpData({
       createdObjectId,
       username,
       email,
@@ -39,20 +39,7 @@ export class SignUp {
       uId
     });
 
-    const image: Jimp = new Jimp(256, 256, data.avatarColor);
-    const font = await Jimp.loadFont(Jimp.FONT_SANS_128_WHITE);
-    image.print(
-      font,
-      65,
-      70,
-      {
-        text: data.username.charAt(0),
-        alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
-        alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE
-      },
-      image.bitmap.width / 2,
-      image.bitmap.height / 2
-    );
+    const image: Jimp = await this.loadJimpImage(data.username, data.avatarColor);
     const dataFile: string = await image.getBase64Async('image/png');
     await Promise.all([uploads(dataFile, `${createdObjectId}`, true, true), saveUserToRedisCache(`${createdObjectId}`, uId, data)]);
     userQueue.addUserJob('addUserToDB', { value: data });
@@ -72,39 +59,57 @@ export class SignUp {
     }
     res.status(HTTP_STATUS.CREATED).json({ message: 'User created successfully', user: data, token: userJwt, notification: false });
   }
-}
 
-export function signUpData(data: ISignUpData): IUserDocument {
-  const { createdObjectId, username, email, uId, password } = data;
-  return ({
-    _id: createdObjectId,
-    uId,
-    username: Helpers.firstLetterUppercase(username),
-    email: Helpers.lowerCase(email),
-    avatarColor: Helpers.avatarColor(),
-    password,
-    birthDay: { month: '', day: '' },
-    postCount: 0,
-    gender: '',
-    quotes: '',
-    about: '',
-    relationship: '',
-    blocked: [],
-    blockedBy: [],
-    bgImageVersion: '',
-    bgImageId: '',
-    work: [],
-    school: [],
-    placesLived: [],
-    createdAt: new Date(),
-    followersCount: 0,
-    followingCount: 0,
-    notifications: {
-      messages: true,
-      reactions: true,
-      comments: true,
-      follows: true
-    },
-    profilePicture: `https://res.cloudinary.com/ratingapp/image/upload/${createdObjectId}`
-  } as unknown) as IUserDocument;
+  private signUpData(data: ISignUpData): IUserDocument {
+    const { createdObjectId, username, email, uId, password } = data;
+    return ({
+      _id: createdObjectId,
+      uId,
+      username: Helpers.firstLetterUppercase(username),
+      email: Helpers.lowerCase(email),
+      avatarColor: Helpers.avatarColor(),
+      password,
+      birthDay: { month: '', day: '' },
+      postCount: 0,
+      gender: '',
+      quotes: '',
+      about: '',
+      relationship: '',
+      blocked: [],
+      blockedBy: [],
+      bgImageVersion: '',
+      bgImageId: '',
+      work: [],
+      school: [],
+      placesLived: [],
+      createdAt: new Date(),
+      followersCount: 0,
+      followingCount: 0,
+      notifications: {
+        messages: true,
+        reactions: true,
+        comments: true,
+        follows: true
+      },
+      profilePicture: `https://res.cloudinary.com/ratingapp/image/upload/${createdObjectId}`
+    } as unknown) as IUserDocument;
+  }
+
+  private async loadJimpImage(username: string, avatarColor: string): Promise<Jimp> {
+    const image: Jimp = new Jimp(256, 256, avatarColor);
+    const font = await Jimp.loadFont(Jimp.FONT_SANS_128_WHITE);
+    image.print(
+      font,
+      65,
+      70,
+      {
+        text: username.charAt(0),
+        alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
+        alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE
+      },
+      image.bitmap.width / 2,
+      image.bitmap.height / 2
+    );
+    return image;
+  }
 }

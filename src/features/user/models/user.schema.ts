@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { compare, hash } from 'bcryptjs';
+import { compare, hash } from 'bcryptjs'; // use bcrypt
 import autopopulate from 'mongoose-autopopulate';
 import { IUserDocument } from '@user/interface/user.interface';
 

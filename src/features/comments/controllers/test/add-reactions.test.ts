@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import redis, { RedisClient } from 'redis-mock';
 import { authUserPayload } from '@root/mocks/auth.mock';
 import { commentMockRequest, commentMockResponse } from '@mock/comment.mock';
-import * as cache from '@redis/comments-cache';
+import { commentCache } from '@redis/comments-cache';
 import { reactionQueue } from '@queues/reaction.queue';
 import { AddReaction } from '@comments/controllers/add-reactions';
 
@@ -41,11 +41,11 @@ describe('AddReaction', () => {
       authUserPayload
     ) as Request;
     const res: Response = commentMockResponse();
-    jest.spyOn(cache, 'savePostReactionToRedisCache');
+    jest.spyOn(commentCache, 'savePostReactionToRedisCache');
     jest.spyOn(reactionQueue, 'addReactionJob');
 
     await AddReaction.prototype.reaction(req, res);
-    expect(cache.savePostReactionToRedisCache).toHaveBeenCalled();
+    expect(commentCache.savePostReactionToRedisCache).toHaveBeenCalled();
     expect(reactionQueue.addReactionJob).toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({

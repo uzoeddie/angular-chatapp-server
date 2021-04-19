@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 import { NotificationModel } from '@notifications/models/notification.schema';
 import { INotificationDocument } from '@notifications/interface/notification.interface';
-
 export class Get {
   public async notification(req: Request, res: Response): Promise<void> {
     const notifications: INotificationDocument[] = (await NotificationModel.find({ userTo: req.currentUser?.userId })

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
-import { removeReactionFromCache } from '@redis/comments-cache';
+import { commentCache } from '@redis/comments-cache';
 import { socketIOPostObject } from '@sockets/posts';
 import { reactionQueue } from '@queues/reaction.queue';
 import { IReactionJob } from '@comments/interface/comment.interface';
@@ -8,7 +8,7 @@ import { IReactionJob } from '@comments/interface/comment.interface';
 export class Remove {
   public async reaction(req: Request, res: Response): Promise<void> {
     const { postId, previousReaction } = req.params;
-    await removeReactionFromCache(postId, previousReaction, req.currentUser!.username);
+    await commentCache.removeReactionFromCache(postId, previousReaction, req.currentUser!.username);
     socketIOPostObject.emit('remove reaction', {
       postId,
       previousReaction,

@@ -7,10 +7,19 @@ import { getUserFromCache, getUsersFromCache } from '@redis/user-cache';
 import { FollowerModel } from '@followers/models/follower.schema';
 import { getUserPostsFromCache } from '@redis/post-cache';
 import { IUserDocument } from '@user/interface/user.interface';
-import { IFollowerDocument } from '@followers/interface/followers.interface';
+import { IFollower, IFollowerDocument } from '@followers/interface/followers.interface';
 import { IPostDocument } from '@posts/interface/post.interface';
+import { LeanDocument } from 'mongoose';
+import { getFollowersFromRedisCache } from '@redis/follower-cache';
 
 const PAGE_SIZE = 100;
+
+interface IAllUser {
+  newSkip: number;
+  limit: number;
+  skip: number;
+  userId: string;
+}
 
 export class GetUser {
   public async all(req: Request, res: Response): Promise<void> {
@@ -18,35 +27,15 @@ export class GetUser {
     const skip: number = (parseInt(page) - 1) * PAGE_SIZE;
     const limit: number = PAGE_SIZE * parseInt(page);
     const newSkip: number = skip === 0 ? skip : skip + 1;
-    let allUsers;
-    const cachedUser: IUserDocument[] = await getUsersFromCache(newSkip, limit, `${req.currentUser?.userId}`);
-    if (cachedUser.length) {
-      allUsers = cachedUser;
-    } else {
-      allUsers = UserModel.find({ _id: { $ne: req.currentUser?.userId } })
-        .lean()
-        .skip(skip)
-        .limit(limit)
-        .sort({ createdAt: -1 });
-    }
-    const followers: IFollowerDocument[] = (FollowerModel.find({ followerId: req.currentUser?.userId })
-      .lean()
-      .populate({
-        path: 'followerId',
-        select: 'username avatarColor postCount followersCount followingCount profilePicture'
-      })
-      .populate({
-        path: 'followeeId',
-        select: 'username avatarColor postCount followersCount followingCount profilePicture'
-      })
-      .skip(skip)
-      .limit(limit)
-      .sort({ createdAt: -1 }) as unknown) as IFollowerDocument[];
-    const response: [IUserDocument[], IFollowerDocument[]] = ((await Promise.all([allUsers, followers])) as [
-      IUserDocument[],
-      IFollowerDocument[]
-    ]) as [IUserDocument[], IFollowerDocument[]];
-    res.status(HTTP_STATUS.OK).json({ message: 'Get users', users: response[0], followers: response[1] });
+    const allUsers: IUserDocument[] | LeanDocument<IUserDocument>[] = await this.allUsers({
+      newSkip,
+      limit,
+      skip,
+      userId: `${req.currentUser?.userId}`
+    });
+    const followers: Promise<IFollowerDocument[] | IFollower[]> = this.followers(`${req.currentUser?.userId}`, limit, skip);
+    const response: (IFollowerDocument[] | IFollower[])[] = await Promise.all([followers]);
+    res.status(HTTP_STATUS.OK).json({ message: 'Get users', users: allUsers, followers: response[0] });
   }
 
   public async profile(req: Request, res: Response): Promise<void> {
@@ -68,5 +57,40 @@ export class GetUser {
       : Helpers.getUserPosts({ username }, 0, 100, { createdAt: -1 });
     const response: [IUserDocument, IPostDocument[]] = await Promise.all([existingUser, userPosts]);
     res.status(HTTP_STATUS.OK).json({ message: 'Get user profile by username', user: response[0], posts: response[1] });
+  }
+
+  private async allUsers({ newSkip, limit, skip, userId }: IAllUser): Promise<IUserDocument[] | LeanDocument<IUserDocument>[]> {
+    let users;
+    const cachedUser: IUserDocument[] = await getUsersFromCache(newSkip, limit, userId);
+    if (cachedUser.length) {
+      users = cachedUser;
+    } else {
+      users = UserModel.find({ _id: { $ne: userId } })
+        .lean()
+        .skip(skip)
+        .limit(limit)
+        .sort({ createdAt: -1 });
+    }
+    return users;
+  }
+
+  private async followers(userId: string, limit: number, skip: number): Promise<IFollowerDocument[] | IFollower[]> {
+    const cachedFollowers: IFollower[] = await getFollowersFromRedisCache(`followers:${userId}`);
+    const userFollowers = cachedFollowers.length
+      ? cachedFollowers
+      : ((FollowerModel.find({ followerId: userId })
+          .lean()
+          .populate({
+            path: 'followerId',
+            select: 'username avatarColor postCount followersCount followingCount profilePicture'
+          })
+          .populate({
+            path: 'followeeId',
+            select: 'username avatarColor postCount followersCount followingCount profilePicture'
+          })
+          .skip(skip)
+          .limit(limit)
+          .sort({ createdAt: -1 }) as unknown) as IFollowerDocument[]);
+    return userFollowers;
   }
 }

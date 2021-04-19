@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import redis, { RedisClient } from 'redis-mock';
 import { authUserPayload } from '@root/mocks/auth.mock';
 import { commentMockRequest, commentMockResponse, commentsData, reactionData, redisCommentList } from '@mock/comment.mock';
-import * as cache from '@redis/comments-cache';
+import { commentCache } from '@redis/comments-cache';
 import { Helpers } from '@global/helpers';
 import { GetPost } from '@comments/controllers/get-comments';
 
@@ -37,7 +37,7 @@ describe('GetPost', () => {
         page: '1'
       }) as Request;
       const res: Response = commentMockResponse();
-      jest.spyOn(cache, 'getCommentsFromCache').mockImplementation((): any => [commentsData]);
+      jest.spyOn(commentCache, 'getCommentsFromCache').mockImplementation((): any => [commentsData]);
 
       await GetPost.prototype.comments(req, res);
       expect(res.status).toHaveBeenCalledWith(200);
@@ -53,7 +53,7 @@ describe('GetPost', () => {
         page: '1'
       }) as Request;
       const res: Response = commentMockResponse();
-      jest.spyOn(cache, 'getCommentsFromCache').mockImplementation((): any => []);
+      jest.spyOn(commentCache, 'getCommentsFromCache').mockImplementation((): any => []);
       jest.spyOn(Helpers, 'getPostComments').mockImplementation(() => Promise.resolve([commentsData]));
 
       await GetPost.prototype.comments(req, res);
@@ -72,7 +72,7 @@ describe('GetPost', () => {
         postId: '6027f77087c9d9ccb1555268'
       }) as Request;
       const res: Response = commentMockResponse();
-      jest.spyOn(cache, 'getCommentNamesFromCache').mockImplementation((): any => redisCommentList);
+      jest.spyOn(commentCache, 'getCommentNamesFromCache').mockImplementation((): any => redisCommentList);
 
       await GetPost.prototype.commentsFromCache(req, res);
       expect(res.status).toHaveBeenCalledWith(200);
@@ -90,7 +90,7 @@ describe('GetPost', () => {
         page: '1'
       }) as Request;
       const res: Response = commentMockResponse();
-      jest.spyOn(cache, 'getReactionsFromCache').mockImplementation((): any => [[reactionData], 1]);
+      jest.spyOn(commentCache, 'getReactionsFromCache').mockImplementation((): any => [[reactionData], 1]);
 
       await GetPost.prototype.reactions(req, res);
       expect(res.status).toHaveBeenCalledWith(200);
@@ -107,7 +107,7 @@ describe('GetPost', () => {
         page: '1'
       }) as Request;
       const res: Response = commentMockResponse();
-      jest.spyOn(cache, 'getReactionsFromCache').mockImplementation((): any => [[]]);
+      jest.spyOn(commentCache, 'getReactionsFromCache').mockImplementation((): any => [[]]);
       jest.spyOn(Helpers, 'getPostReactions').mockImplementation(() => Promise.resolve([[reactionData], 1]));
 
       await GetPost.prototype.reactions(req, res);

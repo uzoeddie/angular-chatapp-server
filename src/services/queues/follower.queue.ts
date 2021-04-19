@@ -2,7 +2,6 @@ import Queue from 'bull';
 import { followerWorker } from '@workers/follower.worker';
 import { BaseQueue } from '@queues/base.queue';
 import { IFollowerJobData } from '@followers/interface/followers.interface';
-
 class FollowerQueue extends BaseQueue {
   constructor() {
     super('followers');

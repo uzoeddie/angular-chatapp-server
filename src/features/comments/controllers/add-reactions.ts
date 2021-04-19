@@ -4,7 +4,7 @@ import { reactionsSchema } from '@comments/schemes/comments';
 import { joiValidation } from '@global/decorators/joi-validation.decorator';
 import { IReactionDocument, IReactionJob } from '@comments/interface/comment.interface';
 import { ObjectID } from 'mongodb';
-import { savePostReactionToRedisCache } from '@redis/comments-cache';
+import { commentCache } from '@redis/comments-cache';
 import { reactionQueue } from '@queues/reaction.queue';
 
 export class AddReaction {
@@ -24,7 +24,7 @@ export class AddReaction {
       profilePicture
     } as unknown) as IReactionDocument;
 
-    await savePostReactionToRedisCache(postId, JSON.stringify(reactionObject), previousReaction);
+    await commentCache.savePostReactionToRedisCache(postId, JSON.stringify(reactionObject), previousReaction);
     const dbReactionData: IReactionJob = {
       postId,
       userTo,

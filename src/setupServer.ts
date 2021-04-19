@@ -13,9 +13,9 @@ import { RedisClient } from 'redis';
 import { Server } from 'socket.io';
 import responseTime from 'response-time';
 import { router } from 'bull-board';
-import swaggerUI from 'swagger-ui-express';
-import yaml from 'js-yaml';
-import fs from 'fs';
+// import swaggerUI from 'swagger-ui-express';
+// import yaml from 'js-yaml';
+// import fs from 'fs';
 import { authRoutes, currentUserRoute } from '@user/routes/authRoutes';
 import { authMiddleware } from '@global/auth-middlewares';
 import { chatRoutes } from '@chat/routes/chatRoutes';
@@ -87,10 +87,10 @@ export class ChatServer {
     app.use('/queues', router);
   }
 
-  private apiDocumentSetup(app: Application): void {
+  private async apiDocumentSetup(app: Application): Promise<void> {
     try {
-      const swaggerDocument: string = JSON.stringify(yaml.load(fs.readFileSync('../swagger.yaml', 'utf8')));
-      app.use('/docs', swaggerUI.serve, swaggerUI.setup(JSON.parse(swaggerDocument), { explorer: true }));
+      // const swaggerDocument: string = await JSON.stringify(yaml.load(fs.readFileSync('../swagger.yaml', 'utf8')));
+      // app.use('/docs', swaggerUI.serve, swaggerUI.setup(JSON.parse(swaggerDocument), { explorer: true }));
       app.use(
         swaggerStats.getMiddleware({
           uriPath: '/swagger-stats'

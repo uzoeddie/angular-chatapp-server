@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import redis, { RedisClient } from 'redis-mock';
 import { authUserPayload } from '@root/mocks/auth.mock';
 import { commentMockRequest, commentMockResponse } from '@mock/comment.mock';
-import * as cache from '@redis/comments-cache';
+import { commentCache } from '@redis/comments-cache';
 import { Remove } from '@comments/controllers/remove-reactions';
 import { reactionQueue } from '@queues/reaction.queue';
 import { socketIOPostObject } from '@sockets/posts';
@@ -39,13 +39,13 @@ describe('Remove', () => {
       previousReaction: 'love'
     }) as Request;
     const res: Response = commentMockResponse();
-    jest.spyOn(cache, 'removeReactionFromCache');
+    jest.spyOn(commentCache, 'removeReactionFromCache');
     jest.spyOn(reactionQueue, 'addReactionJob');
     jest.spyOn(socketIOPostObject, 'emit');
 
     await Remove.prototype.reaction(req, res);
     expect(socketIOPostObject.emit).toHaveBeenCalled();
-    expect(cache.removeReactionFromCache).toHaveBeenCalled();
+    expect(commentCache.removeReactionFromCache).toHaveBeenCalled();
     expect(reactionQueue.addReactionJob).toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({

@@ -2,7 +2,6 @@ import Queue from 'bull';
 import { BaseQueue } from '@queues/base.queue';
 import { notificationWorker } from '@workers/notification.worker';
 import { INotificationJobData } from '@notifications/interface/notification.interface';
-
 class NotificationQueue extends BaseQueue {
   constructor() {
     super('notifications');

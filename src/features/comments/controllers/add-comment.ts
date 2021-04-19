@@ -4,7 +4,7 @@ import { ICommentDocument, ICommentJob } from '@comments/interface/comment.inter
 import { addCommentSchema } from '@comments/schemes/comments';
 import { joiValidation } from '@global/decorators/joi-validation.decorator';
 import { ObjectID } from 'mongodb';
-import { savePostCommentToRedisCache } from '@redis/comments-cache';
+import { commentCache } from '@redis/comments-cache';
 import { commentQueue } from '@queues/comment.queue';
 
 export class Add {
@@ -20,7 +20,7 @@ export class Add {
       profilePicture: req.body.profilePicture,
       createdAt: new Date()
     } as unknown) as ICommentDocument;
-    await savePostCommentToRedisCache(req.body.postId, JSON.stringify(commentData));
+    await commentCache.savePostCommentToRedisCache(req.body.postId, JSON.stringify(commentData));
     const dbCommentData: ICommentJob = {
       postId: req.body.postId,
       userTo: req.body.userTo,

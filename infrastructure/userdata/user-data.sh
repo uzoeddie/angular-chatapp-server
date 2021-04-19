@@ -60,7 +60,7 @@ git clone -b develop https://github.com/uzoeddie/angular-chatapp-server.git
 cd angular-chatapp-server
 npm install
 sudo rm -rf ./node_modules/@types/mongoose
-aws s3 sync s3://chatapp-env-files/develop .
+aws s3 sync s3://chatapp-env-files-test/develop .
 unzip env-file.zip
 cp .env.production .env
 npm run build

@@ -2,7 +2,6 @@ import Queue from 'bull';
 import { BaseQueue } from '@queues/base.queue';
 import { reactionWorker } from '@workers/reaction.worker';
 import { IReactionJob } from '@comments/interface/comment.interface';
-
 class ReactionQueue extends BaseQueue {
   constructor() {
     super('reactions');

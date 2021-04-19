@@ -39,8 +39,3 @@ export class SignIn {
     res.status(HTTP_STATUS.OK).json({ message: 'User login successfully', user: existingAuthUser, token: userJwt, notification: false });
   }
 }
-
-// async function preventTimingAttack(password: string): Promise<void> {
-//     const dummyHash: string = '$2b$14$MdkJ8AVAQsN2GkhitG1lHU.MdkJ8AVAQsN2GkhitG1lHUlSVsKSnG';
-//     await compare(password, dummyHash);
-// }

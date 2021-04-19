@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
-import mongoose from 'mongoose';
+import mongoose, { Aggregate } from 'mongoose';
+import { unflatten } from 'flat';
 import { markChatSchema } from '@chat/schemes/chat';
 import { joiValidation } from '@global/decorators/joi-validation.decorator';
 import { chatQueue } from '@queues/chat.queue';
@@ -8,7 +9,6 @@ import { IConversationDocument } from '@chat/interface/converation.interface';
 import { ConversationModel } from '@chat/models/conversation.schema';
 import { updateIsReadPropInRedisCache } from '@redis/message-cache';
 import { socketIOChatObject } from '@sockets/chat';
-import { unflatten } from 'flat';
 
 export class MarkChat {
   @joiValidation(markChatSchema)
@@ -16,7 +16,20 @@ export class MarkChat {
     let conversationMessageId: mongoose.Types.ObjectId;
     const { conversationId, receiverId, userId }: { conversationId: string; receiverId: string; userId: string } = req.body;
     if (!conversationId) {
-      const conversation: IConversationDocument[] = await ConversationModel.aggregate([
+      const conversation: IConversationDocument[] = await this.conversationAggregate(userId, receiverId);
+      conversationMessageId = conversation[0]._id;
+    } else {
+      conversationMessageId = mongoose.Types.ObjectId(conversationId);
+    }
+    const response: string = await updateIsReadPropInRedisCache(`${req.currentUser?.userId}`, `${receiverId}`, `${conversationMessageId}`);
+    socketIOChatObject.emit('message collection update', unflatten(JSON.parse(response)));
+    chatQueue.addChatJob('markMessagesAsReadInDB', { conversationId: conversationMessageId });
+    res.status(HTTP_STATUS.OK).json({ message: 'Message marked as read', notification: false });
+  }
+
+  private async conversationAggregate(userId: string, receiverId: string): Promise<IConversationDocument[]> {
+    return new Promise((resolve) => {
+      const conversation: Aggregate<IConversationDocument[]> = ConversationModel.aggregate([
         {
           $match: {
             $or: [
@@ -34,13 +47,7 @@ export class MarkChat {
           }
         }
       ]);
-      conversationMessageId = conversation[0]._id as mongoose.Types.ObjectId;
-    } else {
-      conversationMessageId = mongoose.Types.ObjectId(conversationId);
-    }
-    const response: string = await updateIsReadPropInRedisCache(`${req.currentUser?.userId}`, `${receiverId}`, `${conversationMessageId}`);
-    socketIOChatObject.emit('message collection update', unflatten(JSON.parse(response)));
-    chatQueue.addChatJob('markMessagesAsReadInDB', { conversationId: conversationMessageId });
-    res.status(HTTP_STATUS.OK).json({ message: 'Message marked as read', notification: false });
+      resolve(conversation);
+    });
   }
 }

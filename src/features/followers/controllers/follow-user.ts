@@ -14,6 +14,24 @@ export class Add {
     const cachedUser: Promise<IUserDocument> = getUserFromCache(req.currentUser!.userId);
     const response: [IUserDocument, IUserDocument] = await Promise.all([cachedUser, cachedFollower]);
     const followerObjectId: ObjectID = new ObjectID();
+    const addFollower: IFollower = this.followerData(response, followerObjectId);
+    socketIOFollowerObject.emit('add follower', addFollower);
+    const addFollowerToCache: Promise<void> = saveFollowerToRedisCache(`followers:${req.currentUser!.userId}`, addFollower);
+    const addFolloweeToCache: Promise<void> = saveFollowerToRedisCache(`following:${req.params.followerId}`, addFollower);
+    const followersCount: Promise<void> = updateUserFollowersInRedisCache(`${req.params.followerId}`, 'followersCount', 1);
+    const followingCount: Promise<void> = updateUserFollowersInRedisCache(`${req.currentUser?.userId}`, 'followingCount', 1);
+    await Promise.all([addFollowerToCache, addFolloweeToCache, followersCount, followingCount]);
+
+    followerQueue.addFollowerJob('addFollowerDB', {
+      keyOne: `${req.currentUser?.userId}`,
+      keyTwo: `${req.params.followerId}`,
+      username: req.currentUser!.username,
+      followerDocumentId: followerObjectId
+    });
+    res.status(HTTP_STATUS.OK).json({ message: 'Following user now', notification: true });
+  }
+
+  private followerData(response: [IUserDocument, IUserDocument], followerObjectId: ObjectID): IFollower {
     const addFollower: IFollower = {
       _id: followerObjectId,
       followerId: {
@@ -40,19 +58,6 @@ export class Add {
       },
       createdAt: new Date()
     };
-    socketIOFollowerObject.emit('add follower', addFollower);
-    const addFollowerToCache: Promise<void> = saveFollowerToRedisCache(`followers:${req.currentUser!.userId}`, addFollower);
-    const addFolloweeToCache: Promise<void> = saveFollowerToRedisCache(`following:${req.params.followerId}`, addFollower);
-    const followersCount: Promise<void> = updateUserFollowersInRedisCache(`${req.params.followerId}`, 'followersCount', 1);
-    const followingCount: Promise<void> = updateUserFollowersInRedisCache(`${req.currentUser?.userId}`, 'followingCount', 1);
-    await Promise.all([addFollowerToCache, addFolloweeToCache, followersCount, followingCount]);
-
-    followerQueue.addFollowerJob('addFollowerDB', {
-      keyOne: `${req.currentUser?.userId}`,
-      keyTwo: `${req.params.followerId}`,
-      username: req.currentUser!.username,
-      followerDocumentId: followerObjectId
-    });
-    res.status(HTTP_STATUS.OK).json({ message: 'Following user now', notification: true });
+    return addFollower;
   }
 }

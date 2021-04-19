@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
-    bucket  = "app-cinema-dev"
-    key     = "app-cinema-dev.tfstate"
+    bucket  = "terraform-chat-app-backend-test"
+    key     = "chat-app.tfstate"
     region  = "eu-central-1"
     encrypt = true
   }

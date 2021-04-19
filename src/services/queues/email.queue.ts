@@ -2,7 +2,6 @@ import { ProcessCallbackFunction } from 'bull';
 import { BaseQueue } from '@queues/base.queue';
 import { emailWorker } from '@workers/email.worker';
 import { IEmailJob } from '@user/interface/user.interface';
-
 class EmailQueue extends BaseQueue {
   constructor() {
     super('email');

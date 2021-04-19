@@ -2,7 +2,6 @@ import Queue from 'bull';
 import { userWorker } from '@workers/user.worker';
 import { BaseQueue } from '@queues/base.queue';
 import { IUserJob } from '@user/interface/user.interface';
-
 class UserQueue extends BaseQueue {
   constructor() {
     super('users');

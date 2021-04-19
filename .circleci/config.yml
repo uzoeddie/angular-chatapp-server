@@ -129,7 +129,7 @@ jobs:
           command: |
             if [ "${UPDATE_ENV_FILE}" == "true" ]
             then
-              aws s3 sync s3://chatapp-env-files/${CIRCLE_BRANCH} .
+              aws s3 sync s3://chatapp-env-files-test/${CIRCLE_BRANCH} .
               unzip env-file.zip
               cp .env.production .env
               ELASTICACHE_ENDPOINT=$(cat configuration_endpoint_address.txt | sed 's/\"//g')
@@ -138,7 +138,7 @@ jobs:
               rm env-file.zip
               cp .env .env.production
               zip env-file.zip .env.production
-              aws --region eu-central-1 s3 cp env-file.zip s3://chatapp-env-files/${CIRCLE_BRANCH}/
+              aws --region eu-central-1 s3 cp env-file.zip s3://chatapp-env-files-test/${CIRCLE_BRANCH}/
             fi
 
   # Don't attach workspace here otherwise

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
-import mongoose from 'mongoose';
+import mongoose, { Aggregate } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { unflatten } from 'flat';
 import { getChatFromRedisCache } from '@redis/message-cache';
@@ -14,16 +14,11 @@ export class GetChat {
     let list: IChatMessage[];
     const cachedList: string[] = await getChatFromRedisCache(`chatList:${req.currentUser?.userId}`);
     if (cachedList.length) {
-      const flattenedList = [];
-      for (const item of cachedList) {
-        flattenedList.push(unflatten(JSON.parse(item)));
-      }
-      list = flattenedList;
-      res.status(HTTP_STATUS.OK).json({ message: 'User chat list.', list });
-      return;
+      list = this.unflattenList(cachedList);
+    } else {
+      const senderId: ObjectId = mongoose.Types.ObjectId(req.currentUser?.userId);
+      list = await Helpers.getMessages({ $or: [{ senderId }, { receiverId: senderId }] }, { createdAt: 1 });
     }
-    const senderId: ObjectId = mongoose.Types.ObjectId(req.currentUser?.userId);
-    list = await Helpers.getMessages({ $or: [{ senderId }, { receiverId: senderId }] }, { createdAt: 1 });
     res.status(HTTP_STATUS.OK).json({ message: 'User chat list.', list });
   }
 
@@ -32,24 +27,36 @@ export class GetChat {
     let messages: IChatMessage[] = [];
     if (conversationId !== 'undefined') {
       const cachedMessages: string[] = await getChatFromRedisCache(`messages:${conversationId}`);
-      if (cachedMessages.length) {
-        const parsedItem = [];
-        for (const item of cachedMessages) {
-          parsedItem.push(unflatten(JSON.parse(item)));
-        }
-        messages = parsedItem;
-      } else {
-        messages = await Helpers.getMessages({ conversationId: mongoose.Types.ObjectId(conversationId) }, { createdAt: 1 });
-      }
+      messages = cachedMessages.length
+        ? this.unflattenList(cachedMessages)
+        : await Helpers.getMessages({ conversationId: mongoose.Types.ObjectId(conversationId) }, { createdAt: 1 });
     } else {
-      const conversation: IConversationDocument[] = await ConversationModel.aggregate([
+      const conversation: IConversationDocument[] = await this.conversationAggregate(req.currentUser!.userId, receiverId);
+      if (conversation.length) {
+        messages = await Helpers.getMessages({ conversationId: conversation[0]._id }, { createdAt: 1 });
+      }
+    }
+    res.status(HTTP_STATUS.OK).json({ message: 'User chat messages.', chat: messages });
+  }
+
+  private unflattenList(cachedList: string[]): IChatMessage[] {
+    const flattenedList = [];
+    for (const item of cachedList) {
+      flattenedList.push(unflatten(JSON.parse(item)));
+    }
+    return flattenedList;
+  }
+
+  private async conversationAggregate(userId: string, receiverId: string): Promise<IConversationDocument[]> {
+    return new Promise((resolve) => {
+      const conversation: Aggregate<IConversationDocument[]> = ConversationModel.aggregate([
         {
           $match: {
             $or: [
               {
                 participants: {
                   $elemMatch: {
-                    sender: mongoose.Types.ObjectId(req.currentUser?.userId),
+                    sender: mongoose.Types.ObjectId(userId),
                     receiver: mongoose.Types.ObjectId(receiverId)
                   }
                 }
@@ -58,7 +65,7 @@ export class GetChat {
                 participants: {
                   $elemMatch: {
                     sender: mongoose.Types.ObjectId(receiverId),
-                    receiver: mongoose.Types.ObjectId(req.currentUser?.userId)
+                    receiver: mongoose.Types.ObjectId(userId)
                   }
                 }
               }
@@ -66,10 +73,7 @@ export class GetChat {
           }
         }
       ]);
-      if (conversation.length) {
-        messages = await Helpers.getMessages({ conversationId: conversation[0]._id }, { createdAt: 1 });
-      }
-    }
-    res.status(HTTP_STATUS.OK).json({ message: 'User chat messages.', chat: messages });
+      resolve(conversation);
+    });
   }
 }

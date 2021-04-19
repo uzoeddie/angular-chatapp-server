@@ -9,7 +9,6 @@ import { IEmailJob, IUserJob, IUserJobInfo } from '@user/interface/user.interfac
 
 type IBaseJobData = IChatJobData | IFollowerJobData | IPostJobData | IUserJobInfo | IUserJob | IEmailJob;
 const REDIS_PORT = 6379;
-
 export abstract class BaseQueue {
   queue: Queue.Queue;
   log: Logger;
