@@ -5,16 +5,13 @@ import { UserModel } from '@user/models/user.schema';
 import { userCache } from '@redis/user-cache';
 export class CurrentUser {
   public async read(req: Request, res: Response): Promise<void> {
-    let isUser: boolean;
+    let isUser = false;
     let token = null;
     const cachedUser: IUserDocument = await userCache.getUserFromCache(`${req.currentUser?.userId}`);
     const existingAuthUser: IUserDocument = cachedUser
       ? cachedUser
-      : ((await UserModel.findById({ _id: req.currentUser?.userId })) as IUserDocument);
-    if (!existingAuthUser) {
-      isUser = false;
-      token = null;
-    } else {
+      : ((await UserModel.findById({ _id: req.currentUser?.userId }).exec()) as IUserDocument);
+    if (existingAuthUser) {
       isUser = true;
       token = req.session?.jwt;
     }

@@ -22,10 +22,10 @@ class Application {
   }
 
   private static handleExit(): void {
-    // process.on('uncaughtException', (err: Error) => {
-    //   log.error('There was an uncaught error', err);
-    //   Application.shutdownProperly(1);
-    // });
+    process.on('uncaughtException', (err: Error) => {
+      log.error('There was an uncaught error', err);
+      Application.shutdownProperly(1);
+    });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     process.on('unhandledRejection', (reason: Error | any) => {

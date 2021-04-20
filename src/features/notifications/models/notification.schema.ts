@@ -22,14 +22,14 @@ notificationSchema.methods.insertNotification = async function (body: INotificat
     entityId,
     createdItemId
   });
-  const notifications = await NotificationModel.find({ userTo })
+  return NotificationModel.find({ userTo })
     .lean()
     .populate({
       path: 'userFrom',
       select: 'username avatarColor uId profilePicture'
     })
-    .sort({ date: -1 });
-  return notifications;
+    .sort({ date: -1 })
+    .exec();
 };
 
 const NotificationModel: Model<INotificationDocument> = model<INotificationDocument>('Notification', notificationSchema, 'Notification');

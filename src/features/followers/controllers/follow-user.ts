@@ -32,7 +32,7 @@ export class Add {
   }
 
   private followerData(response: [IUserDocument, IUserDocument], followerObjectId: ObjectID): IFollower {
-    const addFollower: IFollower = {
+    return {
       _id: followerObjectId,
       followerId: {
         _id: response[0]._id,
@@ -58,6 +58,5 @@ export class Add {
       },
       createdAt: new Date()
     };
-    return addFollower;
   }
 }

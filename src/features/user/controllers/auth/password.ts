@@ -17,11 +17,11 @@ import { emailQueue } from '@queues/email.queue';
 export class Password {
   @joiValidation(passwordSchema)
   public async create(req: Request, res: Response): Promise<void> {
-    const existingAuthUser: IUserDocument | null = await UserModel.findOne({ email: req.body.email });
+    const existingAuthUser: IUserDocument | null = await UserModel.findOne({ email: req.body.email }).exec();
     if (!existingAuthUser) {
       throw new BadRequestError('Invalid credential');
     }
-    const randomBytes: Buffer = await crypto.randomBytes(20);
+    const randomBytes: Buffer = await Promise.resolve(crypto.randomBytes(20));
     const randomCharacters: string = randomBytes.toString('hex');
     existingAuthUser.passwordResetToken = randomCharacters;
     existingAuthUser.passwordResetExpires = Date.now() + 60 * 60 * 1000;
@@ -38,7 +38,7 @@ export class Password {
     const existingAuthUser: IUserDocument | null = await UserModel.findOne({
       passwordResetToken: req.params.token,
       passwordResetExpires: { $gt: Date.now() }
-    });
+    }).exec();
     if (!existingAuthUser) {
       throw new BadRequestError('Reset token has expired.');
     }

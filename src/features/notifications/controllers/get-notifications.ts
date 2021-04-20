@@ -7,7 +7,8 @@ export class Get {
     const notifications: INotificationDocument[] = (await NotificationModel.find({ userTo: req.currentUser?.userId })
       .lean()
       .populate({ path: 'userFrom', select: 'username avatarColor uId profilePicture' })
-      .sort({ date: -1 })) as INotificationDocument[];
+      .sort({ date: -1 })
+      .exec()) as INotificationDocument[];
     res.status(HTTP_STATUS.OK).json({ message: 'User notifications', notifications });
   }
 }

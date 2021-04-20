@@ -151,3 +151,4 @@ sonar-project.properties
 terraform-steps.txt
 setup.sh
 test-deploy/
+swagger.yaml

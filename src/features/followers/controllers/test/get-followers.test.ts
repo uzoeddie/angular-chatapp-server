@@ -31,7 +31,7 @@ describe('Get', () => {
   });
 
   describe('following', () => {
-    it('should send correct json response if follower exist in cache', async () => {
+    it('should send correct json response if user following exist in cache', async () => {
       const req: Request = followersMockRequest({}, authUserPayload) as Request;
       const res: Response = followersMockResponse();
       jest.spyOn(followerCache, 'getFollowersFromRedisCache').mockImplementation((): any => [followerData]);
@@ -44,7 +44,7 @@ describe('Get', () => {
       });
     });
 
-    it('should send correct json response if follower exist in database', async () => {
+    it('should send correct json response if user following exist in database', async () => {
       const req: Request = followersMockRequest({}, authUserPayload) as Request;
       const res: Response = followersMockResponse();
       jest.spyOn(followerCache, 'getFollowersFromRedisCache').mockImplementation((): any => []);
@@ -63,15 +63,15 @@ describe('Get', () => {
 
   describe('userFollowers', () => {
     it('should send correct json response if follower exist in cache', async () => {
-      const req: Request = followersMockRequest({}, authUserPayload) as Request;
+      const req: Request = followersMockRequest({}, authUserPayload, { userId: '6064861bc25eaa5a5d2f9bf4' }) as Request;
       const res: Response = followersMockResponse();
       jest.spyOn(followerCache, 'getFollowersFromRedisCache').mockImplementation((): any => [followerData]);
 
-      await Get.prototype.following(req, res);
+      await Get.prototype.userFollowers(req, res);
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
-        message: 'User following',
-        following: [followerData]
+        message: 'User followers',
+        followers: [followerData]
       });
     });
 
